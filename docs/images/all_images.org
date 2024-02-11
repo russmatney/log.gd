@@ -1,0 +1,14 @@
+#+title: All Images
+
+
+#+name: misc startup logs
+#+caption:
+[[./misc_startup_logs.png]]
+
+#+name: solver analysis callsite
+#+caption:
+[[./solver_analysis_callsite.png]]
+
+#+name: pretty solver analysis
+#+caption:
+[[./solver_analysis_output.png]]
