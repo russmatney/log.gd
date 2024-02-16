@@ -17,4 +17,8 @@ config/icon="res://icon.svg"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/log/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/log/plugin.cfg")
+
+[gdunit4]
+
+report/godot/push_error=true

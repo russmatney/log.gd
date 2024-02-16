@@ -3,3 +3,5 @@
 
 .clj-kondo/.cache
 .lsp
+
+reports

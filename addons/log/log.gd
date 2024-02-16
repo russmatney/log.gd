@@ -146,7 +146,7 @@ static func to_printable(msgs, stack=[], newlines=false, pretty=true, use_color=
 			m += "%s " % Log.to_pretty(msg, newlines, use_color)
 		else:
 			m += "%s " % str(msg)
-	return m
+	return m.trim_suffix(" ")
 
 static func is_not_default(v):
 	return not v is String or (v is String and v != "ZZZDEF")
