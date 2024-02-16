@@ -13,3 +13,7 @@ config_version=5
 config/name="Log"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/log/plugin.cfg")

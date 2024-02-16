@@ -39,3 +39,5 @@ but maybe that's a future direction
 check out pandora's tooling
 ** [ ] consider csharp implementation
 ** [ ] list other godot asset lib loggers
+** [ ] support log()
+for opting into pretty printing
