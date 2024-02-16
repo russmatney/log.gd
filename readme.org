@@ -22,9 +22,13 @@ You can watch a video covering the initial use-case here: https://youtu.be/5yuEu
 
 
 * todo
-** [ ] pull in Log.gd from Dothop/dino
-** [ ] create example scene and script that uses it
+** [X] pull in Log.gd from Dothop/dino
+CLOSED: [2024-02-16 Fri 17:51]
+** [X] create example scene and script that uses it
+CLOSED: [2024-02-16 Fri 17:52]
 ** [ ] add gdunit
+** [ ] support log()
+for opting into pretty printing
 ** [ ] write some tests
 ** [ ] github actions running tests
 ** [ ] write readme
@@ -36,8 +40,6 @@ You can watch a video covering the initial use-case here: https://youtu.be/5yuEu
 but maybe that's a future direction
 ** [ ] write and submit to godot asset library
 ** [ ] create docs website
-check out pandora's tooling
+check out pandora, phantom-cam, gaea's tooling
 ** [ ] consider csharp implementation
 ** [ ] list other godot asset lib loggers
-** [ ] support log()
-for opting into pretty printing
