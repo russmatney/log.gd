@@ -1,0 +1,14 @@
+{:paths ["bb"]
+ :tasks
+ {:init
+  (do
+    (defn shell-and-log
+      ([x] (shell-and-log {} x))
+      ([opts x]
+       (println x)
+       (when (seq opts) (println opts))
+       (shell opts x))))
+
+  test       (shell-and-log (str "./addons/gdUnit4/runtest.sh -c -a test"))
+  test-match (let [arg (some-> *command-line-args* first)]
+               (shell-and-log (str "./addons/gdUnit4/runtest.sh -c -a " arg)))}}
