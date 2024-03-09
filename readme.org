@@ -28,9 +28,10 @@ CLOSED: [2024-02-16 Fri 17:51]
 CLOSED: [2024-02-16 Fri 17:52]
 ** [X] add gdunit
 CLOSED: [2024-02-16 Fri 18:19]
+** [X] write some tests
+CLOSED: [2024-03-09 Sat 15:55]
 ** [ ] support log()
 for opting into pretty printing
-** [ ] write some tests
 ** [ ] github actions running tests
 ** [ ] write readme
 *** non-Log.gd-based godot printing quick hits
@@ -38,6 +39,8 @@ for opting into pretty printing
 - print_verbose
 
 "Don't want to install a whole addon? Here's a godot print helper overview"
+*** A/B differences between Log.pr() and print()
+for an object, a node, a list, a dictionary
 *** features, with code and screenshots
 **** pretty-printing primitives
 **** pretty-printing arrays and dicts
@@ -46,10 +49,9 @@ for opting into pretty printing
 but maybe that's a future direction
 ** [ ] write and submit to godot asset library
 ** [ ] create docs website
-check out pandora, phantom-cam, gaea's tooling
-** [ ] consider csharp implementation
+check out pandora, phantom-cam, gaea's static site tooling
+** [ ] consider csharp support or implementation
 ** [ ] list other godot asset lib loggers
-
 * godot printing resources
 - richtextlabel docs with lists of bbcode tags:
 
