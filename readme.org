@@ -26,12 +26,18 @@ You can watch a video covering the initial use-case here: https://youtu.be/5yuEu
 CLOSED: [2024-02-16 Fri 17:51]
 ** [X] create example scene and script that uses it
 CLOSED: [2024-02-16 Fri 17:52]
-** [ ] add gdunit
+** [X] add gdunit
+CLOSED: [2024-02-16 Fri 18:19]
 ** [ ] support log()
 for opting into pretty printing
 ** [ ] write some tests
 ** [ ] github actions running tests
 ** [ ] write readme
+*** non-Log.gd-based godot printing quick hits
+- print, prints, printt, print_rich
+- print_verbose
+
+"Don't want to install a whole addon? Here's a godot print helper overview"
 *** features, with code and screenshots
 **** pretty-printing primitives
 **** pretty-printing arrays and dicts
@@ -43,3 +49,12 @@ but maybe that's a future direction
 check out pandora, phantom-cam, gaea's tooling
 ** [ ] consider csharp implementation
 ** [ ] list other godot asset lib loggers
+
+* godot printing resources
+- richtextlabel docs with lists of bbcode tags:
+
+https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+
+- print_rich
+  supported colors: ~black~, ~red~, ~green~, ~yellow~, ~blue~, ~magenta~, ~pink~, ~purple~, ~cyan~, ~white~, ~orange~, ~gray~
+  supported tags: ~b~, ~i~, ~u~, ~s~, ~indent~, ~code~, ~url~, ~center~, ~right~, ~color~, ~bgcolor~, ~fgcolor~
