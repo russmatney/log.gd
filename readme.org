@@ -55,6 +55,7 @@ CLOSED: [2024-03-20 Wed 16:40]
 ** [X] impl, tests for log() (duck-typing opt-in to pretty printing per object)
 CLOSED: [2024-03-20 Wed 17:01]
 should be argless
+** [ ] license
 ** [ ] write readme
 *** non-Log.gd-based godot printing quick hits
 - print, prints, printt, print_rich
@@ -67,20 +68,33 @@ for an object, a node, a list, a dictionary
 **** pretty-printing primitives
 **** pretty-printing arrays and dicts
 **** opting-in to prettier/limited classes/objects
+#+begin_src gdscript
+func to_printable():
+    {your=str(value)}
+#+end_src
 *** _not_ a production log-to-file helper
-but maybe that's a future direction
+but maybe that's a future direction?
 ** [ ] write and submit to godot asset library
 ** [ ] create docs website
 check out pandora, phantom-cam, gaea's static site tooling
-** [ ] consider csharp support or implementation
+** [ ] consider csharp support + implementation
 ** [ ] github action creating releases
 ** [ ] list prior art (other godot asset lib loggers)
-** [ ] support runtime per-type prettyprint overrides
-passed in as a dictionary
+** [ ] support configurable per-type prettyprint overrides
+example: i want to impl a to_printable for PandoraEntities without subclassing it
+
+type->to_printable opts passed in as a dictionary?
 ideally written as a config of some kind
 
 but how to read it from a static function?
 maybe need to write constants to disk like pandora does?
+
+could read/write from a ~res://log.gd~ for opts.
+(this is what gd-plug does, for example)
+
+- specify colors for types
+- specify to_printable overrides
+  - for eg, a fallback for PandoraEntities
 * godot printing resources
 - richtextlabel docs with lists of bbcode tags:
 
