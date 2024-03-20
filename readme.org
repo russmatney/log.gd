@@ -21,7 +21,7 @@ You can watch a video covering the initial use-case here: https://youtu.be/5yuEu
 [[./docs/images/solver_analysis_output.png]]
 
 
-* TLDR: example script and output
+** TLDR: example script and output
 Checkout [[file:src/Example.gd][src/Example.gd]] for this code.
 
 ~Log.pr()~ colorizes and prints the passed data structures.
@@ -48,48 +48,49 @@ which gets picked up by Log's static method via duck-typing.
 
 This makes dictionaries and arrays much more readable at a glance, which speeds
 up debugging and reduces eye-strain.
-
-* todo
-** [X] pull in Log.gd from Dothop/dino
+** todo
+*** v0.1
+**** [X] pull in Log.gd from Dothop/dino
 CLOSED: [2024-02-16 Fri 17:51]
-** [X] create example scene and script that uses it
+**** [X] create example scene and script that uses it
 CLOSED: [2024-02-16 Fri 17:52]
-** [X] add gdunit
+**** [X] add gdunit
 CLOSED: [2024-02-16 Fri 18:19]
-** [X] write some tests
+**** [X] write some tests
 CLOSED: [2024-03-09 Sat 15:55]
-** [X] github actions running tests
+**** [X] github actions running tests
 CLOSED: [2024-03-20 Wed 16:40]
-** [X] impl, tests for log() (duck-typing opt-in to pretty printing per object)
+**** [X] impl, tests for log() (duck-typing opt-in to pretty printing per object)
 CLOSED: [2024-03-20 Wed 17:01]
 should be argless
-** [X] license
+**** [X] license
 CLOSED: [2024-03-20 Wed 17:45]
-** [ ] write readme
-*** non-Log.gd-based godot printing quick hits
+**** [ ] write readme
+***** non-Log.gd-based godot printing quick hits
 - print, prints, printt, print_rich
 - print_verbose
 
 "Don't want to install a whole addon? Here's a godot print helper overview"
-*** A/B differences between Log.pr() and print()
+***** A/B differences between Log.pr() and print()
 for an object, a node, a list, a dictionary
-*** features, with code and screenshots
-**** pretty-printing primitives
-**** pretty-printing arrays and dicts
-**** opting-in to prettier/limited classes/objects
+***** features, with code and screenshots
+****** pretty-printing primitives
+****** pretty-printing arrays and dicts
+****** opting-in to prettier/limited classes/objects
 #+begin_src gdscript
 func to_printable():
     {your=str(value)}
 #+end_src
-*** _not_ a production log-to-file helper
+***** _not_ a production log-to-file helper
 but maybe that's a future direction?
-** [ ] write and submit to godot asset library
-** [ ] create docs website
+**** [ ] write and submit to godot asset library
+**** [ ] create docs website
 check out pandora, phantom-cam, gaea's static site tooling
-** [ ] consider csharp support + implementation
-** [ ] github action creating releases
-** [ ] list prior art (other godot asset lib loggers)
-** [ ] support configurable per-type prettyprint overrides
+**** [ ] github action creating releases
+**** [ ] list prior art (other godot asset lib loggers)
+*** v1.0
+**** [ ] consider csharp support + implementation
+**** [ ] configurable per-type prettyprint overrides
 example: i want to impl a to_printable for PandoraEntities without subclassing it
 
 type->to_printable opts passed in as a dictionary?
@@ -104,7 +105,11 @@ could read/write from a ~res://log.gd~ for opts.
 - specify colors for types
 - specify to_printable overrides
   - for eg, a fallback for PandoraEntities
-* godot printing resources
+**** [ ] configurable colors and multiple schemas
+- pretty colors
+- terminal-safe colors
+- custom color dictionary
+** godot printing resources
 - richtextlabel docs with lists of bbcode tags:
 
 https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
