@@ -30,8 +30,8 @@ CLOSED: [2024-02-16 Fri 17:52]
 CLOSED: [2024-02-16 Fri 18:19]
 ** [X] write some tests
 CLOSED: [2024-03-09 Sat 15:55]
-** [ ] support log()
-for opting into pretty printing
+** [ ] support duck-typed, argless log() impl
+for opting into pretty printing per object
 ** [ ] github actions running tests
 ** [ ] write readme
 *** non-Log.gd-based godot printing quick hits

@@ -39,8 +39,36 @@ var _expected_tests = {
 	"test_parameterized_dict_values" : [
 		[{"key_a":"value_a"}, '{"key_a":"value_a"}'],
 		[{"key_b":"value_b"}, '{"key_b":"value_b"}']
+	],
+	"test_with_dynamic_paramater_resolving" : [
+		["test_a"],
+		["test_b"],
+		["test_c"],
+		["test_d"]
+	],
+	"test_with_dynamic_paramater_resolving2" : [
+		["test_a"],
+		["test_b"],
+		["test_c"]
+	],
+	"test_with_extern_parameter_set" : [
+		["test_a"],
+		["test_b"],
+		["test_c"]
 	]
 }
+
+
+var _test_node_before :Node
+var _test_node_before_test :Node
+
+
+func before() -> void:
+	_test_node_before = auto_free(SubViewport.new())
+
+
+func before_test() -> void:
+	_test_node_before_test = auto_free(SubViewport.new())
 
 
 func after():
@@ -74,7 +102,7 @@ func test_parameterized_int_values(a: int, b :int, c :int, expected :int, test_p
 	[1, 2, 3, 6],
 	[3, 4, 5, 12],
 	[6, 7, 8, 21] ]):
-	
+
 	collect_test_call("test_parameterized_int_values", [a, b, c, expected])
 	assert_that(a+b+c).is_equal(expected)
 
@@ -84,7 +112,7 @@ func test_parameterized_float_values(a: float, b :float, expected :float, test_p
 	[2.2, 2.2, 4.4],
 	[2.2, 2.3, 4.5],
 	[3.3, 2.2, 5.5] ]):
-	
+
 	collect_test_call("test_parameterized_float_values", [a, b, expected])
 	assert_float(a+b).is_equal(expected)
 
@@ -94,7 +122,7 @@ func test_parameterized_string_values(a: String, b :String, expected :String, te
 	["2.2", "2.2", "2.22.2"],
 	["foo", "bar", "foobar"],
 	["a", "b", "ab"] ]):
-	
+
 	collect_test_call("test_parameterized_string_values", [a, b, expected])
 	assert_that(a+b).is_equal(expected)
 
@@ -104,7 +132,7 @@ func test_parameterized_Vector2_values(a: Vector2, b :Vector2, expected :Vector2
 	[Vector2.ONE, Vector2.ONE, Vector2(2, 2)],
 	[Vector2.LEFT, Vector2.RIGHT, Vector2.ZERO],
 	[Vector2.ZERO, Vector2.LEFT, Vector2.LEFT] ]):
-	
+
 	collect_test_call("test_parameterized_Vector2_values", [a, b, expected])
 	assert_that(a+b).is_equal(expected)
 
@@ -114,17 +142,17 @@ func test_parameterized_Vector3_values(a: Vector3, b :Vector3, expected :Vector3
 	[Vector3.ONE, Vector3.ONE, Vector3(2, 2, 2)],
 	[Vector3.LEFT, Vector3.RIGHT, Vector3.ZERO],
 	[Vector3.ZERO, Vector3.LEFT, Vector3.LEFT] ]):
-	
+
 	collect_test_call("test_parameterized_Vector3_values", [a, b, expected])
 	assert_that(a+b).is_equal(expected)
 
 
 class TestObj extends RefCounted:
 	var _value :String
-	
+
 	func _init(value :String):
 		_value = value
-	
+
 	func _to_string() -> String:
 		return _value
 
@@ -132,7 +160,7 @@ class TestObj extends RefCounted:
 @warning_ignore("unused_parameter")
 func test_parameterized_obj_values(a: Object, b :Object, expected :String, test_parameters := [
 	[TestObj.new("abc"), TestObj.new("def"), "abcdef"]]):
-	
+
 	collect_test_call("test_parameterized_obj_values", [a, b, expected])
 	assert_that(a.to_string()+b.to_string()).is_equal(expected)
 
@@ -209,3 +237,60 @@ func test_with_string_contains_brackets(
 			flowchart TD
 			id{"This is a rhombus node"}
 			""")
+
+
+func test_with_dynamic_parameter_resolving(name: String, value, expected, test_parameters := [
+	["test_a", auto_free(Node2D.new()), Node2D],
+	["test_b", auto_free(Node3D.new()), Node3D],
+	["test_c", _test_node_before, SubViewport],
+	["test_d", _test_node_before_test, SubViewport],
+]) -> void:
+	# all values must be resolved
+	assert_that(value).is_not_null().is_instanceof(expected)
+	if name == "test_c":
+		assert_that(value).is_same(_test_node_before)
+	if name == "test_d":
+		assert_that(value).is_same(_test_node_before_test)
+	# the argument 'test_parameters' must be replaced by <null> set to avoid re-instantiate of test arguments
+	assert_that(test_parameters).is_empty()
+	collect_test_call("test_with_dynamic_paramater_resolving", [name])
+
+
+@warning_ignore("unused_parameter")
+func test_with_dynamic_parameter_resolving2(
+	name: String,
+	type,
+	log_level,
+	expected_logs,
+	test_parameters = [
+		["test_a", null, "LOG", {}],
+		[
+			"test_b",
+			Node2D,
+			null,
+			{Node2D: "ERROR"}
+		],
+		[
+			"test_c",
+			Node2D,
+			"LOG",
+			{Node2D: "LOG"}
+		]
+	]
+):
+	# the argument 'test_parameters' must be replaced by <null> set to avoid re-instantiate of test arguments
+	assert_that(test_parameters).is_empty()
+	collect_test_call("test_with_dynamic_paramater_resolving2", [name])
+
+
+var _test_set =[
+	["test_a"],
+	["test_b"],
+	["test_c"]
+]
+
+@warning_ignore("unused_parameter")
+func test_with_extern_parameter_set(value, test_parameters = _test_set):
+	assert_that(value).is_not_empty()
+	assert_that(test_parameters).is_empty()
+	collect_test_call("test_with_extern_parameter_set", [value])
