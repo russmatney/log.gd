@@ -26,17 +26,25 @@ Checkout [[file:src/Example.gd][src/Example.gd]] for this code.
 
 ~Log.pr()~ colorizes and prints the passed data structures.
 
+*** Example.gd:
+
 #+name: Example.gd
 #+caption: ~Log.pr()~ should Just Work in most (all?) cases
 [[./docs/images/example_gd_impl.png]]
+
+~Log.pr()~ should Just Work in most (all?) cases
 
 You can opt-in to pretty printing in your objects by implementing
 `to_printable()`,
 which gets picked up by Log's static method via duck-typing.
 
+*** Output of Example.gd:
+
 #+name: output of Example.gd
 #+caption: ~prn~ (vs ~pr~) adds newlines between values
 [[./docs/images/example_gd_output.png]]
+
+~prn~ (vs ~pr~) adds newlines between values
 
 This makes dictionaries and arrays much more readable at a glance, which speeds
 up debugging and reduces eye-strain.
@@ -55,7 +63,8 @@ CLOSED: [2024-03-20 Wed 16:40]
 ** [X] impl, tests for log() (duck-typing opt-in to pretty printing per object)
 CLOSED: [2024-03-20 Wed 17:01]
 should be argless
-** [ ] license
+** [X] license
+CLOSED: [2024-03-20 Wed 17:45]
 ** [ ] write readme
 *** non-Log.gd-based godot printing quick hits
 - print, prints, printt, print_rich
