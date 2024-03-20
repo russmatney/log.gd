@@ -1,5 +1,7 @@
 #+title: Log: Godot Pretty Printer
 
+[[./assets/Log_logo_4x.png]]
+
 Hey there!
 
 I've been building up a pretty-printer in my Godot games lately - here I'm
