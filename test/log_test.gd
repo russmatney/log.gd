@@ -36,4 +36,7 @@ class ExampleObj:
 func test_custom_to_printable():
 	var obj = ExampleObj.new(Vector2(1, 2))
 	var val = Log.to_printable([obj])
-	assert_that(val).is_equal("[color=red]{ [/color][color=magenta]\"val\"[/color]: ([color=purple]1[/color],[color=purple]2[/color])[color=red], [/color][color=magenta]\"id\"[/color]: -9223371948388514306[color=red] }[/color]")
+	var id = obj.get_instance_id()
+	assert_that(val).is_equal(
+		"[color=red]{ [/color][color=magenta]\"val\"[/color]: ([color=purple]1[/color],[color=purple]2[/color])[color=red], [/color][color=magenta]\"id\"[/color]: %s[color=red] }[/color]" \
+		% str(id))

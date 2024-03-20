@@ -21,6 +21,26 @@ You can watch a video covering the initial use-case here: https://youtu.be/5yuEu
 [[./docs/images/solver_analysis_output.png]]
 
 
+* TLDR: example script and output
+Checkout [[file:src/Example.gd][src/Example.gd]] for this code.
+
+~Log.pr()~ colorizes and prints the passed data structures.
+
+#+name: Example.gd
+#+caption: ~Log.pr()~ should Just Work in most (all?) cases
+[[./docs/images/example_gd_impl.png]]
+
+You can opt-in to pretty printing in your objects by implementing
+`to_printable()`,
+which gets picked up by Log's static method via duck-typing.
+
+#+name: output of Example.gd
+#+caption: ~prn~ (vs ~pr~) adds newlines between values
+[[./docs/images/example_gd_output.png]]
+
+This makes dictionaries and arrays much more readable at a glance, which speeds
+up debugging and reduces eye-strain.
+
 * todo
 ** [X] pull in Log.gd from Dothop/dino
 CLOSED: [2024-02-16 Fri 17:51]
@@ -55,6 +75,12 @@ check out pandora, phantom-cam, gaea's static site tooling
 ** [ ] consider csharp support or implementation
 ** [ ] github action creating releases
 ** [ ] list prior art (other godot asset lib loggers)
+** [ ] support runtime per-type prettyprint overrides
+passed in as a dictionary
+ideally written as a config of some kind
+
+but how to read it from a static function?
+maybe need to write constants to disk like pandora does?
 * godot printing resources
 - richtextlabel docs with lists of bbcode tags:
 
