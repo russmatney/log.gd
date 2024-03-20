@@ -30,9 +30,11 @@ CLOSED: [2024-02-16 Fri 17:52]
 CLOSED: [2024-02-16 Fri 18:19]
 ** [X] write some tests
 CLOSED: [2024-03-09 Sat 15:55]
-** [ ] support duck-typed, argless log() impl
-for opting into pretty printing per object
-** [ ] github actions running tests
+** [X] github actions running tests
+CLOSED: [2024-03-20 Wed 16:40]
+** [X] impl, tests for log() (duck-typing opt-in to pretty printing per object)
+CLOSED: [2024-03-20 Wed 17:01]
+should be argless
 ** [ ] write readme
 *** non-Log.gd-based godot printing quick hits
 - print, prints, printt, print_rich
@@ -51,7 +53,8 @@ but maybe that's a future direction
 ** [ ] create docs website
 check out pandora, phantom-cam, gaea's static site tooling
 ** [ ] consider csharp support or implementation
-** [ ] list other godot asset lib loggers
+** [ ] github action creating releases
+** [ ] list prior art (other godot asset lib loggers)
 * godot printing resources
 - richtextlabel docs with lists of bbcode tags:
 

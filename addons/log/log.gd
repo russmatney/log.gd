@@ -49,11 +49,11 @@ static func color_wrap(s, color, use_color=true):
 # - bgcolor
 # - fgcolor
 
-## to_pretty ###########################################################################
+## _to_pretty ###########################################################################
 
 # refactor into opts dict
 # refactor into pluggable pretty printer
-static func to_pretty(msg, newlines=false, use_color=true, indent_level=0):
+static func _to_pretty(msg, newlines=false, use_color=true, indent_level=0):
 	var max_array_size = 20
 	var omit_vals_for_keys = ["layer_0/tile_data"]
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
@@ -70,7 +70,7 @@ static func to_pretty(msg, newlines=false, use_color=true, indent_level=0):
 		for i in range(len(msg)):
 			if newlines and last > 1:
 				tmp += "\n\t"
-			tmp += Log.to_pretty(msg[i], newlines, use_color, indent_level + 1)
+			tmp += Log._to_pretty(msg[i], newlines, use_color, indent_level + 1)
 			if i != last:
 				tmp += Log.color_wrap(", ", "red", use_color)
 		tmp += Log.color_wrap(" ]", "red", use_color)
@@ -86,7 +86,7 @@ static func to_pretty(msg, newlines=false, use_color=true, indent_level=0):
 			if k in omit_vals_for_keys:
 				val = "..."
 			else:
-				val = Log.to_pretty(msg[k], newlines, use_color, indent_level + 1)
+				val = Log._to_pretty(msg[k], newlines, use_color, indent_level + 1)
 			if newlines and ct > 1:
 				tmp += "\n\t" \
 					+ range(indent_level)\
@@ -117,9 +117,9 @@ static func to_pretty(msg, newlines=false, use_color=true, indent_level=0):
 		else:
 			return '(%s,%s)' % [msg.x, msg.y]
 	elif msg is Object and msg.has_method("data"):
-		return Log.to_pretty(msg.data(), newlines, use_color, indent_level)
-	elif msg is Object and msg.has_method("to_pretty"):
-		return msg.to_pretty(newlines, use_color, indent_level)
+		return Log._to_pretty(msg.data(), newlines, use_color, indent_level)
+	elif msg is Object and msg.has_method("to_printable"):
+		return Log._to_pretty(msg.to_printable(), newlines, use_color, indent_level)
 	else:
 		return str(msg)
 
@@ -143,7 +143,7 @@ static func to_printable(msgs, stack=[], newlines=false, pretty=true, use_color=
 	for msg in msgs:
 		# add a space between msgs
 		if pretty:
-			m += "%s " % Log.to_pretty(msg, newlines, use_color)
+			m += "%s " % Log._to_pretty(msg, newlines, use_color)
 		else:
 			m += "%s " % str(msg)
 	return m.trim_suffix(" ")
