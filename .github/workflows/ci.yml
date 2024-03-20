@@ -2,10 +2,9 @@ name: log-ci
 run-name: ${{ github.head_ref || github.ref_name }}-log-ci
 
 on:
-  pull_request:
-    paths-ignore:
-      - '**.org'
+  # pull_request:
   workflow_dispatch:
+  push:
 
 
 concurrency:
