@@ -1,10 +1,14 @@
 # CHANGELOG
 
 
-## Unreleased
+## v0.0.4
 
 
 ### 21 Mar 2024
+
+- ([`7e5bcbd`](https://github.com/russmatney/log.gd/commit/7e5bcbd)) refactor: update repo name from log to log.gd
+
+  > Hopefully doesn't break everything!
 
 - ([`3a3bacf`](https://github.com/russmatney/log.gd/commit/3a3bacf)) fix: readme markdown fixes
 - ([`d33c3d0`](https://github.com/russmatney/log.gd/commit/d33c3d0)) docs: cover call-site prefixes
