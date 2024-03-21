@@ -1,11 +1,12 @@
 # CHANGELOG
 
 
-## v0.0.2
+## v0.0.3
 
 
 ### 21 Mar 2024
 
+- ([`15ee689`](https://github.com/russmatney/log/commit/15ee689)) chore: new version: v0.0.2
 - ([`02f5951`](https://github.com/russmatney/log/commit/02f5951)) feat: automate more of the release flow
 
   > Gluing it all together - tag creation, changelog update, commit and push.
