@@ -3,17 +3,11 @@
    [clojure.string :as string]
    [clojure.edn :as edn]
    [babashka.process :as process]
-   [babashka.fs :as fs]
    [clojure.java.shell :as clj-sh]
    ))
 
 (def changelog-path "CHANGELOG.md")
 (def repo-dir "~/russmatney/log")
-
-(defn partition-by-newlines [lines]
-  (->> lines
-       (partition-by #{""})
-       (remove (comp #{""} first))))
 
 (defn bash [command]
   (clj-sh/sh "bash" "-c" command))
@@ -64,7 +58,6 @@
     "}"))
 
 (defn first-commit-hash [{:keys [dir]}]
-  ;; NOTE crashes/throws when no tags exist
   (->
     ^{:out :string :dir (str dir)}
     (process/$ git rev-list --max-parents=0 HEAD)
@@ -74,7 +67,6 @@
          (-> res :out string/trim-newline))))))
 
 (defn last-tag [{:keys [dir]}]
-  ;; NOTE crashes/throws when no tags exist
   (->
     ^{:out :string :dir (str dir)}
     (process/$ git describe --tags --abbrev=0)
@@ -84,7 +76,6 @@
          (-> res :out string/trim-newline))))))
 
 (defn all-tags [{:keys [dir]}]
-  ;; NOTE crashes/throws when no tags exist
   (->
     ^{:out :string :dir (str dir)}
     (process/$ git describe --tags --abbrev=0)
@@ -99,14 +90,8 @@
   (first-commit-hash {:dir (expand "~/russmatney/log")}))
 
 (defn commits
-  "Retuns metadata for `n` commits at the specified `dir`.
-  ;; TODO support before/after
-  ;; TODO rename, probably just `commits`
-  "
-  [{:keys [dir n
-           after-tag
-           before-tag]
-    :as   opts}]
+  "Retuns metadata for `n` commits at the specified `dir`."
+  [{:keys [dir n after-tag before-tag] :as opts}]
   (let [n (or n 500)
         cmd
         (str "git log" (str " -n " n)
@@ -184,13 +169,13 @@
 
 
 (defn commit->lines [commit]
-  ;; TODO make hyperlink
   [(str "- " (:commit/subject commit) " (" (commit-hash-link commit) ", " (commit-date commit) ")")
    (when (seq (:commit/body commit))
      (str "\n" (->> (:commit/body commit)
                     (string/split-lines)
-                    (map #(str "  " %))
-                    (string/join "\n"))))])
+                    (map #(str "  > " %))
+                    (string/join "\n"))
+          "\n"))])
 
 (defn tag-section [[tag commits]]
   (let [headline     (str "## " (cond
