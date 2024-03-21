@@ -1,12 +1,19 @@
 # CHANGELOG
 
 
-## Unreleased
+## v0.0.1
 
 
 ### 21 Mar 2024
 
-- ([`3666d3e`](https://github.com/russmatney/log/commit/3666d3e)) docs: monospace hashes and subject lines
+- ([`c0a9e37`](https://github.com/russmatney/log/commit/c0a9e37)) docs: extend changelog to specify a latest version label
+
+  > This lets me write the changelog with the new tag before it actually
+  > exists. There's a chicken-and-egg problem with using tags to create the
+  > changelog - i want the changelog update included in the tagged commit
+  > itself, so we have to fake the tag's existence first.
+
+- ([`a8dd5c3`](https://github.com/russmatney/log/commit/a8dd5c3)) docs: monospace hashes and subject lines
 - ([`7a29c89`](https://github.com/russmatney/log/commit/7a29c89)) docs: changelog hashes first
 
   > More scannable! I think this is done.
