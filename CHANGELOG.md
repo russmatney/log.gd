@@ -4,11 +4,21 @@
 ## v0.0.2
 
 
-## v0.0.1
+### 21 Mar 2024
+
+- ([`02f5951`](https://github.com/russmatney/log/commit/02f5951)) feat: automate more of the release flow
+
+  > Gluing it all together - tag creation, changelog update, commit and push.
+  > 
+  > Would be cool to error out if there's already a git-diff here as well.
+
+
+## v0.0.2
 
 
 ### 21 Mar 2024
 
+- ([`097b950`](https://github.com/russmatney/log/commit/097b950)) chore: new version: v0.0.2
 - ([`03043d0`](https://github.com/russmatney/log/commit/03043d0)) chore: version and changelog update
 - ([`c0a9e37`](https://github.com/russmatney/log/commit/c0a9e37)) docs: extend changelog to specify a latest version label
 
