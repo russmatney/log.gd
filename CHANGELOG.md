@@ -1,11 +1,15 @@
 # CHANGELOG
 
 
+## v0.0.2
+
+
 ## v0.0.1
 
 
 ### 21 Mar 2024
 
+- ([`03043d0`](https://github.com/russmatney/log/commit/03043d0)) chore: version and changelog update
 - ([`c0a9e37`](https://github.com/russmatney/log/commit/c0a9e37)) docs: extend changelog to specify a latest version label
 
   > This lets me write the changelog with the new tag before it actually
@@ -25,12 +29,6 @@
 
 - ([`7e210ae`](https://github.com/russmatney/log/commit/7e210ae)) feat: generating initial changelog
 - ([`f3be3be`](https://github.com/russmatney/log/commit/f3be3be)) wip: bb code gathering commits per tag
-
-## v0.0.0
-
-
-### 21 Mar 2024
-
 - ([`e00bc10`](https://github.com/russmatney/log/commit/e00bc10)) feat: plugin version, split out todos
 - ([`1c7b719`](https://github.com/russmatney/log/commit/1c7b719)) chore: expand ci to cover more godot versions
 

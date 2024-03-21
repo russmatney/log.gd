@@ -14,11 +14,21 @@
   test-match (let [arg (some-> *command-line-args* first)]
                (shell-and-log (str "./addons/gdUnit4/runtest.sh -c -a " arg)))
 
-  release (do
-            (println "Update version in addons/log/plugin.cfg")
-            (println "Run `bb changelog <new-version-tag>` to update the Changelog.md")
-            (println "Write commit for new version")
-            (println "Run add-and-push-tag <new-version-tag>"))
+  release
+  (do
+    (println "Update version in addons/log/plugin.cfg")
+    (println "Run `bb changelog <new-version-tag>` to update the Changelog.md")
+    (println "Stage expected files (plugin.cfg and changelog.md)")
+    (println "Run `bb commit-version <new-version-tag>`")
+    (println "Run `bb add-and-push-tag <new-version-tag>`"))
+
+  commit-version
+  (let [tag (some-> *command-line-args* first)]
+    (if-not tag
+      (println "Expected passed tag")
+      (do
+        (println "Writing commit for all staged changes!")
+        (shell-and-log (str "git commit -m 'chore: new version: " tag "'")))))
 
   changelog (let [tag-overwrite (some-> *command-line-args* first)]
               (changelog/rewrite-changelog {:latest-tag-label tag-overwrite}))
@@ -30,5 +40,5 @@
       (do
         (println "Creating and pushing tag!")
         (println "WARN: Assuming the current HEAD should be tagged and pushed")
-        (shell-and-log (str "git tag -a " tag))
+        (shell-and-log (str "git tag " tag))
         (shell-and-log (str "git push origin " tag)))))}}
