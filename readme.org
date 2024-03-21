@@ -1,6 +1,6 @@
 #+title: Log.gd: A Godot Pretty Printer
 
-[[./assets/Log_logo_4x.png]]
+[[./docs/assets/Log_logo_4x.png]]
 
 Hey there!
 

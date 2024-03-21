@@ -2,7 +2,7 @@
 
 > Coming soon to the Godot Asset Library!
 
-### TLDR
+### Quick Overview
 
 Log.gd provides static functions for printing colorized output. These
 are intended as drop-in replacements for `print(...)`.
