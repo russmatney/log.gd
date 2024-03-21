@@ -7,7 +7,7 @@
    ))
 
 (def changelog-path "CHANGELOG.md")
-(def repo-dir "~/russmatney/log")
+(def repo-dir "~/russmatney/log.gd")
 
 (defn bash [command]
   (clj-sh/sh "bash" "-c" command))
@@ -85,9 +85,9 @@
          (-> res :out string/split-lines))))))
 
 (comment
-  (all-tags {:dir (expand "~/russmatney/log")})
-  (last-tag {:dir (expand "~/russmatney/log")})
-  (first-commit-hash {:dir (expand "~/russmatney/log")}))
+  (all-tags {:dir (expand "~/russmatney/log.gd")})
+  (last-tag {:dir (expand "~/russmatney/log.gd")})
+  (first-commit-hash {:dir (expand "~/russmatney/log.gd")}))
 
 (defn commits
   "Retuns metadata for `n` commits at the specified `dir`."
@@ -151,7 +151,7 @@
     first second first))
 
 (defn commit-hash-link [commit]
-  (str "[`" (:commit/short-hash commit) "`](" (str "https://github.com/russmatney/log/commit/" (:commit/short-hash commit)) ")"))
+  (str "[`" (:commit/short-hash commit) "`](" (str "https://github.com/russmatney/log.gd/commit/" (:commit/short-hash commit)) ")"))
 
 (defn commit-date [commit]
   (->

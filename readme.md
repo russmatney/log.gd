@@ -48,7 +48,7 @@ func _ready():_
 
 ### Example script and output
 
-Checkout [src/Example.gd](https://github.com/russmatney/log/blob/main/src/Example.gd) for this code.
+Checkout [src/Example.gd](https://github.com/russmatney/log.gd/blob/main/src/Example.gd) for this code.
 
 `Log.pr()` colorizes and prints passed arguments, including recursively digging
 into Arrays and Dictionaries.
