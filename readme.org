@@ -12,15 +12,15 @@ You can watch a video covering the initial use-case here: https://youtu.be/5yuEu
 
 #+name: misc startup logs
 #+caption:
-[[./docs/images/misc_startup_logs.png]]
+[[./docs/assets/misc_startup_logs.png]]
 
 #+name: solver analysis callsite
 #+caption:
-[[./docs/images/solver_analysis_callsite.png]]
+[[./docs/assets/solver_analysis_callsite.png]]
 
 #+name: pretty solver analysis
 #+caption:
-[[./docs/images/solver_analysis_output.png]]
+[[./docs/assets/solver_analysis_output.png]]
 
 
 ** TLDR: example script and output
@@ -32,7 +32,7 @@ Checkout [[file:src/Example.gd][src/Example.gd]] for this code.
 
 #+name: Example.gd
 #+caption: ~Log.pr()~ should Just Work in most (all?) cases
-[[./docs/images/example_gd_impl.png]]
+[[./docs/assets/example_gd_impl.png]]
 
 ~Log.pr()~ should Just Work in most (all?) cases
 
@@ -44,7 +44,7 @@ which gets picked up by Log's static method via duck-typing.
 
 #+name: output of Example.gd
 #+caption: ~prn~ (vs ~pr~) adds newlines between values
-[[./docs/images/example_gd_output.png]]
+[[./docs/assets/example_gd_output.png]]
 
 ~prn~ (vs ~pr~) adds newlines between values
 
