@@ -170,7 +170,7 @@
 
 (defn commit->lines [commit]
   (->>
-    [(str "- " (:commit/subject commit) " (" (commit-hash-link commit) ")")
+    [(str "- " (commit-hash-link commit) ": " (:commit/subject commit))
      (when (seq (string/trim-newline (:commit/body commit)))
        (str "\n" (->> (:commit/body commit)
                       (string/split-lines)
