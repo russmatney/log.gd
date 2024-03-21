@@ -133,8 +133,7 @@
          (partition 2 1)
          reverse)))
 
-(defn gather-commits
-  []
+(defn gather-commits []
   (let [dir        (expand repo-dir)
         opts       {:dir dir}
         boundaries (release-boundaries opts)]
@@ -179,24 +178,29 @@
             "\n"))]
     (remove nil?)))
 
-(defn tag-section [[tag commits]]
-  (let [headline     (str "\n## " (cond
-                                  (#{"HEAD"} tag) "Unreleased"
-                                  :else           tag))
-        commit-lines (->> commits
-                          (group-by commit-date)
-                          (mapcat (fn [[date comms]]
-                                    (concat [(str "\n### " date "\n")]
-                                            (mapcat commit->lines comms)))))]
-    (concat [(str headline "\n")] commit-lines)))
+(defn tag-section
+  ([tag-and-commits] (tag-section nil tag-and-commits))
+  ([{:keys [latest-tag-label]} [tag commits]]
+   (let [headline     (str "\n## " (cond
+                                     (#{"HEAD"} tag) (or latest-tag-label "Unreleased")
+                                     :else           tag))
+         commit-lines (->> commits
+                           (group-by commit-date)
+                           (mapcat (fn [[date comms]]
+                                     (concat [(str "\n### " date "\n")]
+                                             (mapcat commit->lines comms)))))]
+     (concat [(str headline "\n")] commit-lines))))
 
-(defn rewrite-changelog []
-  (let [content (str "# CHANGELOG\n\n"
-                     (str
-                       (->> (gather-commits)
-                            (mapcat tag-section)
-                            (string/join "\n"))))]
-    (spit changelog-path content)))
+(defn rewrite-changelog
+  ([] (rewrite-changelog nil))
+  ([{:keys [latest-tag-label]}]
+   (let [content (str "# CHANGELOG\n\n"
+                      (str
+                        (->> (gather-commits)
+                             (mapcat (partial tag-section {:latest-tag-label latest-tag-label}))
+                             (string/join "\n"))))]
+     (spit changelog-path content))))
 
 (comment
-  (rewrite-changelog))
+  (rewrite-changelog)
+  (rewrite-changelog {:latest-tag-label "v1.0.0"}))

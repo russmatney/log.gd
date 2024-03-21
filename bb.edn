@@ -1,6 +1,7 @@
 {:paths ["bb"]
  :tasks
- {:init
+ {:requires ([changelog])
+  :init
   (do
     (defn shell-and-log
       ([x] (shell-and-log {} x))
@@ -11,4 +12,23 @@
 
   test       (shell-and-log (str "./addons/gdUnit4/runtest.sh -c -a test"))
   test-match (let [arg (some-> *command-line-args* first)]
-               (shell-and-log (str "./addons/gdUnit4/runtest.sh -c -a " arg)))}}
+               (shell-and-log (str "./addons/gdUnit4/runtest.sh -c -a " arg)))
+
+  release (do
+            (println "Update version in addons/log/plugin.cfg")
+            (println "Run `bb changelog <new-version-tag>` to update the Changelog.md")
+            (println "Write commit for new version")
+            (println "Run add-and-push-tag <new-version-tag>"))
+
+  changelog (let [tag-overwrite (some-> *command-line-args* first)]
+              (changelog/rewrite-changelog {:latest-tag-label tag-overwrite}))
+
+  add-and-push-tag
+  (let [tag (some-> *command-line-args* first)]
+    (if-not tag
+      (println "Expected passed tag")
+      (do
+        (println "Creating and pushing tag!")
+        (println "WARN: Assuming the current HEAD should be tagged and pushed")
+        (shell-and-log (str "git tag -a " tag))
+        (shell-and-log (str "git push origin " tag)))))}}
