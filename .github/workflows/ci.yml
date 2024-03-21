@@ -24,13 +24,28 @@ jobs:
       pull-requests: write
       statuses: write
 
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        godot-version: ['4.1', '4.1.1', '4.1.2', '4.1.3', '4.2', '4.2.1']
+        godot-status: ['stable']
+        include:
+          - godot-version: '4.2.2'
+            godot-status: 'rc2'
+          - godot-version: '4.3'
+            godot-status: 'dev3'
+
     steps:
       # checkout your repository
       - uses: actions/checkout@v4
+      # run unit tests
       - uses: MikeSchulze/gdUnit4-action@v1.0.2
         with:
-          godot-version: '4.2.1'
+          godot-version: ${{ matrix.godot-version }}
+          godot-status: ${{ matrix.godot-status }}
           paths: |
             res://test/
           timeout: 5
-          report-name: test_report.xml
+          report-name:
+            report_${{ matrix.version }}_Godot${{ matrix.godot-version }}-${{ matrix.godot-status }}.xml
