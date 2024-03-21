@@ -1,6 +1,6 @@
 #+title: Log.gd Todos
 
-* v0.1
+* v0.1.0
 ** [X] pull in Log.gd from Dothop/dino
 CLOSED: [2024-02-16 Fri 17:51]
 ** [X] create example scene and script that uses it
@@ -16,7 +16,18 @@ CLOSED: [2024-03-20 Wed 17:01]
 should be argless
 ** [X] license
 CLOSED: [2024-03-20 Wed 17:45]
-** [ ] write readme
+** [X] create docs website
+CLOSED: [2024-03-21 Thu 15:38]
+check out pandora, phantom-cam, gaea's static site tooling
+** SKIP github action creating releases
+CLOSED: [2024-03-21 Thu 15:38]
+** [X] restore call-site module prefix
+CLOSED: [2024-03-21 Thu 15:57]
+- add line to docs and readme
+- update readme/site screenshots
+- include line numbers
+** [ ] write and submit to godot asset library
+** [ ] readme/docs content
 *** non-Log.gd-based godot printing quick hits
 - print, prints, printt, print_rich
 - print_verbose
@@ -32,14 +43,12 @@ for an object, a node, a list, a dictionary
 func to_printable():
     {your=str(value)}
 #+end_src
+**** call-site prefixes
 *** _not_ a production log-to-file helper
 but maybe that's a future direction?
-** [ ] write and submit to godot asset library
-** [ ] create docs website
-check out pandora, phantom-cam, gaea's static site tooling
-** [ ] github action creating releases
+** [ ] call-site prefix test coverage
+* v1.0.0
 ** [ ] list prior art (other godot asset lib loggers)
-* v1.0
 ** [ ] consider csharp support + implementation
 ** [ ] configurable per-type prettyprint overrides
 example: i want to impl a to_printable for PandoraEntities without subclassing it
