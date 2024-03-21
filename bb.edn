@@ -1,6 +1,7 @@
 {:paths ["bb"]
  :tasks
- {:requires ([changelog])
+ {:requires ([clojure.string :as string]
+             [changelog])
   :init
   (do
     (defn shell-and-log
@@ -15,12 +16,30 @@
                (shell-and-log (str "./addons/gdUnit4/runtest.sh -c -a " arg)))
 
   release
-  (do
-    (println "Update version in addons/log/plugin.cfg")
-    (println "Run `bb changelog <new-version-tag>` to update the Changelog.md")
-    (println "Stage expected files (plugin.cfg and changelog.md)")
-    (println "Run `bb commit-version <new-version-tag>`")
-    (println "Run `bb add-and-push-tag <new-version-tag>`"))
+  (let [tag (some-> *command-line-args* first)]
+    (if-not tag
+      (do
+        (println "Ensure tests are passing")
+        (println "Ensure empty diff")
+        (println "Update version in addons/log/plugin.cfg")
+        (println "Run `bb release <new-version-tag>`")
+        (println "Create release on github")
+        (println "Update version number in the asset store"))
+      (let [plugin-cfg (slurp "addons/log/plugin.cfg")]
+        (if (not (string/includes? plugin-cfg (str "version=\"" tag "\"")))
+          (println "plugin.cfg version does not match passed tag" tag)
+          (do
+            (println "Run `bb changelog <new-version-tag>` to update the Changelog.md")
+            (changelog/rewrite-changelog {:latest-tag-label tag})
+            (println "Stage expected files (plugin.cfg and changelog.md)")
+            (shell-and-log "git add addons/log/plugin.cfg")
+            (shell-and-log "git add CHANGELOG.md")
+            (shell-and-log (str "git commit -m 'chore: new version: " tag "'"))
+            (shell-and-log (str "git tag " tag))
+            (shell-and-log (str "git push origin " tag))
+            (shell-and-log (str "git push"))
+            (println "TODO: Create release on github!")
+            (println "TODO: Update version number in the godot asset library"))))))
 
   commit-version
   (let [tag (some-> *command-line-args* first)]
