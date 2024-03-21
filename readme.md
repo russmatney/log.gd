@@ -26,9 +26,9 @@ added, feel free to create an issue!
 Log's print functions will prefix the output with the name of the script the log
 comes from, including the line number.
 
-!> This call-site feature is really nice! Unfortunately it can only be used
-during development - it depends on `get_stack()`, which is not available in
-production builds or at `@tool` script time.
+> This call-site feature is really nice! Unfortunately it can only be used
+> during development - it depends on `get_stack()`, which is not available in
+> production builds or at `@tool` script time.
 
 #### Opt-in via duck-typing
 
@@ -81,13 +81,13 @@ Compare the above output with the usual from `print(...)`:
 - `Log.err(...)`, `Log.error(...)`
   - pretty-print without newlines AND push a error via `push_error`
 
-?> These functions all take up to 7 args.
-We could support more, but you can also just pass an Array or a Dictionary if you
-need more args right away.
+> These functions all take up to 7 args.
+> We could support more, but you can also just pass an Array or a Dictionary if you
+> need more args right away.
 
-?> `Log.warn()` and `Log.err()` are nice because push_warning and push_error on
-their own do not let you see warnings/errors in the same context as your usual
-`print()` statements.
+> `Log.warn()` and `Log.err()` are nice because push_warning and push_error on
+> their own do not let you see warnings/errors in the same context as your usual
+> `print()` statements.
 
 
 ## godot printing resources
