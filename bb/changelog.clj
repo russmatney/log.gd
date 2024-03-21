@@ -169,21 +169,26 @@
 
 
 (defn commit->lines [commit]
-  [(str "- " (:commit/subject commit) " (" (commit-hash-link commit) ", " (commit-date commit) ")")
-   (when (seq (:commit/body commit))
-     (str "\n" (->> (:commit/body commit)
-                    (string/split-lines)
-                    (map #(str "  > " %))
-                    (string/join "\n"))
-          "\n"))])
+  (->>
+    [(str "- " (:commit/subject commit) " (" (commit-hash-link commit) ")")
+     (when (seq (string/trim-newline (:commit/body commit)))
+       (str "\n" (->> (:commit/body commit)
+                      (string/split-lines)
+                      (map #(str "  > " %))
+                      (string/join "\n"))
+            "\n"))]
+    (remove nil?)))
 
 (defn tag-section [[tag commits]]
-  (let [headline     (str "## " (cond
+  (let [headline     (str "\n## " (cond
                                   (#{"HEAD"} tag) "Unreleased"
                                   :else           tag))
-        commit-lines (mapcat commit->lines commits)]
-    (concat [(str headline "\n")] commit-lines))
-  )
+        commit-lines (->> commits
+                          (group-by commit-date)
+                          (mapcat (fn [[date comms]]
+                                    (concat [(str "\n### " date "\n")]
+                                            (mapcat commit->lines comms)))))]
+    (concat [(str headline "\n")] commit-lines)))
 
 (defn rewrite-changelog []
   (let [content (str "# CHANGELOG\n\n"
