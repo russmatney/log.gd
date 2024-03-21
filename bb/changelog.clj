@@ -87,7 +87,7 @@
   ;; NOTE crashes/throws when no tags exist
   (->
     ^{:out :string :dir (str dir)}
-    (process/$ git describe --tags)
+    (process/$ git describe --tags --abbrev=0)
     (process/check)
     ((fn [res]
        (when (#{0} (:exit res))
@@ -145,7 +145,8 @@
         last-commit  "HEAD"
         tags         (all-tags opts)]
     (->> (concat [first-commit] tags [last-commit])
-         (partition 2 1))))
+         (partition 2 1)
+         reverse)))
 
 (defn gather-commits
   []
@@ -160,6 +161,52 @@
                                      :after-tag after)))])))))
 
 (comment
+  (release-boundaries {:dir (expand repo-dir)})
   (->>
     (gather-commits)
     first second first))
+
+(defn commit-hash-link [commit]
+  (str "[" (:commit/short-hash commit) "](" (str "https://github.com/russmatney/log/commit/" (:commit/short-hash commit)) ")"))
+
+(defn commit-date [commit]
+  (->
+    (re-seq
+      #"\d\d? \w\w\w \d\d\d\d"
+      (:commit/author-date commit))
+    first))
+
+(comment
+  (first
+    (re-seq
+      #"\d\d? \w\w\w \d\d\d\d"
+      "Wed, 2 Mar 2024 17:42:41 -0400")))
+
+
+(defn commit->lines [commit]
+  ;; TODO make hyperlink
+  [(str "- " (:commit/subject commit) " (" (commit-hash-link commit) ", " (commit-date commit) ")")
+   (when (seq (:commit/body commit))
+     (str "\n" (->> (:commit/body commit)
+                    (string/split-lines)
+                    (map #(str "  " %))
+                    (string/join "\n"))))])
+
+(defn tag-section [[tag commits]]
+  (let [headline     (str "## " (cond
+                                  (#{"HEAD"} tag) "Unreleased"
+                                  :else           tag))
+        commit-lines (mapcat commit->lines commits)]
+    (concat [(str headline "\n")] commit-lines))
+  )
+
+(defn rewrite-changelog []
+  (let [content (str "# CHANGELOG\n\n"
+                     (str
+                       (->> (gather-commits)
+                            (mapcat tag-section)
+                            (string/join "\n"))))]
+    (spit changelog-path content)))
+
+(comment
+  (rewrite-changelog))
