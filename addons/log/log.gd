@@ -8,12 +8,13 @@ static func log_prefix(stack):
 	if len(stack) > 1:
 		var call_site = stack[1]
 		var basename = call_site["source"].get_file().get_basename()
+		var line_num = str(call_site.get("line", 0))
 		if call_site["source"].match("*/test/*"):
-			return "{" + basename + "}: "
+			return "{" + basename + ":" + line_num + "}: "
 		elif call_site["source"].match("*/addons/*"):
-			return "<" + basename + ">: "
+			return "<" + basename + ":" + line_num + ">: "
 		else:
-			return "[" + basename + "]: "
+			return "[" + basename + ":" + line_num + "]: "
 
 static func color_wrap(s, color, use_color=true):
 	if use_color:
