@@ -24,7 +24,8 @@
 
 ![Log.gd logo](./docs/assets/Log_logo_4x.png)
 
-> Coming soon to the Godot Asset Library!
+> Available on the [Godot Asset
+> Library](https://godotengine.org/asset-library/asset/edit/11271).
 
 ### Quick Overview
 

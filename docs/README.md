@@ -22,7 +22,8 @@
 
 # Log.gd, a Godot pretty printer
 
-> Coming soon to the Godot Asset Library!
+> Available on the [Godot Asset
+> Library](https://godotengine.org/asset-library/asset/edit/11271) and [github](https://github.com/russmatney/log.gd).
 
 ### Quick Overview
 
