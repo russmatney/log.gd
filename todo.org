@@ -76,3 +76,6 @@ could read/write from a ~res://log.gd~ for opts.
 - pretty colors
 - terminal-safe colors
 - custom color dictionary
+** [ ] hide/show logs based on arbitrary categories
+https://mastodon.gamedev.place/deck/@brycedixon@peoplemaking.games/112140962069868440
+** [ ] hide/show logs based on script name
