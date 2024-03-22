@@ -41,23 +41,7 @@
             (println "TODO: Create release on github!")
             (println "TODO: Update version number in the godot asset library"))))))
 
-  commit-version
-  (let [tag (some-> *command-line-args* first)]
-    (if-not tag
-      (println "Expected passed tag")
-      (do
-        (println "Writing commit for all staged changes!")
-        (shell-and-log (str "git commit -m 'chore: new version: " tag "'")))))
-
-  changelog (let [tag-overwrite (some-> *command-line-args* first)]
-              (changelog/rewrite-changelog {:latest-tag-label tag-overwrite}))
-
-  add-and-push-tag
-  (let [tag (some-> *command-line-args* first)]
-    (if-not tag
-      (println "Expected passed tag")
-      (do
-        (println "Creating and pushing tag!")
-        (println "WARN: Assuming the current HEAD should be tagged and pushed")
-        (shell-and-log (str "git tag " tag))
-        (shell-and-log (str "git push origin " tag)))))}}
+  gd-plug
+  (shell-and-log
+    (str "godot --no-window -s plug.gd " (string/join " " *command-line-args*)))
+  }}
