@@ -33,7 +33,8 @@ are intended as drop-in replacements for `print(...)`.
 - `Log.pr(...)` - pretty print args in one line
 - `Log.prn(...)` - the same, but with newlines
 
-This is very useful while developing, because your printed output is much more readable.
+This makes your printed output is much more readable, and helps reduce
+wall-of-text noise and eye strain.
 
 #### Colorized output
 
