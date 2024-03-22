@@ -26,7 +26,8 @@ CLOSED: [2024-03-21 Thu 15:57]
 - add line to docs and readme
 - update readme/site screenshots
 - include line numbers
-** [ ] write and submit to godot asset library
+** [X] write and submit to godot asset library
+CLOSED: [2024-03-21 Thu 18:33]
 ** [ ] readme/docs content
 *** non-Log.gd-based godot printing quick hits
 - print, prints, printt, print_rich
@@ -46,7 +47,13 @@ func to_printable():
 **** call-site prefixes
 *** _not_ a production log-to-file helper
 but maybe that's a future direction?
+*** prior art
+** [ ] readme link, docs install instructions
+** [ ] docs full api page
 ** [ ] call-site prefix test coverage
+** [ ] to_printable naming (vs to_pretty)?
+** [ ] better public obj -> rich-string function
+no more wrap it in [] nonsense
 * v1.0.0
 ** [ ] list prior art (other godot asset lib loggers)
 ** [ ] consider csharp support + implementation
