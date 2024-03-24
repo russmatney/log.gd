@@ -41,6 +41,9 @@
             (println "TODO: Create release on github!")
             (println "TODO: Update version number in the godot asset library"))))))
 
+  changelog (let [tag-overwrite (some-> *command-line-args* first)]
+              (changelog/rewrite-changelog {:latest-tag-label tag-overwrite}))
+
   gd-plug
   (shell-and-log
     (str "godot --no-window -s plug.gd " (string/join " " *command-line-args*)))

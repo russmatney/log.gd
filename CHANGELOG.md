@@ -1,11 +1,44 @@
 # CHANGELOG
 
 
+## Unreleased
+
+
+### 24 Mar 2024
+
+- ([`8814055`](https://github.com/russmatney/log.gd/commit/8814055)) fix: api docs on docsify homepage
+
+### 23 Mar 2024
+
+- ([`f5623cd`](https://github.com/russmatney/log.gd/commit/f5623cd)) Fix API descriptions in README.md
+
+  > It seemed weird when I read these functions didn't create newlines, but upon looking at the source realized they did.
+
+
+### 22 Mar 2024
+
+- ([`541c1c0`](https://github.com/russmatney/log.gd/commit/541c1c0)) chore: add gd-plug bb task, drop unused tasks
+- ([`2ffa981`](https://github.com/russmatney/log.gd/commit/2ffa981)) docs: hide/show based on arbitrary categories
+
+  > Much thanks to bryce dixon for the idea!
+
+- ([`dcff941`](https://github.com/russmatney/log.gd/commit/dcff941)) docs: get to the point
+- ([`e6e980c`](https://github.com/russmatney/log.gd/commit/e6e980c)) fix: use proper asset lib link
+- ([`349dab4`](https://github.com/russmatney/log.gd/commit/349dab4)) fix: drop godot 4.0, which Log is not compatibel with!
+- ([`f4224ac`](https://github.com/russmatney/log.gd/commit/f4224ac)) fix: add godot 4.0 version
+- ([`c778d26`](https://github.com/russmatney/log.gd/commit/c778d26)) docs: add link to godot asset lib
+- ([`1f58168`](https://github.com/russmatney/log.gd/commit/1f58168)) docs: add badges to readme and docs site
+
+### 21 Mar 2024
+
+- ([`6ba4738`](https://github.com/russmatney/log.gd/commit/6ba4738)) docs: misc todos
+
 ## v0.0.4
 
 
 ### 21 Mar 2024
 
+- ([`c34c260`](https://github.com/russmatney/log.gd/commit/c34c260)) chore: new version: v0.0.4
 - ([`7e5bcbd`](https://github.com/russmatney/log.gd/commit/7e5bcbd)) refactor: update repo name from log to log.gd
 
   > Hopefully doesn't break everything!
@@ -17,12 +50,6 @@
 - ([`0c3e360`](https://github.com/russmatney/log.gd/commit/0c3e360)) fix: correct readme image urls
 - ([`6b2a31a`](https://github.com/russmatney/log.gd/commit/6b2a31a)) docs: v1 docs site with quick hits
 - ([`fdfa25b`](https://github.com/russmatney/log.gd/commit/fdfa25b)) docs: init basic docsify pages
-
-## v0.0.3
-
-
-### 21 Mar 2024
-
 - ([`ff22e41`](https://github.com/russmatney/log.gd/commit/ff22e41)) chore: new version: v0.0.3
 - ([`15ee689`](https://github.com/russmatney/log.gd/commit/15ee689)) chore: new version: v0.0.2
 - ([`02f5951`](https://github.com/russmatney/log.gd/commit/02f5951)) feat: automate more of the release flow
