@@ -99,9 +99,9 @@ Compare the above output with the usual from `print(...)`:
 - `Log.prn(...)`
   - pretty-print with newlines
 - `Log.warn(...)`
-  - pretty-print without newlines AND push a warning via `push_warning`
+  - pretty-print with newlines AND push a warning via `push_warning`
 - `Log.err(...)`, `Log.error(...)`
-  - pretty-print without newlines AND push a error via `push_error`
+  - pretty-print with newlines AND push a error via `push_error`
 
 ?> These functions all take up to 7 args.
 We could support more, but you can also just pass an Array or a Dictionary if you
