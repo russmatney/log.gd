@@ -2,7 +2,12 @@
 extends Object
 class_name Log
 
-## misc ###########################################################################
+static func assoc(opts: Dictionary, key: String, val):
+	var _opts = opts.duplicate(true)
+	_opts[key] = val
+	return _opts
+
+## prefix ###########################################################################
 
 static func log_prefix(stack):
 	if len(stack) > 1:
@@ -16,11 +21,7 @@ static func log_prefix(stack):
 		else:
 			return "[" + basename + ":" + line_num + "]: "
 
-static func color_wrap(s, color, use_color=true):
-	if use_color:
-		return "[color=%s]%s[/color]" % [color, s]
-	else:
-		return s
+## colors ###########################################################################
 
 # supported colors:
 # - black
@@ -36,27 +37,155 @@ static func color_wrap(s, color, use_color=true):
 # - orange
 # - gray
 
-# supported tags:
-# - b
-# - i
-# - u
-# - s
-# - indent
-# - code
-# - url
-# - center
-# - right
-# - color
-# - bgcolor
-# - fgcolor
+static var COLORS_TERMINAL_SAFE = {
+	"SRC": "cyan",
+	"ADDONS": "red",
+	"TEST": "green",
+	",": "red",
+	"[": "red",
+	"]": "red",
+	"{": "red",
+	"}": "red",
+	"&": "orange",
+	"^": "orange",
+	"dict_key": "magenta",
+	"vector_value": "purple",
+	TYPE_NIL: "pink",
+	TYPE_BOOL: "pink",
+	TYPE_INT: "green",
+	TYPE_FLOAT: "green",
+	TYPE_STRING: "pink",
+	TYPE_VECTOR2: "green",
+	TYPE_VECTOR2I: "green",
+	TYPE_RECT2: "green",
+	TYPE_RECT2I: "green",
+	TYPE_VECTOR3: "green",
+	TYPE_VECTOR3I: "green",
+	TYPE_TRANSFORM2D: "pink",
+	TYPE_VECTOR4: "green",
+	TYPE_VECTOR4I: "green",
+	TYPE_PLANE: "pink",
+	TYPE_QUATERNION: "pink",
+	TYPE_AABB: "pink",
+	TYPE_BASIS: "pink",
+	TYPE_TRANSFORM3D: "pink",
+	TYPE_PROJECTION: "pink",
+	TYPE_COLOR: "pink",
+	TYPE_STRING_NAME: "pink",
+	TYPE_NODE_PATH: "pink",
+	TYPE_RID: "pink",
+	TYPE_OBJECT: "pink",
+	TYPE_CALLABLE: "pink",
+	TYPE_SIGNAL: "pink",
+	TYPE_DICTIONARY: "pink",
+	TYPE_ARRAY: "pink",
+	TYPE_PACKED_BYTE_ARRAY: "pink",
+	TYPE_PACKED_INT32_ARRAY: "pink",
+	TYPE_PACKED_INT64_ARRAY: "pink",
+	TYPE_PACKED_FLOAT32_ARRAY: "pink",
+	TYPE_PACKED_FLOAT64_ARRAY: "pink",
+	TYPE_PACKED_STRING_ARRAY: "pink",
+	TYPE_PACKED_VECTOR2_ARRAY: "pink",
+	TYPE_PACKED_VECTOR3_ARRAY: "pink",
+	TYPE_PACKED_COLOR_ARRAY: "pink",
+	TYPE_MAX: "pink",
+	}
+
+static var COLORS_PRETTY_V1 = {
+	"SRC": "cyan",
+	"ADDONS": "aqua",
+	"TEST": "green_yellow",
+	",": "crimson",
+	"[": "crimson",
+	"]": "crimson",
+	"{": "crimson",
+	"}": "crimson",
+	"&": "peru",
+	"^": "peru",
+	"dict_key": "fuchsia",
+	"vector_value": "purple",
+	TYPE_NIL: "pink",
+	TYPE_BOOL: "pink",
+	TYPE_INT: "green",
+	TYPE_FLOAT: "green",
+	TYPE_STRING: "pink",
+	TYPE_VECTOR2: "green",
+	TYPE_VECTOR2I: "green",
+	TYPE_RECT2: "green",
+	TYPE_RECT2I: "green",
+	TYPE_VECTOR3: "green",
+	TYPE_VECTOR3I: "green",
+	TYPE_TRANSFORM2D: "pink",
+	TYPE_VECTOR4: "green",
+	TYPE_VECTOR4I: "green",
+	TYPE_PLANE: "pink",
+	TYPE_QUATERNION: "pink",
+	TYPE_AABB: "pink",
+	TYPE_BASIS: "pink",
+	TYPE_TRANSFORM3D: "pink",
+	TYPE_PROJECTION: "pink",
+	TYPE_COLOR: "pink",
+	TYPE_STRING_NAME: "pink",
+	TYPE_NODE_PATH: "pink",
+	TYPE_RID: "pink",
+	TYPE_OBJECT: "pink",
+	TYPE_CALLABLE: "pink",
+	TYPE_SIGNAL: "pink",
+	TYPE_DICTIONARY: "pink",
+	TYPE_ARRAY: "pink",
+	TYPE_PACKED_BYTE_ARRAY: "pink",
+	TYPE_PACKED_INT32_ARRAY: "pink",
+	TYPE_PACKED_INT64_ARRAY: "pink",
+	TYPE_PACKED_FLOAT32_ARRAY: "pink",
+	TYPE_PACKED_FLOAT64_ARRAY: "pink",
+	TYPE_PACKED_STRING_ARRAY: "pink",
+	TYPE_PACKED_VECTOR2_ARRAY: "pink",
+	TYPE_PACKED_VECTOR3_ARRAY: "pink",
+	TYPE_PACKED_COLOR_ARRAY: "pink",
+	TYPE_MAX: "pink",
+	}
+
+
+static func color_scheme(opts={}):
+	return Log.COLORS_TERMINAL_SAFE
+	# return Log.COLORS_PRETTY_V1
+
+static func color_wrap(s, opts={}):
+	var use_color = opts.get("use_color", true)
+	var colors = opts.get("color_scheme", color_scheme(opts))
+
+	if use_color:
+		var color = opts.get("color")
+		if not color:
+			var s_type = opts.get("typeof", typeof(s))
+			if s_type is String:
+				# type overwrites
+				color = colors.get(s_type)
+			elif s_type is int and s_type == TYPE_STRING:
+				# specific strings/punctuation
+				var s_trimmed = s.strip_edges()
+				if s_trimmed in colors:
+					color = colors.get(s_trimmed)
+				else:
+					# fallback string color
+					color = colors.get(s_type)
+			else:
+				# all other types
+				color = colors.get(s_type)
+
+		if color == null:
+			print("Log.gd could not determine color for object: %s type: (%s)" % [str(s), typeof(s)])
+
+		return "[color=%s]%s[/color]" % [color, s]
+	else:
+		return s
 
 ## _to_pretty ###########################################################################
 
-# refactor into opts dict
-# refactor into pluggable pretty printer
+# refactor into extendable (per type) pretty printer
 static func _to_pretty(msg, opts={}):
 	var newlines = opts.get("newlines", false)
-	var use_color = opts.get("color", true)
+	var use_color = opts.get("use_color", true)
 	var indent_level = opts.get("indent_level", 0)
 	if not "indent_level" in opts:
 		opts["indent_level"] = indent_level
@@ -72,7 +201,7 @@ static func _to_pretty(msg, opts={}):
 			if newlines:
 				msg.append("...")
 
-		var tmp = Log.color_wrap("[ ", "red", use_color)
+		var tmp = Log.color_wrap("[ ", opts)
 		var last = len(msg) - 1
 		for i in range(len(msg)):
 			if newlines and last > 1:
@@ -80,11 +209,11 @@ static func _to_pretty(msg, opts={}):
 			opts.indent_level += 1
 			tmp += Log._to_pretty(msg[i], opts)
 			if i != last:
-				tmp += Log.color_wrap(", ", "red", use_color)
-		tmp += Log.color_wrap(" ]", "red", use_color)
+				tmp += Log.color_wrap(", ", opts)
+		tmp += Log.color_wrap(" ]", opts)
 		return tmp
 	elif msg is Dictionary:
-		var tmp = Log.color_wrap("{ ", "red", use_color)
+		var tmp = Log.color_wrap("{ ", opts)
 		var ct = len(msg)
 		var last
 		if len(msg) > 0:
@@ -102,12 +231,13 @@ static func _to_pretty(msg, opts={}):
 					.map(func(_i): return "\t")\
 						.reduce(func(a, b): return str(a, b), "")
 			if use_color:
-				tmp += '[color=%s]"%s"[/color]: %s' % ["magenta", k, val]
+				var key = Log.color_wrap('"%s"' % k, assoc(opts, "typeof", "dict_key"))
+				tmp += "%s: %s" % [key, val]
 			else:
 				tmp += '"%s": %s' % [k, val]
 			if last and str(k) != str(last):
-				tmp += Log.color_wrap(", ", "red", use_color)
-		tmp += Log.color_wrap(" }", "red", use_color)
+				tmp += Log.color_wrap(", ", opts)
+		tmp += Log.color_wrap(" }", opts)
 		return tmp
 	elif msg is String:
 		if msg == "":
@@ -115,14 +245,17 @@ static func _to_pretty(msg, opts={}):
 		# could check for supported tags in the string (see list above)
 		# if msg.contains("["):
 		# 	msg = "<ACTUAL-TEXT-REPLACED>"
-		return Log.color_wrap(msg, "pink", use_color)
+		return Log.color_wrap(msg, opts)
 	elif msg is StringName:
-		return str(Log.color_wrap("&", "orange", use_color), '"%s"' % msg)
+		return str(Log.color_wrap("&", opts), '"%s"' % msg)
 	elif msg is NodePath:
-		return str(Log.color_wrap("^", "orange", use_color), '"%s"' % msg)
-	elif msg is Vector2:
+		return str(Log.color_wrap("^", opts), '"%s"' % msg)
+	elif msg is Vector2 or msg is Vector2i:
 		if use_color:
-			return '([color=%s]%s[/color],[color=%s]%s[/color])' % ["purple", msg.x, "purple", msg.y]
+			return '(%s,%s)' % [
+				Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value"))
+				]
 		else:
 			return '(%s,%s)' % [msg.x, msg.y]
 	elif msg is Object and msg.has_method("data"):
@@ -130,7 +263,7 @@ static func _to_pretty(msg, opts={}):
 	elif msg is Object and msg.has_method("to_printable"):
 		return Log._to_pretty(msg.to_printable(), opts)
 	else:
-		return str(msg)
+		return Log.color_wrap(msg, opts)
 
 ## to_printable ###########################################################################
 
@@ -138,19 +271,18 @@ static func to_printable(msgs, opts={}):
 	var stack = opts.get("stack", [])
 	var pretty = opts.get("pretty", true)
 	var newlines = opts.get("newlines", false)
-	var use_color = opts.get("color", true)
 	var m = ""
 	if len(stack) > 0:
 		var prefix = Log.log_prefix(stack)
-		var c
+		var prefix_type
 		if prefix != null and prefix[0] == "[":
-			c = "cyan"
+			prefix_type = "SRC"
 		elif prefix != null and prefix[0] == "{":
-			c = "green"
+			prefix_type = "ADDONS"
 		elif prefix != null and prefix[0] == "<":
-			c = "red"
-		if pretty and use_color:
-			m += "[color=%s]%s[/color]" % [c, prefix]
+			prefix_type = "TEST"
+		if pretty:
+			m += Log.color_wrap(prefix, assoc(opts, "typeof", prefix_type))
 		else:
 			m += prefix
 	for msg in msgs:
