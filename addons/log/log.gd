@@ -92,32 +92,32 @@ static var COLORS_TERMINAL_SAFE = {
 	}
 
 static var COLORS_PRETTY_V1 = {
-	"SRC": "cyan",
-	"ADDONS": "aqua",
+	"SRC": "aquamarine",
+	"ADDONS": "peru",
 	"TEST": "green_yellow",
 	",": "crimson",
 	"[": "crimson",
 	"]": "crimson",
 	"{": "crimson",
 	"}": "crimson",
-	"&": "peru",
-	"^": "peru",
-	"dict_key": "fuchsia",
+	"&": "coral",
+	"^": "coral",
+	"dict_key": "cadet_blue",
 	"vector_value": "purple",
 	TYPE_NIL: "pink",
 	TYPE_BOOL: "pink",
-	TYPE_INT: "green",
-	TYPE_FLOAT: "green",
-	TYPE_STRING: "pink",
-	TYPE_VECTOR2: "green",
-	TYPE_VECTOR2I: "green",
-	TYPE_RECT2: "green",
-	TYPE_RECT2I: "green",
-	TYPE_VECTOR3: "green",
-	TYPE_VECTOR3I: "green",
+	TYPE_INT: "cornflower_blue",
+	TYPE_FLOAT: "cornflower_blue",
+	TYPE_STRING: "dark_gray",
+	TYPE_VECTOR2: "cornflower_blue",
+	TYPE_VECTOR2I: "cornflower_blue",
+	TYPE_RECT2: "cornflower_blue",
+	TYPE_RECT2I: "cornflower_blue",
+	TYPE_VECTOR3: "cornflower_blue",
+	TYPE_VECTOR3I: "cornflower_blue",
 	TYPE_TRANSFORM2D: "pink",
-	TYPE_VECTOR4: "green",
-	TYPE_VECTOR4I: "green",
+	TYPE_VECTOR4: "cornflower_blue",
+	TYPE_VECTOR4I: "cornflower_blue",
 	TYPE_PLANE: "pink",
 	TYPE_QUATERNION: "pink",
 	TYPE_AABB: "pink",
@@ -278,9 +278,9 @@ static func to_printable(msgs, opts={}):
 		if prefix != null and prefix[0] == "[":
 			prefix_type = "SRC"
 		elif prefix != null and prefix[0] == "{":
-			prefix_type = "ADDONS"
-		elif prefix != null and prefix[0] == "<":
 			prefix_type = "TEST"
+		elif prefix != null and prefix[0] == "<":
+			prefix_type = "ADDONS"
 		if pretty:
 			m += Log.color_wrap(prefix, assoc(opts, "typeof", prefix_type))
 		else:
