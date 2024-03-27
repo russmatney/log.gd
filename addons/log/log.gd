@@ -50,6 +50,7 @@ static var COLORS_TERMINAL_SAFE = {
 	"^": "orange",
 	"dict_key": "magenta",
 	"vector_value": "purple",
+	"class_name": "magenta",
 	TYPE_NIL: "pink",
 	TYPE_BOOL: "pink",
 	TYPE_INT: "green",
@@ -104,6 +105,7 @@ static var COLORS_PRETTY_V1 = {
 	"^": "coral",
 	"dict_key": "cadet_blue",
 	"vector_value": "purple",
+	"class_name": "cadet_blue",
 	TYPE_NIL: "pink",
 	TYPE_BOOL: "pink",
 	TYPE_INT: "cornflower_blue",
@@ -250,6 +252,15 @@ static func _to_pretty(msg, opts={}):
 		return str(Log.color_wrap("&", opts), '"%s"' % msg)
 	elif msg is NodePath:
 		return str(Log.color_wrap("^", opts), '"%s"' % msg)
+	elif msg is Object and msg.has_method("data"):
+		return Log._to_pretty(msg.data(), opts)
+	elif msg is Object and msg.has_method("to_printable"):
+		return Log._to_pretty(msg.to_printable(), opts)
+	elif msg is PackedScene:
+		if msg.resource_path != "":
+			return str(Log.color_wrap("PackedScene:", opts), '%s' % msg.resource_path.get_file())
+		else:
+			return Log.color_wrap(msg, opts)
 	elif msg is Vector2 or msg is Vector2i:
 		if use_color:
 			return '(%s,%s)' % [
@@ -258,10 +269,11 @@ static func _to_pretty(msg, opts={}):
 				]
 		else:
 			return '(%s,%s)' % [msg.x, msg.y]
-	elif msg is Object and msg.has_method("data"):
-		return Log._to_pretty(msg.data(), opts)
-	elif msg is Object and msg.has_method("to_printable"):
-		return Log._to_pretty(msg.to_printable(), opts)
+	elif msg is RefCounted:
+		if msg.get_script() != null and msg.get_script().resource_path != "":
+			return Log.color_wrap(msg.get_script().resource_path.get_file(), assoc(opts, "typeof", "class_name"))
+		else:
+			return Log.color_wrap(msg.get_class(), assoc(opts, "typeof", "class_name"))
 	else:
 		return Log.color_wrap(msg, opts)
 
