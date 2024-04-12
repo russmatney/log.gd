@@ -23,7 +23,7 @@ static func log_prefix(stack):
 
 ## colors ###########################################################################
 
-# supported colors:
+# terminal safe colors:
 # - black
 # - red
 # - green
@@ -42,6 +42,8 @@ static var COLORS_TERMINAL_SAFE = {
 	"ADDONS": "red",
 	"TEST": "green",
 	",": "red",
+	"(": "red",
+	")": "red",
 	"[": "red",
 	"]": "red",
 	"{": "red",
@@ -49,7 +51,7 @@ static var COLORS_TERMINAL_SAFE = {
 	"&": "orange",
 	"^": "orange",
 	"dict_key": "magenta",
-	"vector_value": "purple",
+	"vector_value": "green",
 	"class_name": "magenta",
 	TYPE_NIL: "pink",
 	TYPE_BOOL: "pink",
@@ -97,6 +99,8 @@ static var COLORS_PRETTY_V1 = {
 	"ADDONS": "peru",
 	"TEST": "green_yellow",
 	",": "crimson",
+	"(": "crimson",
+	")": "crimson",
 	"[": "crimson",
 	"]": "crimson",
 	"{": "crimson",
@@ -104,7 +108,7 @@ static var COLORS_PRETTY_V1 = {
 	"&": "coral",
 	"^": "coral",
 	"dict_key": "cadet_blue",
-	"vector_value": "purple",
+	"vector_value": "cornflower_blue",
 	"class_name": "cadet_blue",
 	TYPE_NIL: "pink",
 	TYPE_BOOL: "pink",
@@ -184,6 +188,9 @@ static func color_wrap(s, opts={}):
 
 ## _to_pretty ###########################################################################
 
+# TODO read from config
+static var max_array_size = 20
+
 # refactor into extendable (per type) pretty printer
 static func _to_pretty(msg, opts={}):
 	var newlines = opts.get("newlines", false)
@@ -192,13 +199,16 @@ static func _to_pretty(msg, opts={}):
 	if not "indent_level" in opts:
 		opts["indent_level"] = indent_level
 
-	var max_array_size = 20
 	var omit_vals_for_keys = ["layer_0/tile_data"]
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
 		return str(msg)
-	if msg is Array or msg is PackedStringArray:
+	if msg is Object and msg.has_method("data"):
+		return Log._to_pretty(msg.data(), opts)
+	elif msg is Object and msg.has_method("to_printable"):
+		return Log._to_pretty(msg.to_printable(), opts)
+	elif msg is Array or msg is PackedStringArray:
 		if len(msg) > max_array_size:
-			prn("[DEBUG]: truncating large array. total:", len(msg))
+			pr("[DEBUG]: truncating large array. total:", len(msg))
 			msg = msg.slice(0, max_array_size - 1)
 			if newlines:
 				msg.append("...")
@@ -252,10 +262,6 @@ static func _to_pretty(msg, opts={}):
 		return str(Log.color_wrap("&", opts), '"%s"' % msg)
 	elif msg is NodePath:
 		return str(Log.color_wrap("^", opts), '"%s"' % msg)
-	elif msg is Object and msg.has_method("data"):
-		return Log._to_pretty(msg.data(), opts)
-	elif msg is Object and msg.has_method("to_printable"):
-		return Log._to_pretty(msg.to_printable(), opts)
 	elif msg is PackedScene:
 		if msg.resource_path != "":
 			return str(Log.color_wrap("PackedScene:", opts), '%s' % msg.resource_path.get_file())
@@ -263,12 +269,43 @@ static func _to_pretty(msg, opts={}):
 			return Log.color_wrap(msg, opts)
 	elif msg is Vector2 or msg is Vector2i:
 		if use_color:
-			return '(%s,%s)' % [
+			return '%s%s%s%s%s' % [
+				Log.color_wrap("("),
 				Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value"))
+				Log.color_wrap(","),
+				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(")"),
 				]
 		else:
 			return '(%s,%s)' % [msg.x, msg.y]
+	elif msg is Vector3 or msg is Vector3i:
+		if use_color:
+			return '%s%s%s%s%s%s%s' % [
+				Log.color_wrap("("),
+				Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(","),
+				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(","),
+				Log.color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(")"),
+				]
+		else:
+			return '(%s,%s,%s)' % [msg.x, msg.y, msg.z]
+	elif msg is Vector4 or msg is Vector4i:
+		if use_color:
+			return '%s%s%s%s%s%s%s%s%s' % [
+				Log.color_wrap("("),
+				Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(","),
+				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(","),
+				Log.color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(","),
+				Log.color_wrap(msg.w, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(")"),
+				]
+		else:
+			return '(%s,%s,%s,%s)' % [msg.x, msg.y, msg.z, msg.w]
 	elif msg is RefCounted:
 		if msg.get_script() != null and msg.get_script().resource_path != "":
 			return Log.color_wrap(msg.get_script().resource_path.get_file(), assoc(opts, "typeof", "class_name"))
