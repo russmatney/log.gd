@@ -140,6 +140,18 @@ func test_log_dictionary():
 	assert_str(val).is_equal(
 		"[color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]val[/color][color=red], [/color][color=magenta]\"another\"[/color]: [color=green]2[/color][color=red] }[/color]")
 
+func test_array_of_dictionaries():
+	var val = Log.to_pretty([{some="val"},{some="another"}])
+	assert_str(val).is_equal(
+		"[color=red][ [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]val[/color][color=red] }[/color][color=red], [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]another[/color][color=red] }[/color][color=red] ][/color]"
+		)
+
+func test_array_of_dictionaries_with_newlines():
+	var val = Log.to_pretty([{some="val"},{some="another"}], {newlines=true})
+	assert_str(val).is_equal(
+		"[color=red][ [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]val[/color][color=red] }[/color][color=red], [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]another[/color][color=red] }[/color][color=red] ][/color]"
+		)
+
 ## custom object ##########################################
 
 class ExampleObj:

@@ -220,8 +220,10 @@ static func to_pretty(msg, opts={}):
 		for i in range(len(msg)):
 			if newlines and last > 1:
 				tmp += "\n\t"
-			opts.indent_level += 1
-			tmp += Log.to_pretty(msg[i], opts)
+			tmp += Log.to_pretty(msg[i],
+				# duplicate here to prevent indenting-per-msg
+				# e.g. when printing an array of dictionaries
+				opts.duplicate(true))
 			if i != last:
 				tmp += Log.color_wrap(", ", opts)
 		tmp += Log.color_wrap(" ]", opts)
