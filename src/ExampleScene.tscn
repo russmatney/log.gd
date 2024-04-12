@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://dv5fj7cdea0sh"]
+
+[ext_resource type="Script" path="res://src/ExampleScene.gd" id="1_rghsl"]
+[ext_resource type="Script" path="res://src/SomeResource.gd" id="2_unowp"]
+
+[sub_resource type="Resource" id="Resource_d4rid"]
+script = ExtResource("2_unowp")
+name = "fire bot"
+element = 1
+
+[sub_resource type="Resource" id="Resource_hbyy1"]
+script = ExtResource("2_unowp")
+name = "water bot"
+element = 2
+
+[sub_resource type="Resource" id="Resource_6lcg3"]
+script = ExtResource("2_unowp")
+name = "wind bot"
+element = 3
+
+[node name="ExampleScene" type="CanvasLayer"]
+script = ExtResource("1_rghsl")
+some_custom_types = Array[ExtResource("2_unowp")]([SubResource("Resource_d4rid"), SubResource("Resource_hbyy1"), SubResource("Resource_6lcg3")])
+
+[node name="SomeNode" type="Node" parent="."]
+unique_name_in_owner = true
