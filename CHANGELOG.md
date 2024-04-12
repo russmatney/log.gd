@@ -1,11 +1,12 @@
 # CHANGELOG
 
 
-## Unreleased
+## v0.0.5
 
 
 ### 12 Apr 2024
 
+- ([`d13aea0`](https://github.com/russmatney/log.gd/commit/d13aea0)) docs: update changelog
 - ([`8abba09`](https://github.com/russmatney/log.gd/commit/8abba09)) fix: don't over indent arrays of dicts
 
   > the opts dictionary was being updated in place, which was resulting in
