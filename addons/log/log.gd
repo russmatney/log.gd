@@ -186,13 +186,13 @@ static func color_wrap(s, opts={}):
 	else:
 		return s
 
-## _to_pretty ###########################################################################
+## to_pretty ###########################################################################
 
 # TODO read from config
 static var max_array_size = 20
 
-# refactor into extendable (per type) pretty printer
-static func _to_pretty(msg, opts={}):
+# returns the passed object as a decorated string
+static func to_pretty(msg, opts={}):
 	var newlines = opts.get("newlines", false)
 	var use_color = opts.get("use_color", true)
 	var indent_level = opts.get("indent_level", 0)
@@ -202,10 +202,12 @@ static func _to_pretty(msg, opts={}):
 	var omit_vals_for_keys = ["layer_0/tile_data"]
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
 		return str(msg)
-	if msg is Object and msg.has_method("data"):
-		return Log._to_pretty(msg.data(), opts)
+	if msg is Object and msg.has_method("to_pretty"):
+		return Log.to_pretty(msg.to_pretty(), opts)
+	elif msg is Object and msg.has_method("data"):
+		return Log.to_pretty(msg.data(), opts)
 	elif msg is Object and msg.has_method("to_printable"):
-		return Log._to_pretty(msg.to_printable(), opts)
+		return Log.to_pretty(msg.to_printable(), opts)
 	elif msg is Array or msg is PackedStringArray:
 		if len(msg) > max_array_size:
 			pr("[DEBUG]: truncating large array. total:", len(msg))
@@ -219,7 +221,7 @@ static func _to_pretty(msg, opts={}):
 			if newlines and last > 1:
 				tmp += "\n\t"
 			opts.indent_level += 1
-			tmp += Log._to_pretty(msg[i], opts)
+			tmp += Log.to_pretty(msg[i], opts)
 			if i != last:
 				tmp += Log.color_wrap(", ", opts)
 		tmp += Log.color_wrap(" ]", opts)
@@ -236,7 +238,7 @@ static func _to_pretty(msg, opts={}):
 				val = "..."
 			else:
 				opts.indent_level += 1
-				val = Log._to_pretty(msg[k], opts)
+				val = Log.to_pretty(msg[k], opts)
 			if newlines and ct > 1:
 				tmp += "\n\t" \
 					+ range(indent_level)\
@@ -337,7 +339,7 @@ static func to_printable(msgs, opts={}):
 	for msg in msgs:
 		# add a space between msgs
 		if pretty:
-			m += "%s " % Log._to_pretty(msg, opts)
+			m += "%s " % Log.to_pretty(msg, opts)
 		else:
 			m += "%s " % str(msg)
 	return m.trim_suffix(" ")
