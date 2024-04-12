@@ -22,9 +22,9 @@
         (println "Ensure tests are passing")
         (println "Ensure empty diff")
         (println "Update version in addons/log/plugin.cfg")
-        (println "Run `bb release <new-version-tag>`")
+        (println "Run `bb release <new-version-tag-like-v0.0.5>`")
         (println "Create release on github")
-        (println "Update version number in the asset store"))
+        (println "Submit updated version number to the asset store"))
       (let [plugin-cfg (slurp "addons/log/plugin.cfg")]
         (if (not (string/includes? plugin-cfg (str "version=\"" tag "\"")))
           (println "plugin.cfg version does not match passed tag" tag)
@@ -34,12 +34,12 @@
             (println "Stage expected files (plugin.cfg and changelog.md)")
             (shell-and-log "git add addons/log/plugin.cfg")
             (shell-and-log "git add CHANGELOG.md")
-            (shell-and-log (str "git commit -m 'chore: new version: " tag "'"))
+            (shell-and-log (str "git commit -m 'release: new version: " tag "'"))
             (shell-and-log (str "git tag " tag))
             (shell-and-log (str "git push origin " tag))
             (shell-and-log (str "git push"))
             (println "TODO: Create release on github!")
-            (println "TODO: Update version number in the godot asset library"))))))
+            (println "TODO: Submit updated version number to the asset store"))))))
 
   changelog (let [tag-overwrite (some-> *command-line-args* first)]
               (changelog/rewrite-changelog {:latest-tag-label tag-overwrite}))
