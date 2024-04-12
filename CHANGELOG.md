@@ -4,7 +4,86 @@
 ## Unreleased
 
 
+### 12 Apr 2024
+
+- ([`8abba09`](https://github.com/russmatney/log.gd/commit/8abba09)) fix: don't over indent arrays of dicts
+
+  > the opts dictionary was being updated in place, which was resulting in
+  > the third dictionary in an array being indented three times (instead of 1).
+  > 
+  > Notably the tests don't cover whitespace very well at the moment, but
+  > w/e, it's fixed.
+
+- ([`b8de312`](https://github.com/russmatney/log.gd/commit/b8de312)) test: coverage for vectors, null, bool, etc
+
+  > Adds coverage for more types, and stubs test code/todos for more that
+  > deserve coverage.
+
+- ([`e3cc213`](https://github.com/russmatney/log.gd/commit/e3cc213)) feat: support to_pretty() and Log.to_pretty()
+
+  > Log.to_pretty(obj) can be used to get a colorized string version of the
+  > passed object - this is what is eventually printed via print_rich, but
+  > it can be useful for UIs as well (e.g. passed into a RichText Label)
+  > 
+  > to_pretty() is now a third method that can be implemented on an
+  > object/class/custom_resource to specify the logged data when that object
+  > is logged.
+  > 
+  > Also refactors and fixes the tests a bit, in preparation for testing
+  > more types.
+
+- ([`38a506d`](https://github.com/russmatney/log.gd/commit/38a506d)) refactor: add Custom Resource to example scene
+
+  > Adds a basic Custom Resource with a to_printable func to show the
+  > currently supported case.
+
+- ([`34c4b03`](https://github.com/russmatney/log.gd/commit/34c4b03)) feat: support vector3s and 4s, some color tweaks
+
+### 27 Mar 2024
+
+- ([`e8d7b05`](https://github.com/russmatney/log.gd/commit/e8d7b05)) fix: restore current tests after color changes
+
+  > Ideally these wouldn't be so brittle - maybe swapping in color palettes
+  > will help.
+
+- ([`b7241fa`](https://github.com/russmatney/log.gd/commit/b7241fa)) wip: initial PackedScene and RefCounted handling
+
+  > Now printing a short filename for the resource_path behind the logged
+  > PackedScene or RefCounted object, if it exists. Could perhaps get wiser
+  > about applying this to more types, but for now I'm hitting objects that
+  > show up in my own work, and these seemed like a quick win.
+  > 
+  > Testing to come before the next version release!
+
+
+### 26 Mar 2024
+
+- ([`bf31411`](https://github.com/russmatney/log.gd/commit/bf31411)) fix: prettier colors, fix test/addons mixup
+- ([`35e82c7`](https://github.com/russmatney/log.gd/commit/35e82c7)) refactor: towards swappable color schemes
+
+  > Refactors to_pretty, pulling color-selection completely into the
+  > color_wrap function. Adds two basic color schemes, which are really not
+  > that different at the moment - these are dictionaries that support a
+  > bunch of `typeof` ints and some specific type overwrites for various
+  > punctutation, dictionary keys, vector vals, etc.
+  > 
+  > It's a bit annoying to work with these as static vars b/c the editor
+  > keeps their initial state, which hurts the feedback loop if you edit and
+  > want to see nice logs without running the whole game. Probably these
+  > will need to move to configs or some other place at some point.
+  > 
+  > Not loving the green or color choices in general yet - i'll have to dig
+  > up my original screenshots from last year.
+  > 
+  > Also, could use some test coverage on this! For now, the colors are
+  > still hard-coded (i.e. not swappable).
+
+
 ### 24 Mar 2024
+
+- ([`6449476`](https://github.com/russmatney/log.gd/commit/6449476)) docs: update changelog
+
+  > Also adds the `bb changelog` task back.
 
 - ([`8814055`](https://github.com/russmatney/log.gd/commit/8814055)) fix: api docs on docsify homepage
 
