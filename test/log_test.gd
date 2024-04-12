@@ -1,38 +1,143 @@
 extends GdUnitTestSuite
 
+## null ##########################################
+
+func test_null():
+	var val = Log.to_pretty(null)
+	assert_str(val).is_equal("[color=pink]<null>[/color]")
+
+## bool ##########################################
+
+func test_bool():
+	var val = Log.to_pretty(true)
+	assert_str(val).is_equal("[color=pink]true[/color]")
+
+	val = Log.to_pretty(false)
+	assert_str(val).is_equal("[color=pink]false[/color]")
+
 ## strings ##########################################
 
-func test_log_strings_and_string_names():
+func test_log_strings():
 	var val = Log.to_pretty("Special")
-	assert_that(val).is_equal("[color=pink]Special[/color]")
+	assert_str(val).is_equal("[color=pink]Special[/color]")
 
-	val = Log.to_pretty(&"Special")
-	assert_that(val).is_equal("[color=orange]&[/color]\"Special\"")
+func test_log_string_names():
+	var val = Log.to_pretty(&"Special")
+	assert_str(val).is_equal("[color=orange]&[/color]\"Special\"")
+
+func test_node_paths():
+	var np = NodePath("Some/Path/To/A/Node")
+	var val = Log.to_pretty(np)
+	assert_str(val).is_equal("[color=orange]^[/color]\"Some/Path/To/A/Node\"")
+
+## color ##########################################
+
+func test_color():
+	# TODO
+	pass
 
 ## numbers ##########################################
 
 func test_log_ints():
 	var val = Log.to_pretty(1)
-	assert_that(val).is_equal("[color=green]1[/color]")
+	assert_str(val).is_equal("[color=green]1[/color]")
 
 func test_log_floats():
-	var val = Log.to_pretty(1.4)
-	assert_that(val).is_equal("[color=green]1.4[/color]")
+	var val = Log.to_pretty(3.14)
+	assert_str(val).is_equal("[color=green]3.14[/color]")
 
-## collections ##########################################
+# TYPE_MAX
+
+## vectors ###############################################
+
+func test_log_vector2():
+	var val = Log.to_pretty(Vector2(1, 2))
+	assert_str(val).is_equal("[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red])[/color]")
+
+func test_log_vector2i():
+	var val = Log.to_pretty(Vector2i(1, 2))
+	assert_str(val).is_equal(
+		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red])[/color]"
+		)
+
+func test_log_vector3():
+	var val = Log.to_pretty(Vector3(1, 2, 3))
+	assert_str(val).is_equal(
+		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red],[/color][color=green]3[/color][color=red])[/color]"
+		)
+
+func test_log_vector3i():
+	var val = Log.to_pretty(Vector3i(1, 2, 3))
+	assert_str(val).is_equal(
+		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red],[/color][color=green]3[/color][color=red])[/color]"
+		)
+
+func test_log_vector4():
+	var val = Log.to_pretty(Vector4(1, 2, 3, 4))
+	assert_str(val).is_equal(
+		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red],[/color][color=green]3[/color][color=red],[/color][color=green]4[/color][color=red])[/color]"
+		)
+
+func test_log_vector4i():
+	var val = Log.to_pretty(Vector4i(1, 2, 3, 4))
+	assert_str(val).is_equal(
+		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red],[/color][color=green]3[/color][color=red],[/color][color=green]4[/color][color=red])[/color]"
+		)
+
+## rect ###############################################
+
+func test_rect():
+	# TODO
+	pass
+
+func test_rect2i():
+	# TODO
+	pass
+
+## transform ###############################################
+
+func test_transform2d():
+	# TODO
+	pass
+
+func test_transform3d():
+	# TODO
+	pass
+
+## plane ##########################################
+## quaternion ##########################################
+## aabb ##########################################
+## basis ##########################################
+## projection ##########################################
+
+## arrays ##########################################
 
 func test_log_array():
 	var val = Log.to_pretty([1, 2, 3])
-	assert_that(val).is_equal(
+	assert_str(val).is_equal(
 		"[color=red][ [/color][color=green]1[/color][color=red], [/color][color=green]2[/color][color=red], [/color][color=green]3[/color][color=red] ][/color]")
 
-func test_log_vector():
-	var val = Log.to_pretty(Vector2(1, 2))
-	assert_that(val).is_equal("[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red])[/color]")
+# TYPE_PACKED_STRING_ARRAY
+func test_log_packed_string_array():
+	var packedStrArray = PackedStringArray(["hi", "there"])
+	var val = Log.to_pretty(packedStrArray)
+	assert_str(val).is_equal(
+		"[color=red][ [/color][color=pink]hi[/color][color=red], [/color][color=pink]there[/color][color=red] ][/color]")
+
+# TYPE_PACKED_BYTE_ARRAY
+# TYPE_PACKED_INT32_ARRAY
+# TYPE_PACKED_INT64_ARRAY
+# TYPE_PACKED_FLOAT32_ARRAY
+# TYPE_PACKED_FLOAT64_ARRAY
+# TYPE_PACKED_VECTOR2_ARRAY
+# TYPE_PACKED_VECTOR3_ARRAY
+# TYPE_PACKED_COLOR_ARRAY
+
+## dictionaries ##########################################
 
 func test_log_dictionary():
 	var val = Log.to_pretty({some="val", another=2})
-	assert_that(val).is_equal(
+	assert_str(val).is_equal(
 		"[color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]val[/color][color=red], [/color][color=magenta]\"another\"[/color]: [color=green]2[/color][color=red] }[/color]")
 
 ## custom object ##########################################
@@ -49,6 +154,15 @@ func test_custom_to_printable():
 	var obj = ExampleObj.new(Vector2(1, 2))
 	var val = Log.to_pretty(obj)
 	var id = obj.get_instance_id()
-	assert_that(val).is_equal(
+	assert_str(val).is_equal(
 		"[color=red]{ [/color][color=magenta]\"val\"[/color]: [color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red])[/color][color=red], [/color][color=magenta]\"id\"[/color]: [color=green]%s[/color][color=red] }[/color]"
 		% str(id))
+
+# TODO class_name
+
+## refcounted ##########################################
+## packedscene ##########################################
+## custom resource ##########################################
+## rid ##########################################
+## callables ##########################################
+## signals ##########################################
