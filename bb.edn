@@ -42,7 +42,10 @@
             (println "TODO: Submit updated version number to the asset store"))))))
 
   changelog (let [tag-overwrite (some-> *command-line-args* first)]
-              (changelog/rewrite-changelog {:latest-tag-label tag-overwrite}))
+              (changelog/rewrite-changelog {:latest-tag-label tag-overwrite})
+              ;; TODO commit optional
+              (shell-and-log "git add CHANGELOG.md")
+              (shell-and-log "git commit -m 'docs: update changelog'"))
 
   gd-plug
   (shell-and-log
