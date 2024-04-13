@@ -204,3 +204,18 @@ func test_custom_resource_register_overwrite():
 	assert_str(val).is_equal(
 		"[color=red]{ [/color][color=magenta]\"name\"[/color]: [color=pink]Hanz[/color][color=red], [/color][color=magenta]\"level\"[/color]: [color=green]3[/color][color=red] }[/color]"
 		)
+
+## color schemes ##########################################
+
+func test_null_alt_colors():
+	Log.set_colors_termsafe()
+	var val = Log.to_pretty(null)
+	assert_str(val).is_equal("[color=pink]<null>[/color]")
+
+	Log.set_colors_pretty()
+	val = Log.to_pretty(null)
+	assert_str(val).is_equal("[color=coral]<null>[/color]")
+
+	Log.set_colors_termsafe()
+	val = Log.to_pretty(null)
+	assert_str(val).is_equal("[color=pink]<null>[/color]")

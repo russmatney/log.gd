@@ -2,24 +2,16 @@
 extends Object
 class_name Log
 
+## helpers ####################################
+
 static func assoc(opts: Dictionary, key: String, val):
 	var _opts = opts.duplicate(true)
 	_opts[key] = val
 	return _opts
 
-## prefix ###########################################################################
+## config ####################################
 
-static func log_prefix(stack):
-	if len(stack) > 1:
-		var call_site = stack[1]
-		var basename = call_site["source"].get_file().get_basename()
-		var line_num = str(call_site.get("line", 0))
-		if call_site["source"].match("*/test/*"):
-			return "{" + basename + ":" + line_num + "}: "
-		elif call_site["source"].match("*/addons/*"):
-			return "<" + basename + ":" + line_num + ">: "
-		else:
-			return "[" + basename + ":" + line_num + "]: "
+static var config = {}
 
 ## colors ###########################################################################
 
@@ -110,7 +102,7 @@ static var COLORS_PRETTY_V1 = {
 	"dict_key": "cadet_blue",
 	"vector_value": "cornflower_blue",
 	"class_name": "cadet_blue",
-	TYPE_NIL: "pink",
+	TYPE_NIL: "coral",
 	TYPE_BOOL: "pink",
 	TYPE_INT: "cornflower_blue",
 	TYPE_FLOAT: "cornflower_blue",
@@ -151,14 +143,31 @@ static var COLORS_PRETTY_V1 = {
 	TYPE_MAX: "pink",
 	}
 
+## set color scheme ####################################
+
+static func set_colors_termsafe():
+	set_color_scheme(Log.COLORS_TERMINAL_SAFE)
+
+static func set_colors_pretty():
+	set_color_scheme(Log.COLORS_PRETTY_V1)
+
+static func set_color_scheme(scheme):
+	config["color_scheme"] = scheme
 
 static func color_scheme(opts={}):
-	return Log.COLORS_TERMINAL_SAFE
-	# return Log.COLORS_PRETTY_V1
+	# TODO merge schemes down to support partial color overwrites
+	var scheme = opts.get("color_scheme")
+	if not scheme:
+		scheme = config.get("color_scheme")
+	if not scheme:
+		# TODO default to pretty colors when launched from editor
+		# otherwise, use term-safe colors
+		scheme = Log.COLORS_TERMINAL_SAFE
+	return scheme
 
 static func color_wrap(s, opts={}):
 	var use_color = opts.get("use_color", true)
-	var colors = opts.get("color_scheme", color_scheme(opts))
+	var colors = color_scheme(opts)
 
 	if use_color:
 		var color = opts.get("color")
@@ -372,6 +381,18 @@ static func to_pretty(msg, opts={}):
 
 ## to_printable ###########################################################################
 
+static func log_prefix(stack):
+	if len(stack) > 1:
+		var call_site = stack[1]
+		var basename = call_site["source"].get_file().get_basename()
+		var line_num = str(call_site.get("line", 0))
+		if call_site["source"].match("*/test/*"):
+			return "{" + basename + ":" + line_num + "}: "
+		elif call_site["source"].match("*/addons/*"):
+			return "<" + basename + ":" + line_num + ">: "
+		else:
+			return "[" + basename + ":" + line_num + "]: "
+
 static func to_printable(msgs, opts={}):
 	var stack = opts.get("stack", [])
 	var pretty = opts.get("pretty", true)
@@ -398,10 +419,10 @@ static func to_printable(msgs, opts={}):
 			m += "%s " % str(msg)
 	return m.trim_suffix(" ")
 
+## public print fns ###########################################################################
+
 static func is_not_default(v):
 	return not v is String or (v is String and v != "ZZZDEF")
-
-## public print fns ###########################################################################
 
 static func pr(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
 	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
