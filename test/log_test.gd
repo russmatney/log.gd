@@ -174,7 +174,20 @@ func test_custom_to_printable():
 
 ## refcounted ##########################################
 ## packedscene ##########################################
-## custom resource ##########################################
 ## rid ##########################################
 ## callables ##########################################
 ## signals ##########################################
+
+## custom resource ##########################################
+
+func test_custom_resource():
+	var tp = TestPlayer.new()
+	tp.name = "Hanz"
+	tp.level = 3
+	tp.role = TestPlayer.Role.Tank
+
+	var val = Log.to_pretty(tp)
+	print(val)
+	assert_str(val).is_equal(
+		"[color=magenta]TestPlayer.gd[/color]"
+		)
