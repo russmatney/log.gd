@@ -187,7 +187,20 @@ func test_custom_resource():
 	tp.role = TestPlayer.Role.Tank
 
 	var val = Log.to_pretty(tp)
-	print(val)
 	assert_str(val).is_equal(
 		"[color=magenta]TestPlayer.gd[/color]"
+		)
+
+func test_custom_resource_register_overwrite():
+	var tp = TestPlayer.new()
+	tp.name = "Hanz"
+	tp.level = 3
+	tp.role = TestPlayer.Role.Tank
+
+	Log.register_overwrite(tp.get_class(), func(msg, _opts):
+		return Log.to_pretty({name=msg.name, level=msg.level}))
+
+	var val = Log.to_pretty(tp)
+	assert_str(val).is_equal(
+		"[color=red]{ [/color][color=magenta]\"name\"[/color]: [color=pink]Hanz[/color][color=red], [/color][color=magenta]\"level\"[/color]: [color=green]3[/color][color=red] }[/color]"
 		)

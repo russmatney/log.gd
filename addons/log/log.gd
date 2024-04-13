@@ -186,6 +186,29 @@ static func color_wrap(s, opts={}):
 	else:
 		return s
 
+## overwrites ###########################################################################
+
+static var log_overwrites = {
+	"Vector2": func(msg, opts):
+		if opts.get("use_color", true):
+			return '%s%s%s%s%s' % [
+				Log.color_wrap("("),
+				Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(","),
+				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(")"),
+				]
+		else:
+			return '(%s,%s)' % [msg.x, msg.y],
+	}
+
+static func register_overwrite(key, handler):
+	# TODO warning on key exists?
+	# support multiple handlers?
+	# return success/fail?
+	# validate the key/handler somehow?
+	log_overwrites[key] = handler
+
 ## to_pretty ###########################################################################
 
 # TODO read from config
@@ -202,13 +225,25 @@ static func to_pretty(msg, opts={}):
 	var omit_vals_for_keys = ["layer_0/tile_data"]
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
 		return str(msg)
+
+	if msg == null:
+		return Log.color_wrap(msg, opts)
+
+	if msg is Object and msg.get_class() in log_overwrites:
+		return log_overwrites.get(msg.get_class()).call(msg, opts)
+	elif typeof(msg) in log_overwrites:
+		return log_overwrites.get(typeof(msg)).call(msg, opts)
+
+	# objects
 	if msg is Object and msg.has_method("to_pretty"):
 		return Log.to_pretty(msg.to_pretty(), opts)
-	elif msg is Object and msg.has_method("data"):
+	if msg is Object and msg.has_method("data"):
 		return Log.to_pretty(msg.data(), opts)
-	elif msg is Object and msg.has_method("to_printable"):
+	if msg is Object and msg.has_method("to_printable"):
 		return Log.to_pretty(msg.to_printable(), opts)
-	elif msg is Array or msg is PackedStringArray:
+
+	# arrays
+	if msg is Array or msg is PackedStringArray:
 		if len(msg) > max_array_size:
 			pr("[DEBUG]: truncating large array. total:", len(msg))
 			msg = msg.slice(0, max_array_size - 1)
@@ -228,6 +263,8 @@ static func to_pretty(msg, opts={}):
 				tmp += Log.color_wrap(", ", opts)
 		tmp += Log.color_wrap(" ]", opts)
 		return tmp
+
+	# dictionary
 	elif msg is Dictionary:
 		var tmp = Log.color_wrap("{ ", opts)
 		var ct = len(msg)
@@ -255,7 +292,11 @@ static func to_pretty(msg, opts={}):
 				tmp += Log.color_wrap(", ", opts)
 		tmp += Log.color_wrap(" }", opts)
 		return tmp
+
+	# strings
 	elif msg is String:
+		# TODO support (use as-is) already 'rich/colorized' strings
+		# maybe just a regex for [color=.*]?
 		if msg == "":
 			return '""'
 		# could check for supported tags in the string (see list above)
@@ -266,22 +307,11 @@ static func to_pretty(msg, opts={}):
 		return str(Log.color_wrap("&", opts), '"%s"' % msg)
 	elif msg is NodePath:
 		return str(Log.color_wrap("^", opts), '"%s"' % msg)
-	elif msg is PackedScene:
-		if msg.resource_path != "":
-			return str(Log.color_wrap("PackedScene:", opts), '%s' % msg.resource_path.get_file())
-		else:
-			return Log.color_wrap(msg, opts)
+
+	# vectors
 	elif msg is Vector2 or msg is Vector2i:
-		if use_color:
-			return '%s%s%s%s%s' % [
-				Log.color_wrap("("),
-				Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(","),
-				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(")"),
-				]
-		else:
-			return '(%s,%s)' % [msg.x, msg.y]
+		return log_overwrites.get("Vector2").call(msg, opts)
+
 	elif msg is Vector3 or msg is Vector3i:
 		if use_color:
 			return '%s%s%s%s%s%s%s' % [
@@ -310,11 +340,33 @@ static func to_pretty(msg, opts={}):
 				]
 		else:
 			return '(%s,%s,%s,%s)' % [msg.x, msg.y, msg.z, msg.w]
+
+	# packed scene
+	elif msg is PackedScene:
+		if msg.resource_path != "":
+			return str(Log.color_wrap("PackedScene:", opts), '%s' % msg.resource_path.get_file())
+		elif msg.get_script() != null and msg.get_script().resource_path != "":
+			return Log.color_wrap(msg.get_script().resource_path.get_file(), assoc(opts, "typeof", "class_name"))
+		else:
+			return Log.color_wrap(msg, opts)
+
+	# resource
+	elif msg is Resource:
+		if msg.get_script() != null and msg.get_script().resource_path != "":
+			return Log.color_wrap(msg.get_script().resource_path.get_file(), assoc(opts, "typeof", "class_name"))
+		elif msg.resource_path != "":
+			return str(Log.color_wrap("Resource:", opts), '%s' % msg.resource_path.get_file())
+		else:
+			return Log.color_wrap(msg, opts)
+
+	# refcounted
 	elif msg is RefCounted:
 		if msg.get_script() != null and msg.get_script().resource_path != "":
 			return Log.color_wrap(msg.get_script().resource_path.get_file(), assoc(opts, "typeof", "class_name"))
 		else:
 			return Log.color_wrap(msg.get_class(), assoc(opts, "typeof", "class_name"))
+
+	# fallback to primitive-type lookup
 	else:
 		return Log.color_wrap(msg, opts)
 
