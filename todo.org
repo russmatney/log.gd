@@ -28,7 +28,11 @@ CLOSED: [2024-03-21 Thu 15:57]
 - include line numbers
 ** [X] write and submit to godot asset library
 CLOSED: [2024-03-21 Thu 18:33]
+** [ ] Docs: 'Example' page
+walk through the ExampleScene.gd
+with individual line-by-line output screenshots
 ** [ ] readme/docs content
+*** preview (short-version) of docs example page
 *** non-Log.gd-based godot printing quick hits
 - print, prints, printt, print_rich
 - print_verbose
@@ -49,6 +53,9 @@ func to_printable():
 but maybe that's a future direction?
 *** prior art
 ** [ ] readme link, docs install instructions
+** [ ] Example scene should have buttons to print each thing
+the example outputs could also colorize and print the source code - that output might
+be a fun sharable version of the tutorial (i.e. the tutorial is all printed via Log.gd)
 ** [ ] docs full api page
 ** [ ] call-site prefix test coverage
 ** [ ] to_printable naming (vs to_pretty)?
