@@ -30,6 +30,10 @@ func test_node_paths():
 	var val = Log.to_pretty(np)
 	assert_str(val).is_equal("[color=orange]^[/color]\"Some/Path/To/A/Node\"")
 
+func test_already_colorized_string():
+	var val = Log.to_pretty("[color=blue]Something[/color]")
+	assert_str(val).is_equal("[color=blue]Something[/color]")
+
 ## color ##########################################
 
 func test_color():

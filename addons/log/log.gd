@@ -175,7 +175,7 @@ static func color_scheme(opts={}):
 
 static func color_wrap(s, opts={}):
 	var use_color = opts.get("use_color", true)
-	# support cutting off rebuilding the color scheme
+	# don't rebuild the color scheme every time
 	var colors = opts.get("built_color_scheme", color_scheme(opts))
 
 	if use_color:
@@ -240,8 +240,6 @@ static func to_pretty(msg, opts={}):
 	var color_scheme = opts.get("built_color_scheme", color_scheme(opts))
 	if not "built_color_scheme" in opts:
 		opts["built_color_scheme"] = color_scheme
-
-	# TODO set and attach color_scheme to opts
 
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
 		return str("invalid instance: ", msg)
@@ -315,13 +313,12 @@ static func to_pretty(msg, opts={}):
 
 	# strings
 	elif msg is String:
-		# TODO support (use as-is) already 'rich/colorized' strings
-		# maybe just a regex for [color=.*]?
 		if msg == "":
 			return '""'
-		# could check for supported tags in the string (see list above)
-		# if msg.contains("["):
-		# 	msg = "<ACTUAL-TEXT-REPLACED>"
+		if "[color=" in msg and "[/color]" in msg:
+			# assumes the string is already colorized
+			# NOT PERFECT! could use a regex for something more robust
+			return msg
 		return Log.color_wrap(msg, opts)
 	elif msg is StringName:
 		return str(Log.color_wrap("&", opts), '"%s"' % msg)
