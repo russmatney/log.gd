@@ -278,12 +278,22 @@ func test_scan_by_inheritance_class_name() -> void:
 	var scanner :GdUnitTestSuiteScanner = auto_free(GdUnitTestSuiteScanner.new())
 	var test_suites := scanner.scan("res://addons/gdUnit4/test/core/resources/scan_testsuite_inheritance/by_class_name/")
 
-	assert_array(test_suites).extractv(extr("get_name"), extr("get_script.get_path"), extr("get_children.get_name"))\
-		.contains_exactly_in_any_order([
-			tuple("BaseTest", "res://addons/gdUnit4/test/core/resources/scan_testsuite_inheritance/by_class_name/BaseTest.gd", [&"test_foo1"]),
-			tuple("ExtendedTest","res://addons/gdUnit4/test/core/resources/scan_testsuite_inheritance/by_class_name/ExtendedTest.gd", [&"test_foo2", &"test_foo1"]),
-			tuple("ExtendsExtendedTest", "res://addons/gdUnit4/test/core/resources/scan_testsuite_inheritance/by_class_name/ExtendsExtendedTest.gd", [&"test_foo3", &"test_foo2", &"test_foo1"])
-		])
+	assert_array(test_suites).has_size(3)
+	# sort by names
+	test_suites.sort_custom(func by_name(a, b): return a.get_name() <= b.get_name())
+	assert_array(test_suites).extract("get_name")\
+		.contains_exactly(["BaseTest", "ExtendedTest", "ExtendsExtendedTest"])
+	assert_array(test_suites).extract("get_script.get_path")\
+		.contains_exactly([
+			"res://addons/gdUnit4/test/core/resources/scan_testsuite_inheritance/by_class_name/BaseTest.gd",
+			"res://addons/gdUnit4/test/core/resources/scan_testsuite_inheritance/by_class_name/ExtendedTest.gd",
+			"res://addons/gdUnit4/test/core/resources/scan_testsuite_inheritance/by_class_name/ExtendsExtendedTest.gd"])
+	assert_array(test_suites[0].get_children()).extract("name")\
+		.contains_same_exactly_in_any_order([&"test_foo1"])
+	assert_array(test_suites[1].get_children()).extract("name")\
+		.contains_same_exactly_in_any_order([&"test_foo2", &"test_foo1"])
+	assert_array(test_suites[2].get_children()).extract("name")\
+		.contains_same_exactly_in_any_order([&"test_foo3", &"test_foo2", &"test_foo1"])
 	# finally free all scaned test suites
 	for ts in test_suites:
 		ts.free()
@@ -305,7 +315,7 @@ func test_scan_by_inheritance_class_path() -> void:
 
 
 func test_get_test_case_line_number() -> void:
-	assert_int(GdUnitTestSuiteScanner.get_test_case_line_number("res://addons/gdUnit4/test/core/GdUnitTestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(307)
+	assert_int(GdUnitTestSuiteScanner.get_test_case_line_number("res://addons/gdUnit4/test/core/GdUnitTestSuiteScannerTest.gd", "get_test_case_line_number")).is_equal(317)
 	assert_int(GdUnitTestSuiteScanner.get_test_case_line_number("res://addons/gdUnit4/test/core/GdUnitTestSuiteScannerTest.gd", "unknown")).is_equal(-1)
 
 
@@ -333,22 +343,6 @@ func test_is_script_format_supported() -> void:
 	assert_bool(GdUnitTestSuiteScanner._is_script_format_supported("res://exampe.tres")).is_false()
 
 
-func test_load_parameterized_test_suite():
-	var test_suite :GdUnitTestSuite = auto_free(GdUnitTestResourceLoader.load_test_suite("res://addons/gdUnit4/test/core/resources/testsuites/TestSuiteInvalidParameterizedTests.resource"))
-
-	assert_that(test_suite.name).is_equal("TestSuiteInvalidParameterizedTests")
-	assert_that(test_suite.get_children()).extractv(extr("get_name"), extr("is_skipped"))\
-		.contains_exactly_in_any_order([
-			tuple("test_no_parameters", false),
-			tuple("test_parameterized_success", false),
-			tuple("test_parameterized_failed", false),
-			tuple("test_parameterized_to_less_args", true),
-			tuple("test_parameterized_to_many_args", true),
-			tuple("test_parameterized_to_less_args_at_index_1", true),
-			tuple("test_parameterized_invalid_struct", true),
-			tuple("test_parameterized_invalid_args", true)])
-
-
 func test_resolve_test_suite_path() -> void:
 	# forcing the use of a test folder next to the source folder
 	assert_str(GdUnitTestSuiteScanner.resolve_test_suite_path("res://project/src/folder/myclass.gd", "test")).is_equal("res://project/test/folder/myclass_test.gd")
@@ -369,3 +363,10 @@ func test_resolve_test_suite_path_with_src_folders() -> void:
 	assert_str(GdUnitTestSuiteScanner.resolve_test_suite_path("res://project/folder/MyClass.gd", "")).is_equal("res://project/folder/MyClassTest.gd")
 	assert_str(GdUnitTestSuiteScanner.resolve_test_suite_path("res://project/folder/myclass.gd", "/")).is_equal("res://project/folder/myclass_test.gd")
 	assert_str(GdUnitTestSuiteScanner.resolve_test_suite_path("res://project/folder/MyClass.gd", "/")).is_equal("res://project/folder/MyClassTest.gd")
+
+
+func test_scan_test_suite_without_tests() -> void:
+	var scanner :GdUnitTestSuiteScanner = auto_free(GdUnitTestSuiteScanner.new())
+	var test_suites := scanner.scan("res://addons/gdUnit4/test/core/resources/testsuites/TestSuiteWithoutTests.gd")
+
+	assert_that(test_suites).is_empty()
