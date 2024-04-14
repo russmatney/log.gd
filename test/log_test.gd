@@ -227,3 +227,19 @@ func test_color_overwriting():
 	# does not clear other colors
 	val = Log.to_pretty(1, {color_scheme={TYPE_NIL: "red"}})
 	assert_str(val).is_equal("[color=green]1[/color]")
+
+func test_color_scheme_overwriting():
+	var val = Log.to_pretty(null)
+	assert_str(val).is_equal("[color=pink]<null>[/color]")
+
+	Log.set_color_scheme({TYPE_NIL: "red"})
+
+	val = Log.to_pretty(null)
+	assert_str(val).is_equal("[color=red]<null>[/color]")
+
+	# does not clear other colors
+	val = Log.to_pretty(1)
+	assert_str(val).is_equal("[color=green]1[/color]")
+
+	# reset colors
+	Log.set_colors_termsafe()
