@@ -32,7 +32,7 @@ jobs:
         godot-status: ['stable']
         include:
           - godot-version: '4.2.2'
-            godot-status: 'rc2'
+            godot-status: 'rc3'
           - godot-version: '4.3'
             godot-status: 'dev3'
 
