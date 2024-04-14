@@ -1,6 +1,9 @@
 @tool
 extends CanvasLayer
 
+func _enter_tree():
+	Log.set_colors_pretty()
+
 class ExampleObj:
 	var val
 	func _init(v):
@@ -22,4 +25,8 @@ func _ready():
 		and_node_paths=NodePath("SomeNode"),
 		}))
 
-	Log.prn(some_custom_types)
+	Log.prn("custom types", some_custom_types)
+
+	Log.pr("custom colors", 1)
+	print_rich(Log.to_pretty(1))
+	print_rich(Log.to_pretty(1, {color_scheme={TYPE_INT: "purple"}}))

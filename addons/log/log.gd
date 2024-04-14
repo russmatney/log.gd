@@ -11,7 +11,22 @@ static func assoc(opts: Dictionary, key: String, val):
 
 ## config ####################################
 
-static var config = {}
+static var config = {
+	max_array_size=20,
+	dictionary_skip_keys=["layer_0/tile_data"],
+	}
+
+static func get_max_array_size():
+	return Log.config.get("max_array_size", 20)
+
+static func get_dictionary_skip_keys():
+	return Log.config.get("dictionary_skip_keys", [])
+
+static func set_color_scheme(scheme):
+	Log.config["color_scheme"] = scheme
+
+static func get_config_color_scheme():
+	return Log.config.get("color_scheme", {})
 
 ## colors ###########################################################################
 
@@ -151,23 +166,17 @@ static func set_colors_termsafe():
 static func set_colors_pretty():
 	set_color_scheme(Log.COLORS_PRETTY_V1)
 
-static func set_color_scheme(scheme):
-	config["color_scheme"] = scheme
-
 static func color_scheme(opts={}):
-	# TODO merge schemes down to support partial color overwrites
-	var scheme = opts.get("color_scheme")
-	if not scheme:
-		scheme = config.get("color_scheme")
-	if not scheme:
-		# TODO default to pretty colors when launched from editor
-		# otherwise, use term-safe colors
-		scheme = Log.COLORS_TERMINAL_SAFE
+	var scheme = opts.get("color_scheme", {})
+	# fill in any missing vals with the set scheme, then the term-safe fallbacks
+	scheme.merge(Log.get_config_color_scheme())
+	scheme.merge(Log.COLORS_TERMINAL_SAFE)
 	return scheme
 
 static func color_wrap(s, opts={}):
 	var use_color = opts.get("use_color", true)
-	var colors = color_scheme(opts)
+	# support cutting off rebuilding the color scheme
+	var colors = opts.get("built_color_scheme", color_scheme(opts))
 
 	if use_color:
 		var color = opts.get("color")
@@ -201,11 +210,11 @@ static var log_overwrites = {
 	"Vector2": func(msg, opts):
 		if opts.get("use_color", true):
 			return '%s%s%s%s%s' % [
-				Log.color_wrap("("),
-				Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(","),
-				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(")"),
+				Log.color_wrap("(", opts),
+				Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(",", opts),
+				Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(")", opts),
 				]
 		else:
 			return '(%s,%s)' % [msg.x, msg.y],
@@ -220,9 +229,6 @@ static func register_overwrite(key, handler):
 
 ## to_pretty ###########################################################################
 
-# TODO read from config
-static var max_array_size = 20
-
 # returns the passed object as a decorated string
 static func to_pretty(msg, opts={}):
 	var newlines = opts.get("newlines", false)
@@ -231,9 +237,14 @@ static func to_pretty(msg, opts={}):
 	if not "indent_level" in opts:
 		opts["indent_level"] = indent_level
 
-	var omit_vals_for_keys = ["layer_0/tile_data"]
+	var color_scheme = opts.get("built_color_scheme", color_scheme(opts))
+	if not "built_color_scheme" in opts:
+		opts["built_color_scheme"] = color_scheme
+
+	# TODO set and attach color_scheme to opts
+
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
-		return str(msg)
+		return str("invalid instance: ", msg)
 
 	if msg == null:
 		return Log.color_wrap(msg, opts)
@@ -253,9 +264,9 @@ static func to_pretty(msg, opts={}):
 
 	# arrays
 	if msg is Array or msg is PackedStringArray:
-		if len(msg) > max_array_size:
+		if len(msg) > Log.get_max_array_size():
 			pr("[DEBUG]: truncating large array. total:", len(msg))
-			msg = msg.slice(0, max_array_size - 1)
+			msg = msg.slice(0, Log.get_max_array_size() - 1)
 			if newlines:
 				msg.append("...")
 
@@ -282,7 +293,7 @@ static func to_pretty(msg, opts={}):
 			last = msg.keys()[-1]
 		for k in msg.keys():
 			var val
-			if k in omit_vals_for_keys:
+			if k in Log.get_dictionary_skip_keys():
 				val = "..."
 			else:
 				opts.indent_level += 1
@@ -293,7 +304,7 @@ static func to_pretty(msg, opts={}):
 					.map(func(_i): return "\t")\
 						.reduce(func(a, b): return str(a, b), "")
 			if use_color:
-				var key = Log.color_wrap('"%s"' % k, assoc(opts, "typeof", "dict_key"))
+				var key = Log.color_wrap('"%s"' % k, Log.assoc(opts, "typeof", "dict_key"))
 				tmp += "%s: %s" % [key, val]
 			else:
 				tmp += '"%s": %s' % [k, val]
@@ -324,28 +335,28 @@ static func to_pretty(msg, opts={}):
 	elif msg is Vector3 or msg is Vector3i:
 		if use_color:
 			return '%s%s%s%s%s%s%s' % [
-				Log.color_wrap("("),
-				Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(","),
-				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(","),
-				Log.color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(")"),
+				Log.color_wrap("(", opts),
+				Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(",", opts),
+				Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(",", opts),
+				Log.color_wrap(msg.z, Log.assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(")", opts),
 				]
 		else:
 			return '(%s,%s,%s)' % [msg.x, msg.y, msg.z]
 	elif msg is Vector4 or msg is Vector4i:
 		if use_color:
 			return '%s%s%s%s%s%s%s%s%s' % [
-				Log.color_wrap("("),
-				Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(","),
-				Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(","),
-				Log.color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(","),
-				Log.color_wrap(msg.w, assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(")"),
+				Log.color_wrap("(", opts),
+				Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(",", opts),
+				Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(",", opts),
+				Log.color_wrap(msg.z, Log.assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(",", opts),
+				Log.color_wrap(msg.w, Log.assoc(opts, "typeof", "vector_value")),
+				Log.color_wrap(")", opts),
 				]
 		else:
 			return '(%s,%s,%s,%s)' % [msg.x, msg.y, msg.z, msg.w]
@@ -355,14 +366,14 @@ static func to_pretty(msg, opts={}):
 		if msg.resource_path != "":
 			return str(Log.color_wrap("PackedScene:", opts), '%s' % msg.resource_path.get_file())
 		elif msg.get_script() != null and msg.get_script().resource_path != "":
-			return Log.color_wrap(msg.get_script().resource_path.get_file(), assoc(opts, "typeof", "class_name"))
+			return Log.color_wrap(msg.get_script().resource_path.get_file(), Log.assoc(opts, "typeof", "class_name"))
 		else:
 			return Log.color_wrap(msg, opts)
 
 	# resource
 	elif msg is Resource:
 		if msg.get_script() != null and msg.get_script().resource_path != "":
-			return Log.color_wrap(msg.get_script().resource_path.get_file(), assoc(opts, "typeof", "class_name"))
+			return Log.color_wrap(msg.get_script().resource_path.get_file(), Log.assoc(opts, "typeof", "class_name"))
 		elif msg.resource_path != "":
 			return str(Log.color_wrap("Resource:", opts), '%s' % msg.resource_path.get_file())
 		else:
@@ -371,9 +382,9 @@ static func to_pretty(msg, opts={}):
 	# refcounted
 	elif msg is RefCounted:
 		if msg.get_script() != null and msg.get_script().resource_path != "":
-			return Log.color_wrap(msg.get_script().resource_path.get_file(), assoc(opts, "typeof", "class_name"))
+			return Log.color_wrap(msg.get_script().resource_path.get_file(), Log.assoc(opts, "typeof", "class_name"))
 		else:
-			return Log.color_wrap(msg.get_class(), assoc(opts, "typeof", "class_name"))
+			return Log.color_wrap(msg.get_class(), Log.assoc(opts, "typeof", "class_name"))
 
 	# fallback to primitive-type lookup
 	else:
@@ -408,7 +419,7 @@ static func to_printable(msgs, opts={}):
 		elif prefix != null and prefix[0] == "<":
 			prefix_type = "ADDONS"
 		if pretty:
-			m += Log.color_wrap(prefix, assoc(opts, "typeof", prefix_type))
+			m += Log.color_wrap(prefix, Log.assoc(opts, "typeof", prefix_type))
 		else:
 			m += prefix
 	for msg in msgs:
