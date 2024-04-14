@@ -40,12 +40,11 @@ jobs:
       # checkout your repository
       - uses: actions/checkout@v4
       # run unit tests
-      - uses: MikeSchulze/gdUnit4-action@v1.0.2
+      - uses: MikeSchulze/gdUnit4-action@v1.0.5
         with:
           godot-version: ${{ matrix.godot-version }}
           godot-status: ${{ matrix.godot-status }}
           paths: |
             res://test/
           timeout: 5
-          report-name:
-            report_${{ matrix.version }}_Godot${{ matrix.godot-version }}-${{ matrix.godot-status }}.xml
+          upload-report: false
