@@ -2,6 +2,9 @@
 extends CanvasLayer
 
 func _enter_tree():
+	print("some ansi code?")
+	print("\\033[31mHello\\033[0m")
+
 	Log.set_colors_pretty()
 	# Log.disable_colors()
 
@@ -38,3 +41,6 @@ func _ready():
 
 	Log.pr("disabled colors")
 	print_rich(Log.to_pretty(1, {disable_colors=true}))
+
+	print("\\033[31;1;4mHello\\033[0m")
+
