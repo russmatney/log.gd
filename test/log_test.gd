@@ -37,7 +37,7 @@ func test_already_colorized_string():
 ## color ##########################################
 
 func test_color():
-	# TODO
+	# test for printing colors, not log.gd color nuances
 	pass
 
 ## numbers ##########################################
@@ -247,3 +247,16 @@ func test_color_scheme_overwriting():
 
 	# reset colors
 	Log.set_colors_termsafe()
+
+func test_disable_colors_to_pretty():
+	assert_str(Log.to_pretty(1)).is_equal("[color=green]1[/color]")
+	assert_str(Log.to_pretty(1, {disable_colors=true})).is_equal("1")
+
+func test_disable_colors_via_config():
+	assert_str(Log.to_pretty(1)).is_equal("[color=green]1[/color]")
+
+	Log.disable_colors()
+	assert_str(Log.to_pretty(1)).is_equal("1")
+
+	Log.enable_colors()
+	assert_str(Log.to_pretty(1)).is_equal("[color=green]1[/color]")

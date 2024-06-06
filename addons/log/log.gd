@@ -13,7 +13,11 @@ static func assoc(opts: Dictionary, key: String, val):
 
 static var config = {
 	max_array_size=20,
-	dictionary_skip_keys=["layer_0/tile_data"],
+	dictionary_skip_keys=[
+		"layer_0/tile_data", # skip huge tilemap arrays
+		],
+	color_scheme={},
+	disable_colors=false,
 	}
 
 static func get_max_array_size():
@@ -21,6 +25,15 @@ static func get_max_array_size():
 
 static func get_dictionary_skip_keys():
 	return Log.config.get("dictionary_skip_keys", [])
+
+static func get_disable_colors():
+	return Log.config.get("disable_colors", false)
+
+static func disable_colors():
+	Log.config["disable_colors"] = true
+
+static func enable_colors():
+	Log.config["disable_colors"] = false
 
 static func set_color_scheme(scheme):
 	Log.config["color_scheme"] = scheme
@@ -173,52 +186,56 @@ static func color_scheme(opts={}):
 	scheme.merge(Log.COLORS_TERMINAL_SAFE)
 	return scheme
 
+static func should_use_color(opts={}):
+	if Log.get_disable_colors():
+		return false
+	# supports per-print color skipping
+	if opts.get("disable_colors", false):
+		return false
+	return true
+
 static func color_wrap(s, opts={}):
-	var use_color = opts.get("use_color", true)
 	# don't rebuild the color scheme every time
 	var colors = opts.get("built_color_scheme", color_scheme(opts))
 
-	if use_color:
-		var color = opts.get("color")
-		if not color:
-			var s_type = opts.get("typeof", typeof(s))
-			if s_type is String:
-				# type overwrites
-				color = colors.get(s_type)
-			elif s_type is int and s_type == TYPE_STRING:
-				# specific strings/punctuation
-				var s_trimmed = s.strip_edges()
-				if s_trimmed in colors:
-					color = colors.get(s_trimmed)
-				else:
-					# fallback string color
-					color = colors.get(s_type)
+	if not should_use_color(opts):
+		return str(s)
+
+	var color = opts.get("color")
+	if not color:
+		var s_type = opts.get("typeof", typeof(s))
+		if s_type is String:
+			# type overwrites
+			color = colors.get(s_type)
+		elif s_type is int and s_type == TYPE_STRING:
+			# specific strings/punctuation
+			var s_trimmed = s.strip_edges()
+			if s_trimmed in colors:
+				color = colors.get(s_trimmed)
 			else:
-				# all other types
+				# fallback string color
 				color = colors.get(s_type)
+		else:
+			# all other types
+			color = colors.get(s_type)
 
-		if color == null:
-			print("Log.gd could not determine color for object: %s type: (%s)" % [str(s), typeof(s)])
+	if color == null:
+		print("Log.gd could not determine color for object: %s type: (%s)" % [str(s), typeof(s)])
 
-		return "[color=%s]%s[/color]" % [color, s]
-	else:
-		return s
+	return "[color=%s]%s[/color]" % [color, s]
 
 ## overwrites ###########################################################################
 
 static var log_overwrites = {
 	"Vector2": func(msg, opts):
-		if opts.get("use_color", true):
-			return '%s%s%s%s%s' % [
-				Log.color_wrap("(", opts),
-				Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(",", opts),
-				Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(")", opts),
-				]
-		else:
-			return '(%s,%s)' % [msg.x, msg.y],
-	}
+		return '%s%s%s%s%s' % [
+			Log.color_wrap("(", opts),
+			Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(",", opts),
+			Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(")", opts),
+		]
+		}
 
 static func register_overwrite(key, handler):
 	# TODO warning on key exists?
@@ -232,7 +249,6 @@ static func register_overwrite(key, handler):
 # returns the passed object as a decorated string
 static func to_pretty(msg, opts={}):
 	var newlines = opts.get("newlines", false)
-	var use_color = opts.get("use_color", true)
 	var indent_level = opts.get("indent_level", 0)
 	if not "indent_level" in opts:
 		opts["indent_level"] = indent_level
@@ -301,11 +317,8 @@ static func to_pretty(msg, opts={}):
 					+ range(indent_level)\
 					.map(func(_i): return "\t")\
 						.reduce(func(a, b): return str(a, b), "")
-			if use_color:
-				var key = Log.color_wrap('"%s"' % k, Log.assoc(opts, "typeof", "dict_key"))
-				tmp += "%s: %s" % [key, val]
-			else:
-				tmp += '"%s": %s' % [k, val]
+			var key = Log.color_wrap('"%s"' % k, Log.assoc(opts, "typeof", "dict_key"))
+			tmp += "%s: %s" % [key, val]
 			if last and str(k) != str(last):
 				tmp += Log.color_wrap(", ", opts)
 		tmp += Log.color_wrap(" }", opts)
@@ -330,33 +343,27 @@ static func to_pretty(msg, opts={}):
 		return log_overwrites.get("Vector2").call(msg, opts)
 
 	elif msg is Vector3 or msg is Vector3i:
-		if use_color:
-			return '%s%s%s%s%s%s%s' % [
-				Log.color_wrap("(", opts),
-				Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(",", opts),
-				Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(",", opts),
-				Log.color_wrap(msg.z, Log.assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(")", opts),
-				]
-		else:
-			return '(%s,%s,%s)' % [msg.x, msg.y, msg.z]
+		return '%s%s%s%s%s%s%s' % [
+			Log.color_wrap("(", opts),
+			Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(",", opts),
+			Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(",", opts),
+			Log.color_wrap(msg.z, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(")", opts),
+			]
 	elif msg is Vector4 or msg is Vector4i:
-		if use_color:
-			return '%s%s%s%s%s%s%s%s%s' % [
-				Log.color_wrap("(", opts),
-				Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(",", opts),
-				Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(",", opts),
-				Log.color_wrap(msg.z, Log.assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(",", opts),
-				Log.color_wrap(msg.w, Log.assoc(opts, "typeof", "vector_value")),
-				Log.color_wrap(")", opts),
-				]
-		else:
-			return '(%s,%s,%s,%s)' % [msg.x, msg.y, msg.z, msg.w]
+		return '%s%s%s%s%s%s%s%s%s' % [
+			Log.color_wrap("(", opts),
+			Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(",", opts),
+			Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(",", opts),
+			Log.color_wrap(msg.z, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(",", opts),
+			Log.color_wrap(msg.w, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(")", opts),
+			]
 
 	# packed scene
 	elif msg is PackedScene:
