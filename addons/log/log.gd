@@ -11,35 +11,65 @@ static func assoc(opts: Dictionary, key: String, val):
 
 ## config ####################################
 
+const KEY_PREFIX = "Loggd"
+
+const KEY_COLOR_SCHEME = "%s/color_scheme" % KEY_PREFIX
+const KEY_DISABLE_COLORS = "%s/disable_colors" % KEY_PREFIX
+const KEY_MAX_ARRAY_SIZE = "%s/max_array_size" % KEY_PREFIX
+const KEY_SKIP_KEYS = "%s/dictionary_skip_keys" % KEY_PREFIX
+
+static func setup_config(editor_settings, opts={}):
+	var keys = opts.get("update_keys", [
+		KEY_COLOR_SCHEME,
+		KEY_DISABLE_COLORS,
+		KEY_MAX_ARRAY_SIZE,
+		KEY_SKIP_KEYS,
+		])
+
+	for key in keys:
+		editor_settings.set_initial_value(key, Log.config.get(key), false)
+
+		if editor_settings.has_setting(key):
+			Log.config[key] = editor_settings.get_setting(key)
+		else:
+			editor_settings.set_setting(key, Log.config.get(key))
+
 static var config = {
-	max_array_size=20,
-	dictionary_skip_keys=[
+	# TODO convert to selecting a scheme by name
+	KEY_COLOR_SCHEME: {},
+	KEY_DISABLE_COLORS: false,
+	KEY_MAX_ARRAY_SIZE: 20,
+	KEY_SKIP_KEYS: [
 		"layer_0/tile_data", # skip huge tilemap arrays
 		],
-	color_scheme={},
-	disable_colors=false,
 	}
 
+## config getters
+
 static func get_max_array_size():
-	return Log.config.get("max_array_size", 20)
+	return Log.config.get(KEY_MAX_ARRAY_SIZE, 20)
 
 static func get_dictionary_skip_keys():
-	return Log.config.get("dictionary_skip_keys", [])
+	return Log.config.get(KEY_SKIP_KEYS, [])
 
 static func get_disable_colors():
-	return Log.config.get("disable_colors", false)
-
-static func disable_colors():
-	Log.config["disable_colors"] = true
-
-static func enable_colors():
-	Log.config["disable_colors"] = false
-
-static func set_color_scheme(scheme):
-	Log.config["color_scheme"] = scheme
+	return Log.config.get(KEY_DISABLE_COLORS, false)
 
 static func get_config_color_scheme():
-	return Log.config.get("color_scheme", {})
+	return Log.config.get(KEY_COLOR_SCHEME, {})
+
+## config setters
+# consider setting the editor-settings values of these when the funcs are called
+# editor_settings.set_setting(key, config.get(key))
+
+static func disable_colors():
+	Log.config[KEY_DISABLE_COLORS] = true
+
+static func enable_colors():
+	Log.config[KEY_DISABLE_COLORS] = false
+
+static func set_color_scheme(scheme):
+	Log.config[KEY_COLOR_SCHEME] = scheme
 
 ## colors ###########################################################################
 

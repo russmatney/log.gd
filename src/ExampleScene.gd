@@ -2,7 +2,7 @@
 extends CanvasLayer
 
 func _enter_tree():
-	print("\\033[31mHello\\033[0m")
+	# print("\\033[31mHello\\033[0m")
 
 	Log.set_colors_pretty()
 	# Log.disable_colors()
@@ -12,7 +12,7 @@ class ExampleObj:
 	func _init(v):
 		val = v
 
-	func to_printable():
+	func to_pretty():
 		return {val=val, id=get_instance_id()}
 
 @export var some_custom_types : Array[SomeResource]
@@ -41,5 +41,4 @@ func _ready():
 	Log.pr("disabled colors")
 	print_rich(Log.to_pretty(1, {disable_colors=true}))
 
-	print("\\033[31;1;4mHello\\033[0m")
-
+	# print("\\033[31;1;4mHello\\033[0m")
