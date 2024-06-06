@@ -44,6 +44,7 @@ jobs:
         with:
           godot-version: ${{ matrix.godot-version }}
           godot-status: ${{ matrix.godot-status }}
+          version: 'installed'
           paths: |
             res://test/
           timeout: 5
