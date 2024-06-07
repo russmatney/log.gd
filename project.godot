@@ -26,10 +26,8 @@ settings/common/update_notification_enabled=false
 
 [log_gd]
 
-config/color_scheme={}
-config/max_array_size=11
-config/dictionary_skip_keys=["layer_0/tile_data"]
-config/disable_colors=false
+config/disable_colors=true
+config/max_array_size=14
 
 [rendering]
 

@@ -31,8 +31,10 @@ static func setup_config(opts={}):
 		if ProjectSettings.has_setting(key):
 			Log.config[key] = ProjectSettings.get_setting(key)
 		else:
-			ProjectSettings.set_initial_value(key, Log.config.get(key))
-			# ProjectSettings.set_setting(key, Log.config[key])
+			var val = Log.config[key]
+			if val != null:
+				ProjectSettings.set_setting(key, val)
+				ProjectSettings.set_initial_value(key, val)
 
 	print("updated config", Log.config)
 	Log.is_config_setup = true
