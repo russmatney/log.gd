@@ -4,7 +4,104 @@
 ## Unreleased
 
 
+### 6 Jun 2024
+
+- ([`af59d90`](https://github.com/russmatney/log.gd/commit/af59d90)) fix: prevent errors at startup, remove noisey logs
+
+  > ProjectSettings-supported config seems to be working as expected!
+  > Huzzah!
+
+- ([`0251bdb`](https://github.com/russmatney/log.gd/commit/0251bdb)) refactor: move config from editor- to projectSettings
+
+  > EditorSettings are per-machine and not accessible when starting
+  > scenes (even from the editor). So instead we use the projectSettings,
+  > to at least get these config vals going.
+  > 
+  > This might make more sense than editor settings, and could be useful to
+  > override with feature tags and what not.
+  > 
+  > Still a bit of a mess, naming-wise, and seems to throw errors before the
+  > settings have been created in the project :/
+
+- ([`2a4f1c2`](https://github.com/russmatney/log.gd/commit/2a4f1c2)) ci: test fewer and updated godot versions
+- ([`f231e70`](https://github.com/russmatney/log.gd/commit/f231e70)) deps: update gdunit4, ignore /test dir
+- ([`4b137b7`](https://github.com/russmatney/log.gd/commit/4b137b7)) feat: introduce Log.gd editor-settings
+
+  > Hooks into the editor_settings.settings_changed signal - towards
+  > supporting setting custom values for Log.gd config options, such as
+  > disable_colors and max_array_size. Not _quite_ working, but this is the
+  > bulk of the work.
+
+- ([`a1cc3e2`](https://github.com/russmatney/log.gd/commit/a1cc3e2)) fix: use installed gdunit version
+- ([`0177263`](https://github.com/russmatney/log.gd/commit/0177263)) wip: vscode launch json, some basic ansi-code attempts
+- ([`31ef24c`](https://github.com/russmatney/log.gd/commit/31ef24c)) feat: Log.disable_colors() and Log.enable_colors()
+
+  > Color wrapping can now be globally disabled via Log.disable_colors().
+  > This could help in some situations where the colors are not interpreted
+  > and the output is an unreadable mess of `[color=blah][/color]` tags.
+
+
+### 4 Jun 2024
+
+- ([`92b62b0`](https://github.com/russmatney/log.gd/commit/92b62b0)) chore: update github funding links
+
+### 6 May 2024
+
+- ([`80238ba`](https://github.com/russmatney/log.gd/commit/80238ba)) license: add license to addons/log dir
+
 ### 13 Apr 2024
+
+- ([`5719e6b`](https://github.com/russmatney/log.gd/commit/5719e6b)) deps: update gdunit
+- ([`2bd6de4`](https://github.com/russmatney/log.gd/commit/2bd6de4)) deps: drop gd-plug-ui
+
+  > I'm not using this anyway - dropping while i resolve whatever's up with CI.
+
+- ([`ce88e7d`](https://github.com/russmatney/log.gd/commit/ce88e7d)) chore: drop editor plugin enter/exit
+
+  > No need for this at the moment.
+
+- ([`0ca78cc`](https://github.com/russmatney/log.gd/commit/0ca78cc)) fix: pass already colorized strings through
+- ([`792026f`](https://github.com/russmatney/log.gd/commit/792026f)) fix: move SomeResource to @tool script
+- ([`62d535f`](https://github.com/russmatney/log.gd/commit/62d535f)) test: more color overwriting coverage
+
+  > A test covering overwriting a specific color via
+  > Log.set_color_scheme(scheme)
+
+- ([`f62b9e7`](https://github.com/russmatney/log.gd/commit/f62b9e7)) feat: support color overwriting via Log.to_pretty
+
+  > The color schemes are now built once in Log.to_pretty, and merged into a
+  > single map. This lets a minimal amount of colors be overwritten by a
+  > passed dictionary, and leaves the rest of the colors as-is.
+  > 
+  > Passing color overwrites at the log callsite is a pain at the moment -
+  > the variadic log functions don't make it clear where an opts dictionary
+  > could be passed, and passing the result of Log.pretty to one of the
+  > public Log funcs will print it as a string, which is not ideal
+
+- ([`347a527`](https://github.com/russmatney/log.gd/commit/347a527)) ci: bump godot 4.2.2 test version
+- ([`6bbac1d`](https://github.com/russmatney/log.gd/commit/6bbac1d)) ci: update gdunit4 action version
+- ([`b8e5958`](https://github.com/russmatney/log.gd/commit/b8e5958)) feat: proof of concept for swapping color schemes
+
+  > Inits a Log.config dictionary that pulls the color scheme from
+  > config.color_scheme. The colors can also be passed to Log.to_pretty in
+  > the opts dict.
+  > 
+  > Once the schemes are being merged, it'll be possible to overwrite
+  > specific types without clearing the rest of the colors.
+  > 
+  > Ideally the prettier colors would be opt-ed into by the editor-launched
+  > games, and the term-safe would be used in other circumstances (test
+  > runners, 'built' production games)
+  > 
+  > A similar feature should make it easy to opt-out of colors - I wonder if
+  > it's easy to read a `--log-no-colors` arg from the command line.
+
+- ([`54d8bb2`](https://github.com/russmatney/log.gd/commit/54d8bb2)) todos: some documentation ideas
+- ([`30d32f2`](https://github.com/russmatney/log.gd/commit/30d32f2)) docs: update changelog
+
+  > Also auto-commits in `bb changelog`. Ideally this would be optional, but
+  > i don't want to mess with the first arg - ought to up my
+  > bb-task-cli-opts game a bit.
 
 - ([`4e2241c`](https://github.com/russmatney/log.gd/commit/4e2241c)) feat: Log.register_overwrite(type_or_class, func(x, opts))
 
