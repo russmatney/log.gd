@@ -11,15 +11,16 @@ static func assoc(opts: Dictionary, key: String, val):
 
 ## config ####################################
 
-const KEY_PREFIX = "Loggd"
+const KEY_PREFIX = "log_gd/config"
+static var is_config_setup = false
 
 const KEY_COLOR_SCHEME = "%s/color_scheme" % KEY_PREFIX
 const KEY_DISABLE_COLORS = "%s/disable_colors" % KEY_PREFIX
 const KEY_MAX_ARRAY_SIZE = "%s/max_array_size" % KEY_PREFIX
 const KEY_SKIP_KEYS = "%s/dictionary_skip_keys" % KEY_PREFIX
 
-static func setup_config(editor_settings, opts={}):
-	var keys = opts.get("update_keys", [
+static func setup_config(opts={}):
+	var keys = opts.get("keys", [
 		KEY_COLOR_SCHEME,
 		KEY_DISABLE_COLORS,
 		KEY_MAX_ARRAY_SIZE,
@@ -27,12 +28,14 @@ static func setup_config(editor_settings, opts={}):
 		])
 
 	for key in keys:
-		editor_settings.set_initial_value(key, Log.config.get(key), false)
-
-		if editor_settings.has_setting(key):
-			Log.config[key] = editor_settings.get_setting(key)
+		if ProjectSettings.has_setting(key):
+			Log.config[key] = ProjectSettings.get_setting(key)
 		else:
-			editor_settings.set_setting(key, Log.config.get(key))
+			ProjectSettings.set_initial_value(key, Log.config.get(key))
+			# ProjectSettings.set_setting(key, Log.config[key])
+
+	print("updated config", Log.config)
+	Log.is_config_setup = true
 
 static var config = {
 	# TODO convert to selecting a scheme by name
@@ -60,7 +63,7 @@ static func get_config_color_scheme():
 
 ## config setters
 # consider setting the editor-settings values of these when the funcs are called
-# editor_settings.set_setting(key, config.get(key))
+# ProjectSettings.set_setting(key, config.get(key))
 
 static func disable_colors():
 	Log.config[KEY_DISABLE_COLORS] = true
@@ -439,6 +442,9 @@ static func log_prefix(stack):
 			return "[" + basename + ":" + line_num + "]: "
 
 static func to_printable(msgs, opts={}):
+	if not Log.is_config_setup:
+		setup_config()
+
 	var stack = opts.get("stack", [])
 	var pretty = opts.get("pretty", true)
 	var newlines = opts.get("newlines", false)

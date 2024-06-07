@@ -7,6 +7,8 @@ func _enter_tree():
 	Log.set_colors_pretty()
 	# Log.disable_colors()
 
+	Log.info(Log.config)
+
 class ExampleObj:
 	var val
 	func _init(v):

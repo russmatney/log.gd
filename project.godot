@@ -23,3 +23,15 @@ enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/log/p
 
 report/godot/push_error=true
 settings/common/update_notification_enabled=false
+
+[log_gd]
+
+config/color_scheme={}
+config/max_array_size=11
+config/dictionary_skip_keys=["layer_0/tile_data"]
+config/disable_colors=false
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
