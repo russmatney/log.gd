@@ -6,7 +6,7 @@
   <a href="https://www.patreon.com/russmatney">
     <img alt="russmatney on Patreon" src=https://img.shields.io/badge/Patreon-Support%20this%20Project-%23f1465a?style=for-the-badge />
   </a>
-  <a href="https://discord.gg/xZHWtGfAvF">
+  <a href="https://discord.gg/PQvfdApHFQ">
     <img alt="dangerruss on Discord" src="https://img.shields.io/discord/758750490015563776?style=for-the-badge&logo=discord&logoColor=fff&label=discord" />
   </a>
   <a href="https://mastodon.gamedev.place/@russmatney">
