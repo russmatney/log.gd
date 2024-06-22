@@ -1,11 +1,29 @@
 # CHANGELOG
 
 
-## Unreleased
+## v0.0.6
 
 
 ### 22 Jun 2024
 
+- ([`486a8c8`](https://github.com/russmatney/log.gd/commit/486a8c8)) todo: drop 0.7.0 todo tag
+- ([`c6570b7`](https://github.com/russmatney/log.gd/commit/c6570b7)) docs: add godot-help friendly docstrings
+- ([`b000997`](https://github.com/russmatney/log.gd/commit/b000997)) refactor: cleaner theme and type overwrites
+- ([`3145b3e`](https://github.com/russmatney/log.gd/commit/3145b3e)) refactor: use consts instead of enum for config theme
+
+  > I thought the enum would give the project settings a simple dropdown,
+  > but it doesn't, so no need to take on the enum's problems for nothing.
+
+- ([`da944b3`](https://github.com/russmatney/log.gd/commit/da944b3)) refactor: move to config theme enum
+
+  > To ease project configuration, this moves from a big ole dictionary to
+  > an enum for selecting a pre-existing theme. Really I'd like to support
+  > custom themes, which won't work with this enum... but that can come
+  > later.
+  > 
+  > Renames 'color_scheme' to 'color_theme'.
+
+- ([`86b791a`](https://github.com/russmatney/log.gd/commit/86b791a)) docs: update changelog
 - ([`bde09f1`](https://github.com/russmatney/log.gd/commit/bde09f1)) fix: changelog commit sorting
 - ([`dce72d1`](https://github.com/russmatney/log.gd/commit/dce72d1)) chore: more clj-kondo hooks
 
