@@ -1,15 +1,37 @@
+## Log.gd - colorized pretty printing functions
+##
+## [code]Log.pr(...)[/code] and [code]Log.prn(...)[/code] are drop-in replacements for [code]print(...)[/code].
+##
+## [br][br]
+## You can also [code]Log.warn(...)[/code] or [code]Log.error(...)[/code] to both print and push_warn/push_error.
+##
+## [br][br]
+## Custom object output is supported by implementing [code]to_pretty()[/code] on the object.
+##
+## [br][br]
+## For objects you don't own (built-ins or addons you don't want to edit),
+## there is a [code]register_type_overwrite(key, handler)[/code] helper.
+##
+## [br][br]
+## You can find up to date docs and examples in the Log.gd repo and docs site:
+## [br]
+## - https://github.com/russmatney/log.gd
+## [br]
+## - https://russmatney.github.io/log.gd
+##
+
 @tool
 extends Object
 class_name Log
 
-## helpers ####################################
+# helpers ####################################
 
 static func assoc(opts: Dictionary, key: String, val):
 	var _opts = opts.duplicate(true)
 	_opts[key] = val
 	return _opts
 
-## config ####################################
+# config ####################################
 
 const KEY_PREFIX = "log_gd/config"
 static var is_config_setup = false
@@ -47,7 +69,7 @@ static var config = {
 		],
 	}
 
-## config getters
+# config getters ###################################################################
 
 static func get_max_array_size():
 	return Log.config.get(KEY_MAX_ARRAY_SIZE, 20)
@@ -69,13 +91,18 @@ static func get_config_color_theme():
 			print("Unknown LOG_THEME '%s', using fallback" % theme_id)
 			return Log.COLORS_TERMINAL_SAFE
 
-## config setters
-# consider setting the editor-settings values of these when the funcs are called
-# ProjectSettings.set_setting(key, config.get(key))
+# config setters ###################################################################
 
+## Disable color-wrapping output.
+##
+## [br][br]
+## Useful to declutter the output if the environment does not support colors.
+## Note that some environments support only a subset of colors - you may prefer
+## [code]set_colors_termsafe()[/code] or otherwise setting the theme to 'TERMSAFE'.
 static func disable_colors():
 	Log.config[KEY_DISABLE_COLORS] = true
 
+## Re-enable color-wrapping output.
 static func enable_colors():
 	Log.config[KEY_DISABLE_COLORS] = false
 
@@ -221,14 +248,24 @@ static var COLORS_PRETTY_V1 = {
 
 ## set color theme ####################################
 
+## Use the terminal safe color scheme, which should handle colors in most tty-like environments.
 static func set_colors_termsafe():
 	set_color_theme(LOG_THEME_TERMSAFE)
 
+## Use prettier colors - looks nice in most dark godot themes.
+##
+## [br][br]
+## Hopefully we'll support more themes (including light themes) soon!
 static func set_colors_pretty():
 	set_color_theme(LOG_THEME_PRETTY_V1)
 
 static var theme_overwrites = {}
 
+## Merge per type color adjustments.
+##
+## [br][br]
+## Expects a Dictionary from [code]{typeof(obj): Color}[/code].
+## See [code]COLORS_TERMINAL_SAFE[/code] for an example.
 static func merge_theme_overwrites(colors):
 	theme_overwrites.merge(colors, true)
 
@@ -285,11 +322,27 @@ static func color_wrap(s, opts={}):
 
 static var type_overwrites = {}
 
+## Register a single type overwrite.
+##
+## [br][br]
+## The key should be either obj.get_class() or typeof(var). (Note that using typeof(var) may overwrite more broadly than expected).
+##
+## [br][br]
+## The handler is called with the object and an options dict.
+## [code]func(obj, _opts): return {name=obj.name}[/code]
 static func register_type_overwrite(key, handler):
 	# TODO warning on key exists? support multiple handlers for same type?
 	# validate the key/handler somehow?
 	type_overwrites[key] = handler
 
+## Register a dictionary of type overwrite.
+##
+## [br][br]
+## Expects a Dictionary like [code]{obj.get_class(): func(obj, opts): return {key=obj.get_key()}}[/code].
+##
+## [br][br]
+## It depends on [code]obj.get_class()[/code] then [code]typeof(obj)[/code] for the key.
+## The handler is called with the object and an options dict (e.g. [code]func(obj, _opts): return {name=obj.name}[/code]).
 static func register_type_overwrites(overwrites):
 	type_overwrites.merge(overwrites, true)
 
@@ -298,7 +351,11 @@ static func clear_type_overwrites(overwrites):
 
 ## to_pretty ###########################################################################
 
-# returns the passed object as a bb-colorized string
+## Returns the passed object as a bb-colorized string.
+##
+## [br][br]
+## Useful for feeding directly into a RichTextLabel, but also the core
+## of Log.gd's functionality.
 static func to_pretty(msg, opts={}) -> String:
 	var newlines = opts.get("newlines", false)
 	var indent_level = opts.get("indent_level", 0)
@@ -316,6 +373,7 @@ static func to_pretty(msg, opts={}) -> String:
 		return Log.color_wrap(msg, opts)
 
 	if msg is Object and msg.get_class() in type_overwrites:
+		# TODO support single arity (no opts) impls?
 		return type_overwrites.get(msg.get_class()).call(msg, opts)
 	elif typeof(msg) in type_overwrites:
 		return type_overwrites.get(typeof(msg)).call(msg, opts)
@@ -455,7 +513,7 @@ static func to_pretty(msg, opts={}) -> String:
 
 ## to_printable ###########################################################################
 
-static func log_prefix(stack):
+static func log_prefix(stack) -> String:
 	if len(stack) > 1:
 		var call_site = stack[1]
 		var basename = call_site["source"].get_file().get_basename()
@@ -466,6 +524,7 @@ static func log_prefix(stack):
 			return "<" + basename + ":" + line_num + ">: "
 		else:
 			return "[" + basename + ":" + line_num + "]: "
+	return ""
 
 static func to_printable(msgs, opts={}) -> String:
 	if not Log.is_config_setup:
@@ -503,30 +562,35 @@ static func to_printable(msgs, opts={}) -> String:
 static func is_not_default(v) -> bool:
 	return not v is String or (v is String and v != "ZZZDEF")
 
+## Pretty-print the passed arguments in a single line.
 static func pr(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
 	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
 	var m = Log.to_printable(msgs, {stack=get_stack()})
 	print_rich(m)
 
+## Pretty-print the passed arguments in a single line.
 static func info(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
 	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
 	var m = Log.to_printable(msgs, {stack=get_stack()})
 	print_rich(m)
 
+## Pretty-print the passed arguments in a single line.
 static func log(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
 	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
 	var m = Log.to_printable(msgs, {stack=get_stack()})
 	print_rich(m)
 
+## Pretty-print the passed arguments, expanding dictionaries and arrays with newlines and indentation.
 static func prn(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
 	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
 	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true})
 	print_rich(m)
 
+## Like [code]Log.prn()[/code], but also calls push_warning() with the pretty string.
 static func warn(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
 	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
@@ -536,6 +600,7 @@ static func warn(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF"
 	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
 	push_warning(m)
 
+## Like [code]Log.prn()[/code], but also calls push_error() with the pretty string.
 static func err(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
 	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
@@ -545,6 +610,7 @@ static func err(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF",
 	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
 	push_error(m)
 
+## Like [code]Log.prn()[/code], but also calls push_error() with the pretty string.
 static func error(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
 	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
