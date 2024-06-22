@@ -40,7 +40,7 @@ static func setup_config(opts={}):
 
 static var config = {
 	# TODO convert to selecting a theme by name
-	KEY_COLOR_THEME: LOG_THEME.TERMSAFE,
+	KEY_COLOR_THEME: LOG_THEME_TERMSAFE,
 	KEY_DISABLE_COLORS: false,
 	KEY_MAX_ARRAY_SIZE: 20,
 	KEY_SKIP_KEYS: [
@@ -60,12 +60,15 @@ static func get_disable_colors():
 	return Log.config.get(KEY_DISABLE_COLORS, false)
 
 static func get_config_color_theme():
-	var theme_id = Log.config.get(KEY_COLOR_THEME, LOG_THEME.TERMSAFE)
+	var theme_id = Log.config.get(KEY_COLOR_THEME, LOG_THEME_TERMSAFE)
 	match theme_id:
-		LOG_THEME.TERMSAFE:
+		LOG_THEME_TERMSAFE:
 			return Log.COLORS_TERMINAL_SAFE
-		LOG_THEME.PRETTY:
+		LOG_THEME_PRETTY_V1:
 			return Log.COLORS_PRETTY_V1
+		_:
+			print("Unknown LOG_THEME '%s', using fallback" % theme_id)
+			return Log.COLORS_TERMINAL_SAFE
 
 ## config setters
 # consider setting the editor-settings values of these when the funcs are called
@@ -100,7 +103,8 @@ static func set_color_theme(theme):
 # - orange
 # - gray
 
-enum LOG_THEME {TERMSAFE, PRETTY_V1}
+const LOG_THEME_TERMSAFE = "TERMSAFE"
+const LOG_THEME_PRETTY_V1 = "PRETTY_V1"
 
 static var COLORS_TERMINAL_SAFE = {
 	"SRC": "cyan",
@@ -219,10 +223,10 @@ static var COLORS_PRETTY_V1 = {
 ## set color theme ####################################
 
 static func set_colors_termsafe():
-	set_color_theme(LOG_THEME.TERMSAFE)
+	set_color_theme(LOG_THEME_TERMSAFE)
 
 static func set_colors_pretty():
-	set_color_theme(LOG_THEME.PRETTY_V1)
+	set_color_theme(LOG_THEME_PRETTY_V1)
 
 static func get_color_theme(opts={}):
 	var theme = opts.get("color_theme", {})

@@ -4,7 +4,7 @@ extends CanvasLayer
 func _enter_tree():
 	# print("\\033[31mHello\\033[0m")
 
-	Log.set_colors_pretty()
+	# Log.set_colors_pretty()
 	# Log.disable_colors()
 
 	Log.info(Log.config)

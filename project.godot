@@ -26,8 +26,7 @@ settings/common/update_notification_enabled=false
 
 [log_gd]
 
-config/disable_colors=true
-config/max_array_size=14
+config/max_array_size=4
 
 [rendering]
 
