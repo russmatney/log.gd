@@ -43,6 +43,7 @@
    :commit/author-name       "%aN"
    :commit/author-email      "%aE"
    :commit/author-date       "%aD"
+   :commit/author-date-int   "%at"
    ;; :commit/commiter-name          "%cN"
    ;; :commit/commiter-email         "%cE"
    ;; :commit/commiter-date "%cD"
@@ -107,7 +108,8 @@
         (string/replace "\"" "'")
         (string/replace delimiter "\"")
         edn/read-string
-        (->> (map #(assoc % :commit/directory (str dir)))))
+        (->> (map #(assoc % :commit/directory (str dir)))
+             (sort-by (comp edn/read-string :commit/author-date-int) >)))
       (catch Exception e
         (println "Error fetching commits for dir" dir opts)
         (println e)
@@ -186,6 +188,7 @@
                                      :else           tag))
          commit-lines (->> commits
                            (group-by commit-date)
+                           (sort-by (comp edn/read-string :commit/author-date-int first second) >)
                            (mapcat (fn [[date comms]]
                                      (concat [(str "\n### " date "\n")]
                                              (mapcat commit->lines comms)))))]
