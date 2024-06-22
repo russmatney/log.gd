@@ -28,6 +28,9 @@ CLOSED: [2024-03-21 Thu 15:57]
 - include line numbers
 ** [X] write and submit to godot asset library
 CLOSED: [2024-03-21 Thu 18:33]
+** [X] to_printable naming (vs to_pretty)?
+CLOSED: [2024-06-22 Sat 10:01]
+* v0.7.0
 ** [ ] Docs: 'Example' page
 walk through the ExampleScene.gd
 with individual line-by-line output screenshots
@@ -54,15 +57,14 @@ but maybe that's a future direction?
 *** prior art
 ** [ ] docs for public api
 *** Log.to_pretty
-*** `to_pretty()`, `to_printable()`, `data()`
+*** `to_pretty()`, `data()`
 *** Log.set_color_scheme(scheme) and related
 ** [ ] readme link, docs install instructions
-** [ ] Example scene should have buttons to print each thing
+** [ ] Example scene should have buttons for printing more things
 the example outputs could also colorize and print the source code - that output might
 be a fun sharable version of the tutorial (i.e. the tutorial is all printed via Log.gd)
 ** [ ] docs full api page
 ** [ ] call-site prefix test coverage
-** [ ] to_printable naming (vs to_pretty)?
 ** [ ] better public obj -> rich-string function
 no more wrap it in [] nonsense
 * v1.0.0

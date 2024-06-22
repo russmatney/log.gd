@@ -166,7 +166,7 @@ class ExampleObj:
 	func to_pretty():
 		return {val=val, id=get_instance_id()}
 
-func test_custom_to_printable():
+func test_custom_to_pretty():
 	var obj = ExampleObj.new(Vector2(1, 2))
 	var val = Log.to_pretty(obj)
 	var id = obj.get_instance_id()
@@ -201,7 +201,7 @@ func test_custom_resource_register_overwrite():
 	tp.level = 3
 	tp.role = TestPlayer.Role.Tank
 
-	Log.register_overwrite(tp.get_class(), func(msg, _opts):
+	Log.register_type_overwrite(tp.get_class(), func(msg, _opts):
 		return Log.to_pretty({name=msg.name, level=msg.level}))
 
 	var val = Log.to_pretty(tp)
@@ -225,18 +225,18 @@ func test_null_alt_colors():
 	assert_str(val).is_equal("[color=pink]<null>[/color]")
 
 func test_color_overwriting():
-	var val = Log.to_pretty(null, {color_scheme={TYPE_NIL: "red"}})
+	var val = Log.to_pretty(null, {color_theme={TYPE_NIL: "red"}})
 	assert_str(val).is_equal("[color=red]<null>[/color]")
 
 	# does not clear other colors
-	val = Log.to_pretty(1, {color_scheme={TYPE_NIL: "red"}})
+	val = Log.to_pretty(1, {color_theme={TYPE_NIL: "red"}})
 	assert_str(val).is_equal("[color=green]1[/color]")
 
 func test_color_scheme_overwriting():
 	var val = Log.to_pretty(null)
 	assert_str(val).is_equal("[color=pink]<null>[/color]")
 
-	Log.set_color_scheme({TYPE_NIL: "red"})
+	Log.merge_theme_overwrites({TYPE_NIL: "red"})
 
 	val = Log.to_pretty(null)
 	assert_str(val).is_equal("[color=red]<null>[/color]")
@@ -247,6 +247,7 @@ func test_color_scheme_overwriting():
 
 	# reset colors
 	Log.set_colors_termsafe()
+	Log.clear_theme_overwrites()
 
 func test_disable_colors_to_pretty():
 	assert_str(Log.to_pretty(1)).is_equal("[color=green]1[/color]")

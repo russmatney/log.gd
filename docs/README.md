@@ -55,12 +55,12 @@ production builds or at `@tool` script time.
 #### Opt-in via duck-typing
 
 You can opt-in to pretty-printing in your classes by implementing
-`to_printable()`, which Log will pickup via duck-typing.
+`to_pretty()`, which Log will pickup via duck-typing.
 
 ```gdscript
 class_name ExampleClass
 
-func to_printable():
+func to_pretty():
     return {val=12}
 
 func _ready():_
@@ -80,7 +80,7 @@ into Arrays and Dictionaries.
 `Log.pr()` should Just-Work in most (all?) cases.
 
 You can opt-in to pretty printing in your objects by implementing
-`to_printable()`,
+`to_pretty()`,
 which gets picked up by Log's static method via duck-typing.
 
 ![output of Example.gd](/assets/example_gd_output.png)

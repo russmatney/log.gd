@@ -39,7 +39,6 @@ static func setup_config(opts={}):
 	Log.is_config_setup = true
 
 static var config = {
-	# TODO convert to selecting a theme by name
 	KEY_COLOR_THEME: LOG_THEME_TERMSAFE,
 	KEY_DISABLE_COLORS: false,
 	KEY_MAX_ARRAY_SIZE: 20,
@@ -228,9 +227,18 @@ static func set_colors_termsafe():
 static func set_colors_pretty():
 	set_color_theme(LOG_THEME_PRETTY_V1)
 
+static var theme_overwrites = {}
+
+static func merge_theme_overwrites(colors):
+	theme_overwrites.merge(colors, true)
+
+static func clear_theme_overwrites():
+	theme_overwrites = {}
+
 static func get_color_theme(opts={}):
 	var theme = opts.get("color_theme", {})
 	# fill in any missing vals with the set theme, then the term-safe fallbacks
+	theme.merge(Log.theme_overwrites)
 	theme.merge(Log.get_config_color_theme())
 	theme.merge(Log.COLORS_TERMINAL_SAFE)
 	return theme
@@ -275,28 +283,23 @@ static func color_wrap(s, opts={}):
 
 ## overwrites ###########################################################################
 
-static var log_overwrites = {
-	"Vector2": func(msg, opts):
-		return '%s%s%s%s%s' % [
-			Log.color_wrap("(", opts),
-			Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(",", opts),
-			Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(")", opts),
-		]
-		}
+static var type_overwrites = {}
 
-static func register_overwrite(key, handler):
-	# TODO warning on key exists?
-	# support multiple handlers?
-	# return success/fail?
+static func register_type_overwrite(key, handler):
+	# TODO warning on key exists? support multiple handlers for same type?
 	# validate the key/handler somehow?
-	log_overwrites[key] = handler
+	type_overwrites[key] = handler
+
+static func register_type_overwrites(overwrites):
+	type_overwrites.merge(overwrites, true)
+
+static func clear_type_overwrites(overwrites):
+	type_overwrites = {}
 
 ## to_pretty ###########################################################################
 
-# returns the passed object as a decorated string
-static func to_pretty(msg, opts={}):
+# returns the passed object as a bb-colorized string
+static func to_pretty(msg, opts={}) -> String:
 	var newlines = opts.get("newlines", false)
 	var indent_level = opts.get("indent_level", 0)
 	if not "indent_level" in opts:
@@ -312,16 +315,17 @@ static func to_pretty(msg, opts={}):
 	if msg == null:
 		return Log.color_wrap(msg, opts)
 
-	if msg is Object and msg.get_class() in log_overwrites:
-		return log_overwrites.get(msg.get_class()).call(msg, opts)
-	elif typeof(msg) in log_overwrites:
-		return log_overwrites.get(typeof(msg)).call(msg, opts)
+	if msg is Object and msg.get_class() in type_overwrites:
+		return type_overwrites.get(msg.get_class()).call(msg, opts)
+	elif typeof(msg) in type_overwrites:
+		return type_overwrites.get(typeof(msg)).call(msg, opts)
 
 	# objects
 	if msg is Object and msg.has_method("to_pretty"):
 		return Log.to_pretty(msg.to_pretty(), opts)
 	if msg is Object and msg.has_method("data"):
 		return Log.to_pretty(msg.data(), opts)
+	# DEPRECATED
 	if msg is Object and msg.has_method("to_printable"):
 		return Log.to_pretty(msg.to_printable(), opts)
 
@@ -389,7 +393,13 @@ static func to_pretty(msg, opts={}):
 
 	# vectors
 	elif msg is Vector2 or msg is Vector2i:
-		return log_overwrites.get("Vector2").call(msg, opts)
+		return '%s%s%s%s%s' % [
+			Log.color_wrap("(", opts),
+			Log.color_wrap(msg.x, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(",", opts),
+			Log.color_wrap(msg.y, Log.assoc(opts, "typeof", "vector_value")),
+			Log.color_wrap(")", opts),
+		]
 
 	elif msg is Vector3 or msg is Vector3i:
 		return '%s%s%s%s%s%s%s' % [
@@ -457,10 +467,12 @@ static func log_prefix(stack):
 		else:
 			return "[" + basename + ":" + line_num + "]: "
 
-static func to_printable(msgs, opts={}):
+static func to_printable(msgs, opts={}) -> String:
 	if not Log.is_config_setup:
 		setup_config()
 
+	if not msgs is Array:
+		msgs = [msgs]
 	var stack = opts.get("stack", [])
 	var pretty = opts.get("pretty", true)
 	var newlines = opts.get("newlines", false)
@@ -488,7 +500,7 @@ static func to_printable(msgs, opts={}):
 
 ## public print fns ###########################################################################
 
-static func is_not_default(v):
+static func is_not_default(v) -> bool:
 	return not v is String or (v is String and v != "ZZZDEF")
 
 static func pr(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
