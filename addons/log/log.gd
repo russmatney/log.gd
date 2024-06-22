@@ -14,14 +14,14 @@ static func assoc(opts: Dictionary, key: String, val):
 const KEY_PREFIX = "log_gd/config"
 static var is_config_setup = false
 
-const KEY_COLOR_SCHEME = "%s/color_scheme" % KEY_PREFIX
+const KEY_COLOR_THEME = "%s/color_theme" % KEY_PREFIX
 const KEY_DISABLE_COLORS = "%s/disable_colors" % KEY_PREFIX
 const KEY_MAX_ARRAY_SIZE = "%s/max_array_size" % KEY_PREFIX
 const KEY_SKIP_KEYS = "%s/dictionary_skip_keys" % KEY_PREFIX
 
 static func setup_config(opts={}):
 	var keys = opts.get("keys", [
-		KEY_COLOR_SCHEME,
+		KEY_COLOR_THEME,
 		KEY_DISABLE_COLORS,
 		KEY_MAX_ARRAY_SIZE,
 		KEY_SKIP_KEYS,
@@ -36,12 +36,11 @@ static func setup_config(opts={}):
 				ProjectSettings.set_setting(key, val)
 				ProjectSettings.set_initial_value(key, val)
 
-	print("updated config", Log.config)
 	Log.is_config_setup = true
 
 static var config = {
-	# TODO convert to selecting a scheme by name
-	KEY_COLOR_SCHEME: {},
+	# TODO convert to selecting a theme by name
+	KEY_COLOR_THEME: LOG_THEME.TERMSAFE,
 	KEY_DISABLE_COLORS: false,
 	KEY_MAX_ARRAY_SIZE: 20,
 	KEY_SKIP_KEYS: [
@@ -60,8 +59,13 @@ static func get_dictionary_skip_keys():
 static func get_disable_colors():
 	return Log.config.get(KEY_DISABLE_COLORS, false)
 
-static func get_config_color_scheme():
-	return Log.config.get(KEY_COLOR_SCHEME, {})
+static func get_config_color_theme():
+	var theme_id = Log.config.get(KEY_COLOR_THEME, LOG_THEME.TERMSAFE)
+	match theme_id:
+		LOG_THEME.TERMSAFE:
+			return Log.COLORS_TERMINAL_SAFE
+		LOG_THEME.PRETTY:
+			return Log.COLORS_PRETTY_V1
 
 ## config setters
 # consider setting the editor-settings values of these when the funcs are called
@@ -73,8 +77,12 @@ static func disable_colors():
 static func enable_colors():
 	Log.config[KEY_DISABLE_COLORS] = false
 
-static func set_color_scheme(scheme):
-	Log.config[KEY_COLOR_SCHEME] = scheme
+## DEPRECATED
+static func set_color_scheme(theme):
+	set_color_theme(theme)
+
+static func set_color_theme(theme):
+	Log.config[KEY_COLOR_THEME] = theme
 
 ## colors ###########################################################################
 
@@ -91,6 +99,8 @@ static func set_color_scheme(scheme):
 # - white
 # - orange
 # - gray
+
+enum LOG_THEME {TERMSAFE, PRETTY_V1}
 
 static var COLORS_TERMINAL_SAFE = {
 	"SRC": "cyan",
@@ -206,20 +216,20 @@ static var COLORS_PRETTY_V1 = {
 	TYPE_MAX: "pink",
 	}
 
-## set color scheme ####################################
+## set color theme ####################################
 
 static func set_colors_termsafe():
-	set_color_scheme(Log.COLORS_TERMINAL_SAFE)
+	set_color_theme(LOG_THEME.TERMSAFE)
 
 static func set_colors_pretty():
-	set_color_scheme(Log.COLORS_PRETTY_V1)
+	set_color_theme(LOG_THEME.PRETTY_V1)
 
-static func color_scheme(opts={}):
-	var scheme = opts.get("color_scheme", {})
-	# fill in any missing vals with the set scheme, then the term-safe fallbacks
-	scheme.merge(Log.get_config_color_scheme())
-	scheme.merge(Log.COLORS_TERMINAL_SAFE)
-	return scheme
+static func get_color_theme(opts={}):
+	var theme = opts.get("color_theme", {})
+	# fill in any missing vals with the set theme, then the term-safe fallbacks
+	theme.merge(Log.get_config_color_theme())
+	theme.merge(Log.COLORS_TERMINAL_SAFE)
+	return theme
 
 static func should_use_color(opts={}):
 	if Log.get_disable_colors():
@@ -230,8 +240,8 @@ static func should_use_color(opts={}):
 	return true
 
 static func color_wrap(s, opts={}):
-	# don't rebuild the color scheme every time
-	var colors = opts.get("built_color_scheme", color_scheme(opts))
+	# don't rebuild the theme every time
+	var colors = opts.get("built_color_theme", get_color_theme(opts))
 
 	if not should_use_color(opts):
 		return str(s)
@@ -288,9 +298,9 @@ static func to_pretty(msg, opts={}):
 	if not "indent_level" in opts:
 		opts["indent_level"] = indent_level
 
-	var color_scheme = opts.get("built_color_scheme", color_scheme(opts))
-	if not "built_color_scheme" in opts:
-		opts["built_color_scheme"] = color_scheme
+	var theme = opts.get("built_color_theme", get_color_theme(opts))
+	if not "built_color_theme" in opts:
+		opts["built_color_theme"] = theme
 
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
 		return str("invalid instance: ", msg)
