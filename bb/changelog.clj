@@ -171,7 +171,10 @@
 
 (defn commit->lines [commit]
   (->>
-    [(str "- (" (commit-hash-link commit) ") " (:commit/subject commit))
+    [(str "- (" (commit-hash-link commit)
+          (when-not (#{"Russell Matney"} (:commit/author-name commit))
+            (str ": " (:commit/author-name commit)))
+          ") " (:commit/subject commit))
      (when (seq (string/trim-newline (:commit/body commit)))
        (str "\n" (->> (:commit/body commit)
                       (string/split-lines)
@@ -196,13 +199,15 @@
 
 (defn rewrite-changelog
   ([] (rewrite-changelog nil))
-  ([{:keys [latest-tag-label]}]
+  ([{:keys [latest-tag-label path]}]
    (let [content (str "# CHANGELOG\n\n"
                       (str
                         (->> (gather-commits)
                              (mapcat (partial tag-section {:latest-tag-label latest-tag-label}))
-                             (string/join "\n"))))]
-     (spit changelog-path content))))
+                             (string/join "\n"))))
+         p       (or path changelog-path)]
+     (println "Writing content to" p)
+     (spit p content))))
 
 (comment
   (rewrite-changelog)
