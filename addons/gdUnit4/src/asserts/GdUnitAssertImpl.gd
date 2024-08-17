@@ -15,8 +15,6 @@ func _init(current :Variant) -> void:
 
 
 
-
-
 func failure_message() -> String:
 	return _current_failure_message
 
@@ -39,7 +37,7 @@ func report_error(failure :String, failure_line_number: int = -1) -> GdUnitAsser
 	return self
 
 
-func test_fail() -> GdUnitAssert:
+func do_fail() -> GdUnitAssert:
 	return report_error(GdAssertMessages.error_not_implemented())
 
 

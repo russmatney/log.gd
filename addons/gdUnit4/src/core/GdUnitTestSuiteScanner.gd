@@ -113,10 +113,15 @@ static func _is_script_format_supported(resource_path :String) -> bool:
 	return GdUnit4CSharpApiLoader.is_csharp_file(resource_path)
 
 
-func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
+func _parse_test_suite(script :Script) -> GdUnitTestSuite:
 	if not GdObjects.is_test_suite(script):
 		return null
 
+	# If test suite a C# script
+	if GdUnit4CSharpApiLoader.is_test_suite(script.resource_path):
+		return GdUnit4CSharpApiLoader.parse_test_suite(script.resource_path)
+
+	# Do pares as GDScript
 	var test_suite :GdUnitTestSuite = script.new()
 	test_suite.set_name(GdUnitTestSuiteScanner.parse_test_suite_name(script))
 	# add test cases to test suite and parse test case line nummber
@@ -226,7 +231,7 @@ func _validate_argument(fd :GdFunctionDescriptor, test_case :_TestCase) -> void:
 
 # converts given file name by configured naming convention
 static func _to_naming_convention(file_name :String) -> String:
-	var nc :int = GdUnitSettings.get_setting(GdUnitSettings.TEST_SITE_NAMING_CONVENTION, 0)
+	var nc :int = GdUnitSettings.get_setting(GdUnitSettings.TEST_SUITE_NAMING_CONVENTION, 0)
 	match nc:
 		GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT:
 			if GdObjects.is_snake_case(file_name):
