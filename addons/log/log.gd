@@ -600,6 +600,17 @@ static func warn(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF"
 	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
 	push_warning(m)
 
+## Like [code]Log.prn()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
+static func todo(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
+	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+	msgs = msgs.filter(Log.is_not_default)
+	msgs.push_front("[TODO]")
+	var rich_msgs = msgs.duplicate()
+	rich_msgs.push_front("[color=yellow][WARN][/color]")
+	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
+	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
+	push_warning(m)
+
 ## Like [code]Log.prn()[/code], but also calls push_error() with the pretty string.
 static func err(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
 	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
