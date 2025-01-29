@@ -1,7 +1,7 @@
 @tool
 extends CanvasLayer
 
-func _enter_tree():
+func _enter_tree() -> void:
 	# print("\\033[31mHello\\033[0m")
 
 	# Log.set_colors_pretty()
@@ -10,16 +10,16 @@ func _enter_tree():
 	Log.info(Log.config)
 
 class ExampleObj:
-	var val
-	func _init(v):
+	var val: Variant
+	func _init(v: Variant) -> void:
 		val = v
 
-	func to_pretty():
+	func to_pretty() -> Variant:
 		return {val=val, id=get_instance_id()}
 
 @export var some_custom_types : Array[SomeResource]
 
-func _ready():
+func _ready() -> void:
 	Log.pr("Hi there!")
 
 	Log.pr("an array of vectors", [
