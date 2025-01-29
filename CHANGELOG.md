@@ -1,11 +1,56 @@
 # CHANGELOG
 
 
+## Unreleased
+
+
+### 29 Jan 2025
+
+- ([`763386f`](https://github.com/russmatney/log.gd/commit/763386f)) docs: update changelog
+- ([`e92dc22`](https://github.com/russmatney/log.gd/commit/e92dc22)) fix: resolve type warnings in test file
+
+  > Also disables a few more warnings - no need to handle return values in
+  > test cases, and exclude_addons for now so we don't see a million gdunit
+  > type warnings.
+  > 
+  > It should be noted that exclude_addons should be toggled while working
+  > on log.gd to see the errors in that file.
+
+- ([`b3472b1`](https://github.com/russmatney/log.gd/commit/b3472b1)) feat: satisfy the static type gods
+
+  > Disables the unsafe cast check b/c the logic to deal with it would be
+  > crazy in log's main Variant -> String function.
+  > 
+  > The move to `.call(method-name)` after `.has_method(method-name)` is
+  > annoying but w/e that's what the tool is pushing us into. It's the same
+  > result, anyway.
+
+- ([`a5fe8b8`](https://github.com/russmatney/log.gd/commit/a5fe8b8)) wip: refactor log/log.gd to use static typing everywhere
+
+  > Not quite zero errors yet - just need to figure out how to safe-cast.
+
+
+### 12 Oct 2024
+
+- ([`901adb5`](https://github.com/russmatney/log.gd/commit/901adb5)) feat: add Log.todo() for auto-prepending '[TODO]'
+
+### 17 Aug 2024
+
+- ([`444e920`](https://github.com/russmatney/log.gd/commit/444e920)) fix: don't use installed gdunit?
+- ([`5ac864a`](https://github.com/russmatney/log.gd/commit/5ac864a)) feat: update to 4.3, include 4.3 in tests
+- ([`e4f6479`](https://github.com/russmatney/log.gd/commit/e4f6479)) deps: update gdunit4
+
+### 22 Jun 2024
+
+- ([`fa781a3`](https://github.com/russmatney/log.gd/commit/fa781a3)) deps: update gdunit
+- ([`05f9236`](https://github.com/russmatney/log.gd/commit/05f9236)) chore: test on 4.3.beta2
+
 ## v0.0.6
 
 
 ### 22 Jun 2024
 
+- ([`91bf5d7`](https://github.com/russmatney/log.gd/commit/91bf5d7)) release: new version: v0.0.6
 - ([`486a8c8`](https://github.com/russmatney/log.gd/commit/486a8c8)) todo: drop 0.7.0 todo tag
 - ([`c6570b7`](https://github.com/russmatney/log.gd/commit/c6570b7)) docs: add godot-help friendly docstrings
 - ([`b000997`](https://github.com/russmatney/log.gd/commit/b000997)) refactor: cleaner theme and type overwrites
@@ -148,12 +193,6 @@
 ### 12 Apr 2024
 
 - ([`d06b6bb`](https://github.com/russmatney/log.gd/commit/d06b6bb)) chore: misc bb release improvements
-
-## v0.0.5
-
-
-### 12 Apr 2024
-
 - ([`f583a19`](https://github.com/russmatney/log.gd/commit/f583a19)) chore: new version: v0.0.5
 - ([`d13aea0`](https://github.com/russmatney/log.gd/commit/d13aea0)) docs: update changelog
 - ([`8abba09`](https://github.com/russmatney/log.gd/commit/8abba09)) fix: don't over indent arrays of dicts
