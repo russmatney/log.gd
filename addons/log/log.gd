@@ -26,41 +26,41 @@ class_name Log
 
 # helpers ####################################
 
-static func assoc(opts: Dictionary, key: String, val):
-	var _opts = opts.duplicate(true)
+static func assoc(opts: Dictionary, key: String, val: Variant) -> Dictionary:
+	var _opts: Dictionary = opts.duplicate(true)
 	_opts[key] = val
 	return _opts
 
 # config ####################################
 
-const KEY_PREFIX = "log_gd/config"
-static var is_config_setup = false
+const KEY_PREFIX: String = "log_gd/config"
+static var is_config_setup: bool = false
 
-const KEY_COLOR_THEME = "%s/color_theme" % KEY_PREFIX
-const KEY_DISABLE_COLORS = "%s/disable_colors" % KEY_PREFIX
-const KEY_MAX_ARRAY_SIZE = "%s/max_array_size" % KEY_PREFIX
-const KEY_SKIP_KEYS = "%s/dictionary_skip_keys" % KEY_PREFIX
+const KEY_COLOR_THEME: String = "%s/color_theme" % KEY_PREFIX
+const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
+const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
+const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
 
-static func setup_config(opts={}):
-	var keys = opts.get("keys", [
+static func setup_config(opts: Dictionary = {}) -> void:
+	var keys: Array = opts.get("keys", [
 		KEY_COLOR_THEME,
 		KEY_DISABLE_COLORS,
 		KEY_MAX_ARRAY_SIZE,
 		KEY_SKIP_KEYS,
 		])
 
-	for key in keys:
+	for key: String in keys:
 		if ProjectSettings.has_setting(key):
 			Log.config[key] = ProjectSettings.get_setting(key)
 		else:
-			var val = Log.config[key]
+			var val: Variant = Log.config[key]
 			if val != null:
 				ProjectSettings.set_setting(key, val)
 				ProjectSettings.set_initial_value(key, val)
 
 	Log.is_config_setup = true
 
-static var config = {
+static var config: Dictionary = {
 	KEY_COLOR_THEME: LOG_THEME_TERMSAFE,
 	KEY_DISABLE_COLORS: false,
 	KEY_MAX_ARRAY_SIZE: 20,
@@ -71,17 +71,17 @@ static var config = {
 
 # config getters ###################################################################
 
-static func get_max_array_size():
+static func get_max_array_size() -> int:
 	return Log.config.get(KEY_MAX_ARRAY_SIZE, 20)
 
-static func get_dictionary_skip_keys():
+static func get_dictionary_skip_keys() -> Array:
 	return Log.config.get(KEY_SKIP_KEYS, [])
 
-static func get_disable_colors():
+static func get_disable_colors() -> bool:
 	return Log.config.get(KEY_DISABLE_COLORS, false)
 
-static func get_config_color_theme():
-	var theme_id = Log.config.get(KEY_COLOR_THEME, LOG_THEME_TERMSAFE)
+static func get_config_color_theme() -> Dictionary:
+	var theme_id: String = Log.config.get(KEY_COLOR_THEME, LOG_THEME_TERMSAFE)
 	match theme_id:
 		LOG_THEME_TERMSAFE:
 			return Log.COLORS_TERMINAL_SAFE
@@ -99,18 +99,18 @@ static func get_config_color_theme():
 ## Useful to declutter the output if the environment does not support colors.
 ## Note that some environments support only a subset of colors - you may prefer
 ## [code]set_colors_termsafe()[/code] or otherwise setting the theme to 'TERMSAFE'.
-static func disable_colors():
+static func disable_colors() -> void:
 	Log.config[KEY_DISABLE_COLORS] = true
 
 ## Re-enable color-wrapping output.
-static func enable_colors():
+static func enable_colors() -> void:
 	Log.config[KEY_DISABLE_COLORS] = false
 
 ## DEPRECATED
-static func set_color_scheme(theme):
+static func set_color_scheme(theme: String) -> void:
 	set_color_theme(theme)
 
-static func set_color_theme(theme):
+static func set_color_theme(theme: String) -> void:
 	Log.config[KEY_COLOR_THEME] = theme
 
 ## colors ###########################################################################
@@ -129,10 +129,10 @@ static func set_color_theme(theme):
 # - orange
 # - gray
 
-const LOG_THEME_TERMSAFE = "TERMSAFE"
-const LOG_THEME_PRETTY_V1 = "PRETTY_V1"
+const LOG_THEME_TERMSAFE: String = "TERMSAFE"
+const LOG_THEME_PRETTY_V1: String = "PRETTY_V1"
 
-static var COLORS_TERMINAL_SAFE = {
+static var COLORS_TERMINAL_SAFE: Dictionary = {
 	"SRC": "cyan",
 	"ADDONS": "red",
 	"TEST": "green",
@@ -189,7 +189,7 @@ static var COLORS_TERMINAL_SAFE = {
 	TYPE_MAX: "pink",
 	}
 
-static var COLORS_PRETTY_V1 = {
+static var COLORS_PRETTY_V1: Dictionary = {
 	"SRC": "aquamarine",
 	"ADDONS": "peru",
 	"TEST": "green_yellow",
@@ -249,38 +249,38 @@ static var COLORS_PRETTY_V1 = {
 ## set color theme ####################################
 
 ## Use the terminal safe color scheme, which should handle colors in most tty-like environments.
-static func set_colors_termsafe():
+static func set_colors_termsafe() -> void:
 	set_color_theme(LOG_THEME_TERMSAFE)
 
 ## Use prettier colors - looks nice in most dark godot themes.
 ##
 ## [br][br]
 ## Hopefully we'll support more themes (including light themes) soon!
-static func set_colors_pretty():
+static func set_colors_pretty() -> void:
 	set_color_theme(LOG_THEME_PRETTY_V1)
 
-static var theme_overwrites = {}
+static var theme_overwrites: Dictionary = {}
 
 ## Merge per type color adjustments.
 ##
 ## [br][br]
 ## Expects a Dictionary from [code]{typeof(obj): Color}[/code].
 ## See [code]COLORS_TERMINAL_SAFE[/code] for an example.
-static func merge_theme_overwrites(colors):
+static func merge_theme_overwrites(colors: Dictionary) -> void:
 	theme_overwrites.merge(colors, true)
 
-static func clear_theme_overwrites():
+static func clear_theme_overwrites() -> void:
 	theme_overwrites = {}
 
-static func get_color_theme(opts={}):
-	var theme = opts.get("color_theme", {})
+static func get_color_theme(opts: Dictionary = {}) -> Dictionary:
+	var theme: Dictionary = opts.get("color_theme", {})
 	# fill in any missing vals with the set theme, then the term-safe fallbacks
 	theme.merge(Log.theme_overwrites)
 	theme.merge(Log.get_config_color_theme())
 	theme.merge(Log.COLORS_TERMINAL_SAFE)
 	return theme
 
-static func should_use_color(opts={}):
+static func should_use_color(opts: Dictionary = {}) -> bool:
 	if Log.get_disable_colors():
 		return false
 	# supports per-print color skipping
@@ -288,22 +288,22 @@ static func should_use_color(opts={}):
 		return false
 	return true
 
-static func color_wrap(s, opts={}):
+static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	# don't rebuild the theme every time
-	var colors = opts.get("built_color_theme", get_color_theme(opts))
+	var colors: Dictionary = opts.get("built_color_theme", get_color_theme(opts))
 
 	if not should_use_color(opts):
 		return str(s)
 
-	var color = opts.get("color")
+	var color: String = opts.get("color")
 	if not color:
-		var s_type = opts.get("typeof", typeof(s))
+		var s_type: Variant = opts.get("typeof", typeof(s))
 		if s_type is String:
 			# type overwrites
 			color = colors.get(s_type)
 		elif s_type is int and s_type == TYPE_STRING:
 			# specific strings/punctuation
-			var s_trimmed = s.strip_edges()
+			var s_trimmed: String = str(s).strip_edges()
 			if s_trimmed in colors:
 				color = colors.get(s_trimmed)
 			else:
@@ -320,7 +320,7 @@ static func color_wrap(s, opts={}):
 
 ## overwrites ###########################################################################
 
-static var type_overwrites = {}
+static var type_overwrites: Dictionary = {}
 
 ## Register a single type overwrite.
 ##
@@ -330,7 +330,7 @@ static var type_overwrites = {}
 ## [br][br]
 ## The handler is called with the object and an options dict.
 ## [code]func(obj, _opts): return {name=obj.name}[/code]
-static func register_type_overwrite(key, handler):
+static func register_type_overwrite(key: String, handler: Callable) -> void:
 	# TODO warning on key exists? support multiple handlers for same type?
 	# validate the key/handler somehow?
 	type_overwrites[key] = handler
@@ -343,10 +343,10 @@ static func register_type_overwrite(key, handler):
 ## [br][br]
 ## It depends on [code]obj.get_class()[/code] then [code]typeof(obj)[/code] for the key.
 ## The handler is called with the object and an options dict (e.g. [code]func(obj, _opts): return {name=obj.name}[/code]).
-static func register_type_overwrites(overwrites):
+static func register_type_overwrites(overwrites: Dictionary) -> void:
 	type_overwrites.merge(overwrites, true)
 
-static func clear_type_overwrites(overwrites):
+static func clear_type_overwrites() -> void:
 	type_overwrites = {}
 
 ## to_pretty ###########################################################################
@@ -356,13 +356,13 @@ static func clear_type_overwrites(overwrites):
 ## [br][br]
 ## Useful for feeding directly into a RichTextLabel, but also the core
 ## of Log.gd's functionality.
-static func to_pretty(msg, opts={}) -> String:
-	var newlines = opts.get("newlines", false)
-	var indent_level = opts.get("indent_level", 0)
+static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
+	var newlines: bool = opts.get("newlines", false)
+	var indent_level: int = opts.get("indent_level", 0)
 	if not "indent_level" in opts:
 		opts["indent_level"] = indent_level
 
-	var theme = opts.get("built_color_theme", get_color_theme(opts))
+	var theme: Dictionary = opts.get("built_color_theme", get_color_theme(opts))
 	if not "built_color_theme" in opts:
 		opts["built_color_theme"] = theme
 
@@ -395,9 +395,9 @@ static func to_pretty(msg, opts={}) -> String:
 			if newlines:
 				msg.append("...")
 
-		var tmp = Log.color_wrap("[ ", opts)
-		var last = len(msg) - 1
-		for i in range(len(msg)):
+		var tmp: String = Log.color_wrap("[ ", opts)
+		var last: int = len(msg) - 1
+		for i: int in range(len(msg)):
 			if newlines and last > 1:
 				tmp += "\n\t"
 			tmp += Log.to_pretty(msg[i],
@@ -411,13 +411,13 @@ static func to_pretty(msg, opts={}) -> String:
 
 	# dictionary
 	elif msg is Dictionary:
-		var tmp = Log.color_wrap("{ ", opts)
-		var ct = len(msg)
-		var last
+		var tmp: String = Log.color_wrap("{ ", opts)
+		var ct: int = len(msg)
+		var last: Variant
 		if len(msg) > 0:
 			last = msg.keys()[-1]
-		for k in msg.keys():
-			var val
+		for k: Variant in msg.keys():
+			var val: Variant
 			if k in Log.get_dictionary_skip_keys():
 				val = "..."
 			else:
@@ -426,9 +426,9 @@ static func to_pretty(msg, opts={}) -> String:
 			if newlines and ct > 1:
 				tmp += "\n\t" \
 					+ range(indent_level)\
-					.map(func(_i): return "\t")\
-						.reduce(func(a, b): return str(a, b), "")
-			var key = Log.color_wrap('"%s"' % k, Log.assoc(opts, "typeof", "dict_key"))
+					.map(func(_i: int) -> String: return "\t")\
+					.reduce(func(a: String, b: Variant) -> String: return str(a, b), "")
+			var key: String = Log.color_wrap('"%s"' % k, Log.assoc(opts, "typeof", "dict_key"))
 			tmp += "%s: %s" % [key, val]
 			if last and str(k) != str(last):
 				tmp += Log.color_wrap(", ", opts)
@@ -513,32 +513,32 @@ static func to_pretty(msg, opts={}) -> String:
 
 ## to_printable ###########################################################################
 
-static func log_prefix(stack) -> String:
+static func log_prefix(stack: Array) -> String:
 	if len(stack) > 1:
-		var call_site = stack[1]
-		var basename = call_site["source"].get_file().get_basename()
-		var line_num = str(call_site.get("line", 0))
-		if call_site["source"].match("*/test/*"):
+		var call_site: Dictionary = stack[1]
+		var call_site_source: String = call_site.get("source", "")
+		var basename: String = call_site_source.get_file().get_basename()
+		var line_num: String = str(call_site.get("line", 0))
+		if call_site_source.match("*/test/*"):
 			return "{" + basename + ":" + line_num + "}: "
-		elif call_site["source"].match("*/addons/*"):
+		elif call_site_source.match("*/addons/*"):
 			return "<" + basename + ":" + line_num + ">: "
 		else:
 			return "[" + basename + ":" + line_num + "]: "
 	return ""
 
-static func to_printable(msgs, opts={}) -> String:
+static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	if not Log.is_config_setup:
 		setup_config()
 
 	if not msgs is Array:
 		msgs = [msgs]
-	var stack = opts.get("stack", [])
-	var pretty = opts.get("pretty", true)
-	var newlines = opts.get("newlines", false)
-	var m = ""
+	var stack: Array = opts.get("stack", [])
+	var pretty: bool = opts.get("pretty", true)
+	var m: String = ""
 	if len(stack) > 0:
-		var prefix = Log.log_prefix(stack)
-		var prefix_type
+		var prefix: String = Log.log_prefix(stack)
+		var prefix_type: String
 		if prefix != null and prefix[0] == "[":
 			prefix_type = "SRC"
 		elif prefix != null and prefix[0] == "{":
@@ -549,7 +549,7 @@ static func to_printable(msgs, opts={}) -> String:
 			m += Log.color_wrap(prefix, Log.assoc(opts, "typeof", prefix_type))
 		else:
 			m += prefix
-	for msg in msgs:
+	for msg: Variant in msgs:
 		# add a space between msgs
 		if pretty:
 			m += "%s " % Log.to_pretty(msg, opts)
@@ -559,74 +559,74 @@ static func to_printable(msgs, opts={}) -> String:
 
 ## public print fns ###########################################################################
 
-static func is_not_default(v) -> bool:
+static func is_not_default(v: Variant) -> bool:
 	return not v is String or (v is String and v != "ZZZDEF")
 
 ## Pretty-print the passed arguments in a single line.
-static func pr(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
-	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+static func pr(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
-	var m = Log.to_printable(msgs, {stack=get_stack()})
+	var m: String = Log.to_printable(msgs, {stack=get_stack()})
 	print_rich(m)
 
 ## Pretty-print the passed arguments in a single line.
-static func info(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
-	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+static func info(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
-	var m = Log.to_printable(msgs, {stack=get_stack()})
+	var m: String = Log.to_printable(msgs, {stack=get_stack()})
 	print_rich(m)
 
 ## Pretty-print the passed arguments in a single line.
-static func log(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
-	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+static func log(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
-	var m = Log.to_printable(msgs, {stack=get_stack()})
+	var m: String = Log.to_printable(msgs, {stack=get_stack()})
 	print_rich(m)
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with newlines and indentation.
-static func prn(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
-	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+static func prn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
-	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true})
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true})
 	print_rich(m)
 
 ## Like [code]Log.prn()[/code], but also calls push_warning() with the pretty string.
-static func warn(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
-	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+static func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
-	var rich_msgs = msgs.duplicate()
+	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=yellow][WARN][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
-	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
 	push_warning(m)
 
 ## Like [code]Log.prn()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
-static func todo(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
-	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+static func todo(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
 	msgs.push_front("[TODO]")
-	var rich_msgs = msgs.duplicate()
+	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=yellow][WARN][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
-	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
 	push_warning(m)
 
 ## Like [code]Log.prn()[/code], but also calls push_error() with the pretty string.
-static func err(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
-	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+static func err(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
-	var rich_msgs = msgs.duplicate()
+	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=red][ERR][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
-	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
 	push_error(m)
 
 ## Like [code]Log.prn()[/code], but also calls push_error() with the pretty string.
-static func error(msg, msg2="ZZZDEF", msg3="ZZZDEF", msg4="ZZZDEF", msg5="ZZZDEF", msg6="ZZZDEF", msg7="ZZZDEF"):
-	var msgs = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
-	var rich_msgs = msgs.duplicate()
+	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=red][ERR][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
-	var m = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
 	push_error(m)

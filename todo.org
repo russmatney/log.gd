@@ -30,6 +30,7 @@ CLOSED: [2024-03-21 Thu 15:57]
 CLOSED: [2024-03-21 Thu 18:33]
 ** [X] to_printable naming (vs to_pretty)?
 CLOSED: [2024-06-22 Sat 10:01]
+** [-] add static typing everywhere
 ** [ ] Docs: 'Example' page
 walk through the ExampleScene.gd
 with individual line-by-line output screenshots
