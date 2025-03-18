@@ -56,7 +56,7 @@ func test_log_floats() -> void:
 
 func test_log_vector2() -> void:
 	var val: String = Log.to_pretty(Vector2(1, 2))
-	assert_str(val).is_equal("[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red])[/color]")
+	assert_str(val).is_equal("[color=red]([/color][color=green]1.0[/color][color=red],[/color][color=green]2.0[/color][color=red])[/color]")
 
 func test_log_vector2i() -> void:
 	var val: String = Log.to_pretty(Vector2i(1, 2))
@@ -67,7 +67,7 @@ func test_log_vector2i() -> void:
 func test_log_vector3() -> void:
 	var val: String = Log.to_pretty(Vector3(1, 2, 3))
 	assert_str(val).is_equal(
-		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red],[/color][color=green]3[/color][color=red])[/color]"
+		"[color=red]([/color][color=green]1.0[/color][color=red],[/color][color=green]2.0[/color][color=red],[/color][color=green]3.0[/color][color=red])[/color]"
 		)
 
 func test_log_vector3i() -> void:
@@ -79,7 +79,7 @@ func test_log_vector3i() -> void:
 func test_log_vector4() -> void:
 	var val: String = Log.to_pretty(Vector4(1, 2, 3, 4))
 	assert_str(val).is_equal(
-		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red],[/color][color=green]3[/color][color=red],[/color][color=green]4[/color][color=red])[/color]"
+		"[color=red]([/color][color=green]1.0[/color][color=red],[/color][color=green]2.0[/color][color=red],[/color][color=green]3.0[/color][color=red],[/color][color=green]4.0[/color][color=red])[/color]"
 		)
 
 func test_log_vector4i() -> void:
@@ -171,7 +171,7 @@ func test_custom_to_pretty() -> void:
 	var val: String = Log.to_pretty(obj)
 	var id: int = obj.get_instance_id()
 	assert_str(val).is_equal(
-		"[color=red]{ [/color][color=magenta]\"val\"[/color]: [color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red])[/color][color=red], [/color][color=magenta]\"id\"[/color]: [color=green]%s[/color][color=red] }[/color]"
+		"[color=red]{ [/color][color=magenta]\"val\"[/color]: [color=red]([/color][color=green]1.0[/color][color=red],[/color][color=green]2.0[/color][color=red])[/color][color=red], [/color][color=magenta]\"id\"[/color]: [color=green]%s[/color][color=red] }[/color]"
 		% str(id))
 
 # TODO class_name
