@@ -16,6 +16,8 @@ const TEST_TIMEOUT = GROUP_TEST + "/test_timeout_seconds"
 const TEST_LOOKUP_FOLDER = GROUP_TEST + "/test_lookup_folder"
 const TEST_SUITE_NAMING_CONVENTION = GROUP_TEST + "/test_suite_naming_convention"
 const TEST_DISCOVER_ENABLED = GROUP_TEST + "/test_discovery"
+const TEST_FLAKY_CHECK = GROUP_TEST + "/flaky_check_enable"
+const TEST_FLAKY_MAX_RETRIES = GROUP_TEST + "/flaky_max_retries"
 
 
 # Report Setiings
@@ -95,11 +97,15 @@ const _VALUE_SET_SEPARATOR = "\f" # ASCII Form-feed character (AKA page break)
 
 static func setup() -> void:
 	create_property_if_need(UPDATE_NOTIFICATION_ENABLED, true, "Show notification if new gdUnit4 version is found")
+	# test settings
 	create_property_if_need(SERVER_TIMEOUT, DEFAULT_SERVER_TIMEOUT, "Server connection timeout in minutes")
 	create_property_if_need(TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT, "Test case runtime timeout in seconds")
 	create_property_if_need(TEST_LOOKUP_FOLDER, DEFAULT_TEST_LOOKUP_FOLDER, HELP_TEST_LOOKUP_FOLDER)
 	create_property_if_need(TEST_SUITE_NAMING_CONVENTION, NAMING_CONVENTIONS.AUTO_DETECT, "Naming convention to use when generating testsuites", NAMING_CONVENTIONS.keys())
 	create_property_if_need(TEST_DISCOVER_ENABLED, false, "Automatically detect new tests in test lookup folders at runtime")
+	create_property_if_need(TEST_FLAKY_CHECK, false, "Rerun tests on failure and mark them as FLAKY")
+	create_property_if_need(TEST_FLAKY_MAX_RETRIES, 3, "Sets the number of retries for rerunning a flaky test")
+	# report settings
 	create_property_if_need(REPORT_PUSH_ERRORS, false, "Report push_error() as failure")
 	create_property_if_need(REPORT_SCRIPT_ERRORS, true, "Report script errors as failure")
 	create_property_if_need(REPORT_ORPHANS, true, "Report orphaned nodes after tests finish")
@@ -178,6 +184,7 @@ static func is_update_notification_enabled() -> bool:
 
 static func set_update_notification(enable :bool) -> void:
 	ProjectSettings.set_setting(UPDATE_NOTIFICATION_ENABLED, enable)
+	@warning_ignore("return_value_discarded")
 	ProjectSettings.save()
 
 
@@ -188,6 +195,7 @@ static func get_log_path() -> String:
 static func set_log_path(path :String) -> void:
 	ProjectSettings.set_setting(STDOUT_ENABLE_TO_FILE, true)
 	ProjectSettings.set_setting(STDOUT_WITE_TO_FILE, path)
+	@warning_ignore("return_value_discarded")
 	ProjectSettings.save()
 
 
@@ -264,6 +272,14 @@ static func is_test_discover_enabled() -> bool:
 	return get_setting(TEST_DISCOVER_ENABLED, false)
 
 
+static func is_test_flaky_check_enabled() -> bool:
+	return get_setting(TEST_FLAKY_CHECK, false)
+
+
+static func get_flaky_max_retries() -> int:
+	return get_setting(TEST_FLAKY_MAX_RETRIES, 3)
+
+
 static func set_test_discover_enabled(enable :bool) -> void:
 	var property := get_property(TEST_DISCOVER_ENABLED)
 	property.set_value(enable)
@@ -274,16 +290,12 @@ static func is_log_enabled() -> bool:
 	return ProjectSettings.get_setting(STDOUT_ENABLE_TO_FILE)
 
 
-static func list_settings(category :String) -> Array[GdUnitProperty]:
-	var settings :Array[GdUnitProperty] = []
+static func list_settings(category: String) -> Array[GdUnitProperty]:
+	var settings: Array[GdUnitProperty] = []
 	for property in ProjectSettings.get_property_list():
 		var property_name :String = property["name"]
 		if property_name.begins_with(category):
-			var value :Variant = ProjectSettings.get_setting(property_name)
-			var default :Variant = ProjectSettings.property_get_revert(property_name)
-			var help :String = property["hint_string"]
-			var value_set := extract_value_set_from_help(help)
-			settings.append(GdUnitProperty.new(property_name, property["type"], value, default, extract_help_text(help), value_set))
+			settings.append(build_property(property_name, property))
 	return settings
 
 
@@ -293,6 +305,7 @@ static func extract_value_set_from_help(value :String) -> PackedStringArray:
 		return PackedStringArray()
 
 	var regex := RegEx.new()
+	@warning_ignore("return_value_discarded")
 	regex.compile("\\[(.+)\\]")
 	var matches := regex.search_all(split_value[1])
 	if matches.is_empty():
@@ -326,7 +339,7 @@ static func reset_property(property :GdUnitProperty) -> void:
 static func validate_property_value(property :GdUnitProperty) -> Variant:
 	match property.name():
 		TEST_LOOKUP_FOLDER:
-			return validate_lookup_folder(property.value())
+			return validate_lookup_folder(property.value_as_string())
 		_: return null
 
 
@@ -360,12 +373,17 @@ static func get_property(name :String) -> GdUnitProperty:
 	for property in ProjectSettings.get_property_list():
 		var property_name :String = property["name"]
 		if property_name == name:
-			var value :Variant = ProjectSettings.get_setting(property_name)
-			var default :Variant = ProjectSettings.property_get_revert(property_name)
-			var help :String = property["hint_string"]
-			var value_set := extract_value_set_from_help(help)
-			return GdUnitProperty.new(property_name, property["type"], value, default, extract_help_text(help), value_set)
+			return build_property(name, property)
 	return null
+
+
+static func build_property(property_name: String, property: Dictionary) -> GdUnitProperty:
+	var value: Variant = ProjectSettings.get_setting(property_name)
+	var value_type: int = property["type"]
+	var default: Variant = ProjectSettings.property_get_revert(property_name)
+	var help: String = property["hint_string"]
+	var value_set := extract_value_set_from_help(help)
+	return GdUnitProperty.new(property_name, value_type, value, default, extract_help_text(help), value_set)
 
 
 static func migrate_property(old_property :String, new_property :String, default_value :Variant, help :String, converter := Callable()) -> void:
@@ -378,12 +396,14 @@ static func migrate_property(old_property :String, new_property :String, default
 	ProjectSettings.set_initial_value(new_property, default_value)
 	set_help(new_property, value, help)
 	ProjectSettings.clear(old_property)
-	prints("Succesfull migrated property '%s' -> '%s' value: %s" % [old_property, new_property, value])
+	prints("Successfully migrated property '%s' -> '%s' value: %s" % [old_property, new_property, value])
 
 
 static func dump_to_tmp() -> void:
+	@warning_ignore("return_value_discarded")
 	ProjectSettings.save_custom("user://project_settings.godot")
 
 
 static func restore_dump_from_tmp() -> void:
+	@warning_ignore("return_value_discarded")
 	DirAccess.copy_absolute("user://project_settings.godot", "res://project.godot")

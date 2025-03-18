@@ -61,6 +61,7 @@ func plus(time_unit :TimeUnit, value :int) -> LocalTime:
 			addValue = value * MILLIS_PER_MINUTE
 		TimeUnit.HOUR:
 			addValue = value * MILLIS_PER_HOUR
+	@warning_ignore("return_value_discarded")
 	_init(_time + addValue)
 	return self
 
@@ -76,12 +77,14 @@ static func elapsed(p_time_ms :int) -> String:
 	return "%dms" % local_time_._millisecond
 
 
-@warning_ignore("integer_division")
 # create from epoch timestamp in ms
-func _init(time :int) -> void:
+func _init(time: int) -> void:
 	_time = time
+	@warning_ignore("integer_division")
 	_hour  =  (time / MILLIS_PER_HOUR) % 24
+	@warning_ignore("integer_division")
 	_minute =  (time / MILLIS_PER_MINUTE) % 60
+	@warning_ignore("integer_division")
 	_second =  (time / MILLIS_PER_SECOND) % 60
 	_millisecond = time % 1000
 

@@ -3,6 +3,7 @@ class_name GdUnitAssertions
 extends RefCounted
 
 
+@warning_ignore("return_value_discarded")
 func _init() -> void:
 	# preload all gdunit assertions to speedup testsuite loading time
 	# gdlint:disable=private-method-call
@@ -58,6 +59,7 @@ static func get_line_number() -> int:
 			or source.ends_with("GdUnitTestSuite.gd") \
 			or source.ends_with("GdUnitSceneRunnerImpl.gd") \
 			or source.ends_with("GdUnitObjectInteractions.gd") \
+			or source.ends_with("GdUnitObjectInteractionsVerifier.gd") \
 			or source.ends_with("GdUnitAwaiter.gd"):
 			continue
 		return stack_info.get("line")

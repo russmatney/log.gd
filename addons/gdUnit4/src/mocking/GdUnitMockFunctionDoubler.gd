@@ -3,72 +3,99 @@ extends GdFunctionDoubler
 
 
 const TEMPLATE_FUNC_WITH_RETURN_VALUE = """
-	var args :Array = ["$(func_name)", $(arguments)]
+	var args__: Array = ["$(func_name)", $(arguments)]
 
-	if $(instance)__is_prepare_return_value():
-		$(instance)__save_function_return_value(args)
-		return ${default_return_value}
-	if $(instance)__is_verify_interactions():
-		$(instance)__verify_interactions(args)
-		return ${default_return_value}
-	else:
-		$(instance)__save_function_interaction(args)
+	if __is_prepare_return_value():
+		__save_function_return_value(args__)
+		return ${default_return_value}$(return_as)
 
-	if $(instance)__do_call_real_func("$(func_name)", args):
-		return $(await)super($(arguments))
-	return $(instance)__get_mocked_return_value_or_default(args, ${default_return_value})
+	# verify block
+	var __verifier := __get_verifier()
+	if __verifier != null:
+		if __verifier.is_verify_interactions():
+			__verifier.verify_interactions(args__)
+			return ${default_return_value}$(return_as)
+		else:
+			__verifier.save_function_interaction(args__)
+
+	if __do_call_real_func("$(func_name)", args__):
+		@warning_ignore("unsafe_call_argument")
+		return $(await)super($(arguments))$(return_as)
+
+	return __get_mocked_return_value_or_default(args__, ${default_return_value})
 
 """
 
 
 const TEMPLATE_FUNC_WITH_RETURN_VOID = """
-	var args :Array = ["$(func_name)", $(arguments)]
+	var args__: Array = ["$(func_name)", $(arguments)]
 
-	if $(instance)__is_prepare_return_value():
+	if __is_prepare_return_value():
 		if $(push_errors):
 			push_error(\"Mocking a void function '$(func_name)(<args>) -> void:' is not allowed.\")
 		return
-	if $(instance)__is_verify_interactions():
-		$(instance)__verify_interactions(args)
-		return
-	else:
-		$(instance)__save_function_interaction(args)
 
-	if $(instance)__do_call_real_func("$(func_name)"):
+	# verify block
+	var __verifier := __get_verifier()
+	if __verifier != null:
+		if __verifier.is_verify_interactions():
+			__verifier.verify_interactions(args__)
+			return
+		else:
+			__verifier.save_function_interaction(args__)
+
+	if __do_call_real_func("$(func_name)"):
+		@warning_ignore("unsafe_call_argument")
 		$(await)super($(arguments))
 
 """
 
 
 const TEMPLATE_FUNC_VARARG_RETURN_VALUE = """
-	var varargs :Array = __filter_vargs([$(varargs)])
-	var args :Array = ["$(func_name)", $(arguments)] + varargs
+	var varargs__: Array = __get_verifier().filter_vargs([$(varargs)])
+	var args__: Array = ["$(func_name)", $(arguments)] + varargs__
 
-	if $(instance)__is_prepare_return_value():
+	if __is_prepare_return_value():
 		if $(push_errors):
 			push_error(\"Mocking a void function '$(func_name)(<args>) -> void:' is not allowed.\")
-		$(instance)__save_function_return_value(args)
-		return ${default_return_value}
-	if $(instance)__is_verify_interactions():
-		$(instance)__verify_interactions(args)
-		return ${default_return_value}
-	else:
-		$(instance)__save_function_interaction(args)
+		__save_function_return_value(args__)
+		return ${default_return_value}$(return_as)
 
-	if $(instance)__do_call_real_func("$(func_name)", args):
-		match varargs.size():
+	# verify block
+	var __verifier := __get_verifier()
+	if __verifier != null:
+		if __verifier.is_verify_interactions():
+			__verifier.verify_interactions(args__)
+			return ${default_return_value}$(return_as)
+		else:
+			__verifier.save_function_interaction(args__)
+
+	if __do_call_real_func("$(func_name)", args__):
+		match varargs__.size():
+			@warning_ignore("unsafe_call_argument")
 			0: return $(await)super($(arguments))
-			1: return $(await)super($(arguments), varargs[0])
-			2: return $(await)super($(arguments), varargs[0], varargs[1])
-			3: return $(await)super($(arguments), varargs[0], varargs[1], varargs[2])
-			4: return $(await)super($(arguments), varargs[0], varargs[1], varargs[2], varargs[3])
-			5: return $(await)super($(arguments), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4])
-			6: return $(await)super($(arguments), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5])
-			7: return $(await)super($(arguments), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6])
-			8: return $(await)super($(arguments), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7])
-			9: return $(await)super($(arguments), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8])
-			10: return $(await)super($(arguments), varargs[0], varargs[1], varargs[2], varargs[3], varargs[4], varargs[5], varargs[6], varargs[7], varargs[8], varargs[9])
-	return __get_mocked_return_value_or_default(args, ${default_return_value})
+			@warning_ignore("unsafe_call_argument")
+			1: return $(await)super($(arguments), varargs__[0])
+			@warning_ignore("unsafe_call_argument")
+			2: return $(await)super($(arguments), varargs__[0], varargs__[1])
+			@warning_ignore("unsafe_call_argument")
+			3: return $(await)super($(arguments), varargs__[0], varargs__[1], varargs__[2])
+			@warning_ignore("unsafe_call_argument")
+			4: return $(await)super($(arguments), varargs__[0], varargs__[1], varargs__[2], varargs__[3])
+			@warning_ignore("unsafe_call_argument")
+			5: return $(await)super($(arguments), varargs__[0], varargs__[1], varargs__[2], varargs__[3], varargs__[4])
+			@warning_ignore("unsafe_call_argument")
+			6: return $(await)super($(arguments), varargs__[0], varargs__[1], varargs__[2], varargs__[3], varargs__[4], varargs__[5])
+			@warning_ignore("unsafe_call_argument")
+			7: return $(await)super($(arguments), varargs__[0], varargs__[1], varargs__[2], varargs__[3], varargs__[4], varargs__[5], varargs__[6])
+			@warning_ignore("unsafe_call_argument")
+			8: return $(await)super($(arguments), varargs__[0], varargs__[1], varargs__[2], varargs__[3], varargs__[4], varargs__[5], varargs__[6], varargs__[7])
+			@warning_ignore("unsafe_call_argument")
+			9: return $(await)super($(arguments), varargs__[0], varargs__[1], varargs__[2], varargs__[3], varargs__[4], varargs__[5], varargs__[6], varargs__[7], varargs__[8])
+			@warning_ignore("unsafe_call_argument")
+			10: return $(await)super($(arguments), varargs__[0], varargs__[1], varargs__[2], varargs__[3], varargs__[4], varargs__[5], varargs__[6], varargs__[7], varargs__[8], varargs__[9])
+
+	return __get_mocked_return_value_or_default(args__, ${default_return_value})
 
 """
 
