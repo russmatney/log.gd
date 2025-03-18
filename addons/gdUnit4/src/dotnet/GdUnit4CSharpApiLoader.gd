@@ -46,8 +46,8 @@ static func is_dotnet_supported() -> bool:
 	if not ClassDB.class_exists("CSharpScript") and not is_engine_version_supported():
 		return false
 	# Second we check the C# project file exists
-	var assembly_name: String = ProjectSettings.get_setting("dotnet/project/assembly_name")
-	if assembly_name.is_empty() or not FileAccess.file_exists("res://%s.csproj" % assembly_name):
+	var assembly_name: Variant = ProjectSettings.get_setting("dotnet/project/assembly_name")
+	if assembly_name == null or assembly_name.is_empty() or not FileAccess.file_exists("res://%s.csproj" % assembly_name):
 		return false
 
 	# Finally load the wrapper and check if the GdUnit4 assembly can be found
