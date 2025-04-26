@@ -11,9 +11,9 @@
        (when (seq opts) (println opts))
        (shell opts x))))
 
-  test       (shell-and-log (str "./addons/gdUnit4/runtest.sh -c -a test"))
+  test       (shell-and-log (str "sh ./addons/gdUnit4/runtest.sh -c -a test"))
   test-match (let [arg (some-> *command-line-args* first)]
-               (shell-and-log (str "./addons/gdUnit4/runtest.sh -c -a " arg)))
+               (shell-and-log (str "sh ./addons/gdUnit4/runtest.sh -c -a " arg)))
 
   release
   (let [tag (some-> *command-line-args* first)]
