@@ -136,7 +136,6 @@ func get_exit_code() -> int:
 func quit(code: int) -> void:
 	if code != RETURN_SUCCESS:
 		_state = EXIT
-	_cs_executor = null
 	GdUnitTools.dispose_all()
 	await GdUnitMemoryObserver.gc_on_guarded_instances()
 	await super(code)
@@ -406,17 +405,12 @@ func discover_tests() -> Array[GdUnitTestCase]:
 	for path in _included_tests:
 		var scripts := scanner.scan(path)
 		for script in scripts:
-			if script is GDScript:
-				var gd_script: GDScript = script
-				GdUnitTestDiscoverer.discover_tests(gd_script, func(test: GdUnitTestCase) -> void:
-					if not is_skipped(test):
-						#_console.println_message("discoverd %s" % test.display_name)
-						_test_cases.append(test)
-						gdunit_test_discover_added.emit(test)
-				)
-			else:
-				## TODO implement c# test discovery here
-				pass
+			GdUnitTestDiscoverer.discover_tests(script, func(test: GdUnitTestCase) -> void:
+				if not is_skipped(test):
+					#_console.println_message("discoverd %s" % test.display_name)
+					_test_cases.append(test)
+					gdunit_test_discover_added.emit(test)
+			)
 
 	return _test_cases
 
