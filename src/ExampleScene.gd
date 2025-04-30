@@ -51,33 +51,58 @@ func _ready() -> void:
 func print_header(header: String) -> void:
 	print(str("\n\n\t====", header, "====\n\n"))
 
-func print_and_log(v: Variant) -> void:
-	print(v)
-	Log.pr(v)
-
 func run_showcase() -> void:
 	print_header("SHOWCASE")
 
+	# ints and floats
 	print_header("Ints, Floats")
-	print_and_log(1)
-	print_and_log(1.0)
-	Log.pr(0.0, 1.0, 3.14)
+	Log.pr(42, 3.14)
+	print(1)
+	Log.pr(1)
 
+	print(1.0)
+	Log.pr(1.0)
+
+	# vectors
 	print_header("Vectors")
-	print_and_log(Vector2())
-	print_and_log(Vector3(2.3, 1.4, 0.5))
-	print_and_log(Vector2i.LEFT)
-	print_and_log(Vector3i.UP)
+	print(Vector2())
+	Log.pr(Vector2())
 
+	print(Vector3(2.3, 1.4, 0.5))
+	Log.pr(Vector3(2.3, 1.4, 0.5))
+
+	print(Vector2i.LEFT)
+	Log.pr(Vector2i.LEFT)
+
+	print(Vector3i.UP)
+	Log.pr(Vector3i.UP)
+
+	# strings
 	print_header("Strings, String Names")
-	print_and_log("Hello, World!")
-	print_and_log(&"Hi there!")
 	Log.pr("Hello", &"World")
+	print("Hello, World!")
+	Log.pr("Hello, World!")
+	print(&"Hi there!")
+	Log.pr(&"Hi there!")
 
+	# arrays
 	print_header("Arrays")
-	print_and_log([1, 2.0, 3, 4.0])
+	print([1, 2.0, 3, 4.0])
+	Log.pr([1, 2.0, 3, 4.0])
 	Log.pr(1, 2.0, [3, 4.0])
+	# with newlines
 	Log.prn([1, 2.0, 3, 4.0])
 
+	# dictionaries
 	print_header("Dictionaries")
-	print_and_log({name="Arthur", quest="I seek the grail", health=0.7})
+	print({name="Arthur", quest="I seek the grail", health=0.7})
+	Log.pr({name="Arthur", quest="I seek the grail", health=0.7})
+	# with newlines
+	Log.prn({name="Arthur", quest="I seek the grail", health=0.7})
+
+	print_header("Objects")
+	print(self)
+	Log.pr(self)
+
+# func to_pretty() -> Variant:
+# 	return {name=name}
