@@ -34,7 +34,6 @@ settings/common/update_notification_enabled=false
 
 [log_gd]
 
-config/max_array_size=4
 config/color_theme="PRETTY_LIGHT_V1"
 
 [rendering]

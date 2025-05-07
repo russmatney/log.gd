@@ -25,6 +25,9 @@
 > Now available on the [Godot Asset
 > Library](https://godotengine.org/asset-library/asset/2696) and [github](https://github.com/russmatney/log.gd).
 
+> I'm giving a Lightning talk at Godot Con about this addon.
+> Here are [the slides](https://docs.google.com/presentation/d/1Tlz8bLD4Uqltruwj7OmKIOr_InZrkWIvSDHUkQ_iJdY/edit#slide=id.p).
+
 ### Quick Overview
 
 Log.gd provides static functions for printing colorized output. These
