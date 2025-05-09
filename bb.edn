@@ -49,6 +49,9 @@
               (shell-and-log "git add CHANGELOG.md")
               (shell-and-log "git commit -m 'docs: update changelog'"))
 
+  docs (let []
+         (shell-and-log "docsify serve docs"))
+
   gd-plug
   (shell-and-log
     (str "godot --no-window -s plug.gd " (string/join " " *command-line-args*)))
