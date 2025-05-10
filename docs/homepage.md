@@ -52,7 +52,7 @@ This makes Godot's `Output` buffer much more readable!
 - [Docs (this page)](https://russmatney.github.io/log.gd/#/)
   - [Installation](https://russmatney.github.io/log.gd/#/?id=install)
   - [Features](https://russmatney.github.io/log.gd/#/?id=features)
-  - [Public API](https://russmatney.github.io/log.gd/#/?id=public)
+  - [Public API](https://russmatney.github.io/log.gd/#/?id=public-api)
   - [Settings](https://russmatney.github.io/log.gd/#/?id=settings)
   - [Implementation](https://russmatney.github.io/log.gd/#/implementation)
 - [Github](https://github.com/russmatney/log.gd)
