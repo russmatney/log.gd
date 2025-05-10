@@ -96,9 +96,10 @@ added, feel free to create an issue!
 Log's print functions will prefix the output with the name of the script the log
 comes from, including the line number.
 
-!> This call-site feature is really nice! Unfortunately it can only be used
-during development - it depends on `get_stack()`, which is not available in
-production builds or at `@tool` script time.
+!> This call-site feature is really nice, but it is not yet available
+everywhere! Recent Godot builds (`4.5-dev3`) provide the call-stack to more
+enviroments, and I need to do some testing to confirm whether this now works in
+production builds.
 
 ### Objects and `to_pretty()`
 
