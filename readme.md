@@ -22,99 +22,36 @@
 
 # Log.gd, a Godot pretty printer
 
-![Log.gd logo](./docs/assets/Log_logo_4x.png)
+> Available on the [Godot Asset
+> Library](https://godotengine.org/asset-library/asset/2696) and [Github](https://github.com/russmatney/log.gd).
 
-> Now available on the [Godot Asset
-> Library](https://godotengine.org/asset-library/asset/2696)!.
+> I gave a Lightning talk about this addon at Godot Con Boston!
+> Here are [the
+> slides](https://docs.google.com/presentation/d/1Tlz8bLD4Uqltruwj7OmKIOr_InZrkWIvSDHUkQ_iJdY/edit#slide=id.p).
+> Video link to come soon!
 
-> I'm giving a Lightning talk at Godot Con about this addon.
-> Here are [the slides](https://docs.google.com/presentation/d/1Tlz8bLD4Uqltruwj7OmKIOr_InZrkWIvSDHUkQ_iJdY/edit#slide=id.p).
+Log.gd provides a drop-in replacement for GDScript's `print(...)` function.
 
-### Quick Overview
+It colors the output based on the value passed in, and adds a prefix based on
+the call-site's file and line number.
 
-Log.gd provides static functions for printing colorized output. These
-are intended as drop-in replacements for `print(...)`.
+![Dino output logs (light theme)](/docs/assets/dino_example_output_dark.png)
 
-- `Log.pr(...)` - pretty print args in one line
-- `Log.prn(...)` - the same, but with newlines
+![Dino output logs (dark theme)](/docs/assets/dino_example_output_light.png)
 
-This makes your printed output is much more readable, and helps reduce
-wall-of-text noise and eye strain.
+This makes Godot's `Output` buffer much more readable! And now, I can't live without it :eyeroll:
 
-#### Colorized output
+### TLDR
 
-The colorized output really shines when showing nested data structures (`Arrays`
-and `Dictionaries`), but it's also very useful for other gdscript primitives,
-like `Vectors`, `NodePaths`, and `StringNames`. Support for more types is easily
-added, feel free to create an issue!
+- `Log.pr(...)` - `print(...)` replacement (also adds spaces between args)
+- `Log.prn(...)` - the same, but include newlines + tabs when printing arrays/dictionaries
 
-#### Call-site prefixes
+## Links
 
-Log's print functions will prefix the output with the name of the script the log
-comes from, including the line number.
-
-> This call-site feature is really nice! Unfortunately it can only be used
-> during development - it depends on `get_stack()`, which is not available in
-> production builds or at `@tool` script time.
-
-#### Opt-in via duck-typing
-
-You can opt-in to pretty-printing in your classes by implementing
-`to_pretty()`, which Log will pickup via duck-typing.
-
-```gdscript
-class_name ExampleClass
-
-func to_pretty():
-    return {val=12}
-
-func _ready():_
-    Log.pr(self) # colorized `{"val": 12}`
-```
-
-
-### Example script and output
-
-Checkout [src/Example.gd](https://github.com/russmatney/log.gd/blob/main/src/Example.gd) for this code.
-
-`Log.pr()` colorizes and prints passed arguments, including recursively digging
-into Arrays and Dictionaries.
-
-![`Log.pr()` should Just Work in most (all?) cases](/docs/assets/example_gd_impl.png)
-
-`Log.pr()` should Just-Work in most (all?) cases.
-
-You can opt-in to pretty printing in your objects by implementing
-`to_pretty()`,
-which gets picked up by Log's static method via duck-typing.
-
-![output of Example.gd](/docs/assets/example_gd_output.png)
-
-This makes dictionaries and arrays much more readable at a glance, which speeds
-up debugging and reduces eye-strain.
-
-Compare the above output with the usual from `print(...)`:
-
-![output with only print statements](/docs/assets/example_print_output.png)
-
-# Public API
-
-- `Log.pr(...)`, `Log.info(...)`, `Log.log(...)`
-  - pretty-print without newlines
-- `Log.prn(...)`
-  - pretty-print with newlines
-- `Log.warn(...)`
-  - pretty-print with newlines AND push a warning via `push_warning`
-- `Log.err(...)`, `Log.error(...)`
-  - pretty-print with newlines AND push a error via `push_error`
-
-> These functions all take up to 7 args.
-> We could support more, but you can also just pass an Array or a Dictionary if you
-> need more args right away.
-
-> `Log.warn()` and `Log.err()` are nice because push_warning and push_error on
-> their own do not let you see warnings/errors in the same context as your usual
-> `print()` statements.
+- [The Docs](https://russmatney.github.io/log.gd/#/)
+  - [Features](https://russmatney.github.io/log.gd/#/?id=features)
+  - [Public API](https://russmatney.github.io/log.gd/#/?id=features)
+- [On the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)
 
 
 ## godot printing resources

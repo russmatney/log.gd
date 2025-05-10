@@ -22,22 +22,32 @@
 
 # Log.gd, a Godot pretty printer
 
-> Now available on the [Godot Asset
-> Library](https://godotengine.org/asset-library/asset/2696) and [github](https://github.com/russmatney/log.gd).
+> Available on the [Godot Asset
+> Library](https://godotengine.org/asset-library/asset/2696) and [Github](https://github.com/russmatney/log.gd).
 
-> I'm giving a Lightning talk at Godot Con about this addon.
-> Here are [the slides](https://docs.google.com/presentation/d/1Tlz8bLD4Uqltruwj7OmKIOr_InZrkWIvSDHUkQ_iJdY/edit#slide=id.p).
+> I gave a Lightning talk about this addon at Godot Con Boston!
+> Here are [the
+> slides](https://docs.google.com/presentation/d/1Tlz8bLD4Uqltruwj7OmKIOr_InZrkWIvSDHUkQ_iJdY/edit#slide=id.p).
+> Video link to come soon!
 
-### Quick Overview
+Log.gd provides a drop-in replacement for GDScript's `print(...)` function.
 
-Log.gd provides static functions for printing colorized output. These
-are intended as drop-in replacements for `print(...)`.
+It colors the output based on the value passed in, and adds a prefix based on
+the call-site's file and line number.
 
-- `Log.pr(...)` - pretty print args in one line
-- `Log.prn(...)` - the same, but with newlines
+![Dino output logs (light theme)](/assets/dino_example_output_dark.png)
 
-This makes your printed output is much more readable, and helps reduce
-wall-of-text noise and eye strain.
+![Dino output logs (dark theme)](/assets/dino_example_output_light.png)
+
+This makes Godot's `Output` buffer much more readable!
+
+### TLDR
+
+- `Log.pr(...)` is a `print(...)` replacement (also adds spaces between args)
+- `Log.prn(...)` is the same, but includes newlines + tabs when printing arrays
+  and dictionaries
+
+### Features
 
 #### Colorized output
 
