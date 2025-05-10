@@ -35,9 +35,9 @@ Log.gd provides a drop-in replacement for GDScript's `print(...)` function.
 It colors the output based on the value passed in, and adds a prefix based on
 the call-site's file and line number.
 
-![Dino output logs (light theme)](/assets/dino_example_output_dark.png)
+![Dino output logs (light theme)](/assets/dino_example_output_light.png)
 
-![Dino output logs (dark theme)](/assets/dino_example_output_light.png)
+![Dino output logs (dark theme)](/assets/dino_example_output_dark.png)
 
 This makes Godot's `Output` buffer much more readable!
 
@@ -47,47 +47,51 @@ This makes Godot's `Output` buffer much more readable!
 - `Log.prn(...)` is the same, but includes newlines + tabs when printing arrays
   and dictionaries
 
-## Links
+### Links
 
-- [The Docs](https://russmatney.github.io/log.gd/#/)
-  - [Install](https://russmatney.github.io/log.gd/#/?id=install)
+- [Docs (this page)](https://russmatney.github.io/log.gd/#/)
+  - [Installation](https://russmatney.github.io/log.gd/#/?id=install)
   - [Features](https://russmatney.github.io/log.gd/#/?id=features)
   - [Public API](https://russmatney.github.io/log.gd/#/?id=public)
   - [Settings](https://russmatney.github.io/log.gd/#/?id=settings)
-  - [Implementation](https://russmatney.github.io/log.gd/#/?id=implementation)
-  - [Quirks](https://russmatney.github.io/log.gd/#/?id=quirks)
+  - [Implementation](https://russmatney.github.io/log.gd/#/implementation)
 - [Github](https://github.com/russmatney/log.gd)
-- [On the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)
+- [Log.gd on the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)
 
-### Install
+### Implementation and Quirks
 
-#### Godot Asset Library
+There is some documentation of GDScript features that Log.gd uses and some
+related quirks [on this Implementation Details page](/implementation).
+
+## Installation
+
+### Godot Asset Library
 
 Log.gd is [here on the Godot Asset
 Library](https://godotengine.org/asset-library/asset/2696), so can be installed
 directly via the Godot Editor's `Asset Lib` tab.
 
-#### Via Github
+### Via Github
 
 - Clone the [Repo](https://github.com/russmatney/log.gd) somewhere locally
 - Move the `addons/log/` folder into your game's `addons` directory
 
-#### Manual Copy+Paste
+### Manual Copy+Paste
 
 Log.gd is currently only one GDScript file! So you could just copy-paste [this
 file]() into your game and run for it.
 
 
-### Features
+## Features
 
-#### Colorized output
+### Colorized output
 
 The colorized output really shines when showing nested data structures (`Arrays`
 and `Dictionaries`), but it's also very useful for other gdscript primitives,
 like `Vectors`, `NodePaths`, and `StringNames`. Support for more types is easily
 added, feel free to create an issue!
 
-#### Call-site prefixes
+### Call-site prefixes
 
 Log's print functions will prefix the output with the name of the script the log
 comes from, including the line number.
@@ -96,7 +100,7 @@ comes from, including the line number.
 during development - it depends on `get_stack()`, which is not available in
 production builds or at `@tool` script time.
 
-#### Opt-in via duck-typing
+### Objects and `to_pretty()`
 
 You can opt-in to pretty-printing in your classes by implementing
 `to_pretty()`, which Log will pickup via duck-typing.
@@ -111,79 +115,88 @@ func _ready():_
     Log.pr(self) # colorized `{"val": 12}`
 ```
 
-#### Color Schemes
-#### Type Handler Overwrites
+TODO: pull in obj before/after images
 
-### Example script and output
+### Type Handler Overwrites
 
-Checkout [src/Example.gd](https://github.com/russmatney/log.gd/blob/main/src/Example.gd) for this code.
+You can 'register' handlers for built-in or otherwise 'closed' classes with
+something like:
 
-`Log.pr()` colorizes and prints passed arguments, including recursively digging
-into Arrays and Dictionaries.
+``` gdscript
+Log.register_type_overwrite(some_obj.get_class(),
+  func(val): return {name=val.name, level=val.level})
+```
 
-![`Log.pr()` should Just Work in most (all?) cases](/assets/example_gd_impl.png)
+See the [type handlers functions](/?id=type-handlers).
 
-`Log.pr()` should Just-Work in most (all?) cases.
+### Color Themes
 
-You can opt-in to pretty printing in your objects by implementing
-`to_pretty()`,
-which gets picked up by Log's static method via duck-typing.
+There is very rough color theme support. I'd like to develop this further, and
+possibly align it more strongly with Godot's editor color themes.
 
-![output of Example.gd](/assets/example_gd_output.png)
+For now it's a bit hard-coded...
 
-This makes dictionaries and arrays much more readable at a glance, which speeds
-up debugging and reduces eye-strain.
+## Public API
 
-Compare the above output with the usual from `print(...)`:
+### Print functions
 
-![output with only print statements](/assets/example_print_output.png)
-
-### Public API
-
-- `Log.pr(...)`, `Log.info(...)`, `Log.log(...)`
+- `Log.pr(...)`, `Log.info(...)`
   - pretty-print without newlines
 - `Log.prn(...)`
   - pretty-print with newlines
 - `Log.warn(...)`
-  - pretty-print with newlines AND push a warning via `push_warning`
+  - pretty-print with newlines
+  - push a warning via `push_warning`
 - `Log.err(...)`, `Log.error(...)`
-  - pretty-print with newlines AND push a error via `push_error`
+  - pretty-print with newlines
+  - push a error via `push_error`
 
 ?> These functions all take up to 7 args.
-We could support more, but you can also just pass an Array or a Dictionary if you
+We could support more, but you can also pass an Array or a Dictionary if you
 need more args right away.
 
-?> `Log.warn()` and `Log.err()` are nice because push_warning and push_error on
+?> `Log.warn()` and `Log.err()` are nice because `push_warning` and `push_error` on
 their own do not let you see warnings/errors in the same context as your usual
 `print()` statements.
 
-### Settings
-### Implementation
+### Returning a string
 
-#### GDScript features used
+- `Log.to_pretty(msg: Variant, opts: Dictionary = {}) -> String`
 
-Before getting into some implementation details, let's list some GDScript
-features that Log.gd uses.
+`Log.to_pretty(val)` can be used to get a bb-code wrapped string, maybe to be
+passed into a `RichTextLabel`.
 
-##### `print_rich` and `BBCode`
+### Toggling features
 
-Log.gd's print helpers are really just wrappers around `print_rich`, which
-expects `BBCode`-wrapped strings.
+A few functions I use to tweak things at run time (e.g. when running tests).
 
-BBCode is a markup format similar to xml tags - prefixes like `[color=green]` or
-`[b]` wrap some text before a closing tags (`[/color]` or `[/b]`).
+- `Log.enable_colors()`
+- `Log.disable_colors()`
+- `Log.set_colors_termsafe()`
+- `Log.set_colors_pretty()`
 
-Godot uses `BBCode` in it's `RichTextLabel` component.
+### Type Handlers
 
-Godot docs:
+You can 'register' handlers for built-in classes with the below functions.
 
-- [`print_rich`]()
-- [BBCode]()
-- [RichTextLabel]()
+- `register_type_overwrite(key: String, handler: Callable)`
+  - the handler should be like `val: Variant -> Variant`
+- `register_type_overwrites(overwrites: Dictionary)`
+  - Overwrites is a dictionary like `{obj.get_class(): handler_func}`
+- `clear_type_overwrites()`
 
-##### `get_stack()`
-##### Static Class Methods
-vs Autoloads
-### Quirks
+## Settings
 
-#### "Term Safe" colors
+There are a few Log.gd options available in Project Settings.
+
+> It was pointed out to me that some of these should probably live as Editor
+> Settings instead of Project-wide ones. I'll be moving things around soon!
+
+- `max_array_size` (`20`)
+  - How many array elements to print.
+- `dictionary_skip_keys` ([`layer_0/tile_data`])
+  - Dictionary keys that are _always_ ignored (i.e. never printed.)
+- `disable_colors` (`false`)
+  - Disables colors at game startup.
+- `color_theme` (`PRETTY_DARK_V1`)
+  - A text string name that aligns with (currently hard-coded) color themes.

@@ -35,9 +35,9 @@ Log.gd provides a drop-in replacement for GDScript's `print(...)` function.
 It colors the output based on the value passed in, and adds a prefix based on
 the call-site's file and line number.
 
-![Dino output logs (light theme)](/docs/assets/dino_example_output_dark.png)
+![Dino output logs (light theme)](/docs/assets/dino_example_output_light.png)
 
-![Dino output logs (dark theme)](/docs/assets/dino_example_output_light.png)
+![Dino output logs (dark theme)](/docs/assets/dino_example_output_dark.png)
 
 This makes Godot's `Output` buffer much more readable! And now, I can't live without it :eyeroll:
 
@@ -48,21 +48,10 @@ This makes Godot's `Output` buffer much more readable! And now, I can't live wit
 
 ## Links
 
-- [The Docs](https://russmatney.github.io/log.gd/#/)
-  - [Install](https://russmatney.github.io/log.gd/#/?id=install)
+- [Docs](https://russmatney.github.io/log.gd/#/)
+  - [Installation](https://russmatney.github.io/log.gd/#/?id=install)
   - [Features](https://russmatney.github.io/log.gd/#/?id=features)
   - [Public API](https://russmatney.github.io/log.gd/#/?id=public)
   - [Settings](https://russmatney.github.io/log.gd/#/?id=settings)
-  - [Implementation](https://russmatney.github.io/log.gd/#/?id=implementation)
-  - [Quirks](https://russmatney.github.io/log.gd/#/?id=quirks)
-- [Github](https://github.com/russmatney/log.gd)
-- [On the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)
-
-
-## godot printing resources
-
-- RichTextLabel docs with lists of bbcode tags:
-  https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
-- print_rich
-  supported colors: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `pink`, `purple`, `cyan`, `white`, `orange`, `gray`
-  supported tags: `b`, `i`, `u`, `s`, `indent`, `code`, `url`, `center`, `right`, `color`, `bgcolor`, `fgcolor`
+  - [Implementation](https://russmatney.github.io/log.gd/#/implementation)
+- [Log.gd on the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)

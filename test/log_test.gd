@@ -201,8 +201,8 @@ func test_custom_resource_register_overwrite() -> void:
 	tp.level = 3
 	tp.role = TestPlayer.Role.Tank
 
-	Log.register_type_overwrite(tp.get_class(), func(msg: Variant, _opts: Dictionary) -> String:
-		return Log.to_pretty({name=msg.name, level=msg.level}))
+	Log.register_type_overwrite(tp.get_class(), func(msg: Variant) -> Variant:
+		return {name=msg.name, level=msg.level})
 
 	var val: String = Log.to_pretty(tp)
 	assert_str(val).is_equal(

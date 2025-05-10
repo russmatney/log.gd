@@ -389,7 +389,7 @@ static var type_overwrites: Dictionary = {}
 ##
 ## [br][br]
 ## The handler is called with the object and an options dict.
-## [code]func(obj, _opts): return {name=obj.name}[/code]
+## [code]func(obj): return {name=obj.name}[/code]
 static func register_type_overwrite(key: String, handler: Callable) -> void:
 	# TODO warning on key exists? support multiple handlers for same type?
 	# validate the key/handler somehow?
@@ -398,11 +398,11 @@ static func register_type_overwrite(key: String, handler: Callable) -> void:
 ## Register a dictionary of type overwrite.
 ##
 ## [br][br]
-## Expects a Dictionary like [code]{obj.get_class(): func(obj, opts): return {key=obj.get_key()}}[/code].
+## Expects a Dictionary like [code]{obj.get_class(): func(obj): return {key=obj.get_key()}}[/code].
 ##
 ## [br][br]
 ## It depends on [code]obj.get_class()[/code] then [code]typeof(obj)[/code] for the key.
-## The handler is called with the object and an options dict (e.g. [code]func(obj, _opts): return {name=obj.name}[/code]).
+## The handler is called with the object as the only argument. (e.g. [code]func(obj): return {name=obj.name}[/code]).
 static func register_type_overwrites(overwrites: Dictionary) -> void:
 	type_overwrites.merge(overwrites, true)
 
@@ -433,12 +433,11 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		return Log.color_wrap(msg, opts)
 
 	if msg is Object and (msg as Object).get_class() in type_overwrites:
-		# TODO support single arity (no opts) impls?
 		var fn: Callable = type_overwrites.get((msg as Object).get_class())
-		return fn.call(msg, opts)
+		return Log.to_pretty(fn.call(msg), opts)
 	elif typeof(msg) in type_overwrites:
 		var fn: Callable = type_overwrites.get(typeof(msg))
-		return fn.call(msg, opts)
+		return Log.to_pretty(fn.call(msg), opts)
 
 	# objects
 	if msg is Object and (msg as Object).has_method("to_pretty"):
