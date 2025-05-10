@@ -47,6 +47,37 @@ This makes Godot's `Output` buffer much more readable!
 - `Log.prn(...)` is the same, but includes newlines + tabs when printing arrays
   and dictionaries
 
+## Links
+
+- [The Docs](https://russmatney.github.io/log.gd/#/)
+  - [Install](https://russmatney.github.io/log.gd/#/?id=install)
+  - [Features](https://russmatney.github.io/log.gd/#/?id=features)
+  - [Public API](https://russmatney.github.io/log.gd/#/?id=public)
+  - [Settings](https://russmatney.github.io/log.gd/#/?id=settings)
+  - [Implementation](https://russmatney.github.io/log.gd/#/?id=implementation)
+  - [Quirks](https://russmatney.github.io/log.gd/#/?id=quirks)
+- [Github](https://github.com/russmatney/log.gd)
+- [On the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)
+
+### Install
+
+#### Godot Asset Library
+
+Log.gd is [here on the Godot Asset
+Library](https://godotengine.org/asset-library/asset/2696), so can be installed
+directly via the Godot Editor's `Asset Lib` tab.
+
+#### Via Github
+
+- Clone the [Repo](https://github.com/russmatney/log.gd) somewhere locally
+- Move the `addons/log/` folder into your game's `addons` directory
+
+#### Manual Copy+Paste
+
+Log.gd is currently only one GDScript file! So you could just copy-paste [this
+file]() into your game and run for it.
+
+
 ### Features
 
 #### Colorized output
@@ -80,6 +111,8 @@ func _ready():_
     Log.pr(self) # colorized `{"val": 12}`
 ```
 
+#### Color Schemes
+#### Type Handler Overwrites
 
 ### Example script and output
 
@@ -123,3 +156,34 @@ need more args right away.
 ?> `Log.warn()` and `Log.err()` are nice because push_warning and push_error on
 their own do not let you see warnings/errors in the same context as your usual
 `print()` statements.
+
+### Settings
+### Implementation
+
+#### GDScript features used
+
+Before getting into some implementation details, let's list some GDScript
+features that Log.gd uses.
+
+##### `print_rich` and `BBCode`
+
+Log.gd's print helpers are really just wrappers around `print_rich`, which
+expects `BBCode`-wrapped strings.
+
+BBCode is a markup format similar to xml tags - prefixes like `[color=green]` or
+`[b]` wrap some text before a closing tags (`[/color]` or `[/b]`).
+
+Godot uses `BBCode` in it's `RichTextLabel` component.
+
+Godot docs:
+
+- [`print_rich`]()
+- [BBCode]()
+- [RichTextLabel]()
+
+##### `get_stack()`
+##### Static Class Methods
+vs Autoloads
+### Quirks
+
+#### "Term Safe" colors

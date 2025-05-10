@@ -49,8 +49,13 @@ This makes Godot's `Output` buffer much more readable! And now, I can't live wit
 ## Links
 
 - [The Docs](https://russmatney.github.io/log.gd/#/)
+  - [Install](https://russmatney.github.io/log.gd/#/?id=install)
   - [Features](https://russmatney.github.io/log.gd/#/?id=features)
-  - [Public API](https://russmatney.github.io/log.gd/#/?id=features)
+  - [Public API](https://russmatney.github.io/log.gd/#/?id=public)
+  - [Settings](https://russmatney.github.io/log.gd/#/?id=settings)
+  - [Implementation](https://russmatney.github.io/log.gd/#/?id=implementation)
+  - [Quirks](https://russmatney.github.io/log.gd/#/?id=quirks)
+- [Github](https://github.com/russmatney/log.gd)
 - [On the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)
 
 
