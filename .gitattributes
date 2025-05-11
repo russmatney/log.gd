@@ -1,2 +1,23 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
+
+.clj-kondo/ export-ignore
+.github/ export-ignore
+.vscode/ export-ignore
+assets/ export-ignore
+bb/ export-ignore
+docs/ export-ignore
+src/ export-ignore
+test/ export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+CHANGELOG.md export-ignore
+LICENSE export-ignore
+bb.edn export-ignore
+icon.svg export-ignore
+icon.svg.import export-ignore
+plug.gd export-ignore
+plug.gd.uid export-ignore
+project.godot export-ignore
+readme.md export-ignore
+todo.org export-ignore
