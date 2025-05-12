@@ -1,12 +1,94 @@
 # CHANGELOG
 
 
-## Unreleased
+## v0.0.7
 
+
+### 11 May 2025
+
+- ([`5ce83fd`](https://github.com/russmatney/log.gd/commit/5ce83fd)) fix: export-ignore non-log.gd addons
+- ([`08c32e5`](https://github.com/russmatney/log.gd/commit/08c32e5)) fix: add export-ignore for everything but addons/
+
+  > Much thanks to @Gramps for bringing this to my attention in #4.
+  > 
+  > This fix should prevent a bunch of unnecessary noise from being exported
+  > and included when installing log via the godot asset library (in-editor).
+
+
+### 10 May 2025
+
+- ([`6707693`](https://github.com/russmatney/log.gd/commit/6707693)) fix: update note about call stack in production
+- ([`f137d9a`](https://github.com/russmatney/log.gd/commit/f137d9a)) fix: public-api link
+- ([`aa9afda`](https://github.com/russmatney/log.gd/commit/aa9afda)) docs: major rewrite (impl, homepage)
+
+  > Fleshes out a bunch more details.
+
+- ([`31d681a`](https://github.com/russmatney/log.gd/commit/31d681a)) docs: rough install instructions, some impl details
+- ([`c7e3314`](https://github.com/russmatney/log.gd/commit/c7e3314)) wip: doc rewrite begins!
+
+  > Simplifies intro, drops/dedupes readme content in favor of the docs site.
+
+
+### 9 May 2025
+
+- ([`4e0d6ba`](https://github.com/russmatney/log.gd/commit/4e0d6ba)) chore: bb docs for serving docsify locally
+
+### 6 May 2025
+
+- ([`ec1ecda`](https://github.com/russmatney/log.gd/commit/ec1ecda)) feat: add link to slides
+
+### 30 Apr 2025
+
+- ([`1cbf698`](https://github.com/russmatney/log.gd/commit/1cbf698)) wip: initial light theme, cleaned up showcase
+
+### 28 Apr 2025
+
+- ([`8171e27`](https://github.com/russmatney/log.gd/commit/8171e27)) wip: better showcase
+
+### 26 Apr 2025
+
+- ([`c1dd49d`](https://github.com/russmatney/log.gd/commit/c1dd49d)) fix: drop godot 4.5 tests
+
+  > Not sure the expected syntax for this, and i can't find examples/docs
+  > for it anywhere. W/e, no need to test future versions just yet.
+
+- ([`f5aaf3f`](https://github.com/russmatney/log.gd/commit/f5aaf3f)) fix: update gdunit test action, use `sh` to run tests
+- ([`39d4670`](https://github.com/russmatney/log.gd/commit/39d4670)) fix: update gdunit and .uid files
+
+  > for some reason gdunit git-ignores .uid files, so we're stuck with these
+  > rolling over every time we update. :eyeroll:
+
+
+### 18 Mar 2025
+
+- ([`0c46788`](https://github.com/russmatney/log.gd/commit/0c46788)) chore: drop godot 4.1 tests, update gdunit4-action version
+- ([`ac24278`](https://github.com/russmatney/log.gd/commit/ac24278)) fix: we now always add a decimal to floats
+
+  > b/c why not!
+
+- ([`e6cb483`](https://github.com/russmatney/log.gd/commit/e6cb483)) fix: handle null return from project settings
+
+  > This func expected a string, but these settings don't always exist.
+
+- ([`a6dc262`](https://github.com/russmatney/log.gd/commit/a6dc262)) chore: a million billion uids
+
+  > That will inevitably get updated when they land in gdunit itself
+
+- ([`00e33be`](https://github.com/russmatney/log.gd/commit/00e33be)) chore: chmod gdunit test script
+
+  > Gotta do this every time i update :eyeroll:
+
+- ([`5b13f0e`](https://github.com/russmatney/log.gd/commit/5b13f0e)) deps: update gd-plug
+
+  > unless godot generated this for me?
+
+- ([`f71bba1`](https://github.com/russmatney/log.gd/commit/f71bba1)) ci: add godot 4.4 to tested versions
+- ([`37282b3`](https://github.com/russmatney/log.gd/commit/37282b3)) deps: gdunit update
+- ([`fe980cd`](https://github.com/russmatney/log.gd/commit/fe980cd)) chore: godot 4.4 uid updates
 
 ### 29 Jan 2025
 
-- ([`763386f`](https://github.com/russmatney/log.gd/commit/763386f)) docs: update changelog
+- ([`9c5d4f8`](https://github.com/russmatney/log.gd/commit/9c5d4f8)) docs: update changelog
 - ([`e92dc22`](https://github.com/russmatney/log.gd/commit/e92dc22)) fix: resolve type warnings in test file
 
   > Also disables a few more warnings - no need to handle return values in
