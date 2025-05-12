@@ -46,8 +46,9 @@
               (changelog/rewrite-changelog {:latest-tag-label tag-overwrite
                                             :path             "docs/changelog.md"})
               ;; TODO commit optional
-              (shell-and-log "git add CHANGELOG.md")
-              (shell-and-log "git commit -m 'docs: update changelog'"))
+              ;; (shell-and-log "git add CHANGELOG.md")
+              ;; (shell-and-log "git commit -m 'docs: update changelog'")
+              )
 
   docs (let []
          (shell-and-log "docsify serve docs"))

@@ -6,6 +6,7 @@
 
 ### 11 May 2025
 
+- ([`cc51223`](https://github.com/russmatney/log.gd/commit/cc51223)) release: new version: v0.0.7
 - ([`5ce83fd`](https://github.com/russmatney/log.gd/commit/5ce83fd)) fix: export-ignore non-log.gd addons
 - ([`08c32e5`](https://github.com/russmatney/log.gd/commit/08c32e5)) fix: add export-ignore for everything but addons/
 
