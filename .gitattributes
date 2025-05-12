@@ -4,6 +4,8 @@
 .clj-kondo/ export-ignore
 .github/ export-ignore
 .vscode/ export-ignore
+addons/gd-plug/ export-ignore
+addons/gdUnit4/ export-ignore
 assets/ export-ignore
 bb/ export-ignore
 docs/ export-ignore
