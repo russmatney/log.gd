@@ -43,7 +43,7 @@ This makes Godot's `Output` buffer much more readable!
 
 ### TLDR
 
-- `Log.pr(...)` is a `print(...)` replacement (also adds spaces between args)
+- `Log.pr(...)` is a `prints(...)` replacement
 - `Log.prn(...)` is the same, but includes newlines + tabs when printing arrays
   and dictionaries
 - Both add prefix with the calling filename and line number (e.g. `[Player:34]`)
