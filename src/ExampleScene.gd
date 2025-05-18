@@ -104,5 +104,11 @@ func run_showcase() -> void:
 	print(self)
 	Log.pr(self)
 
+	Log.prn({
+		one={two="three", four="five"},
+		two={two="three", four={five="five", six="six"}},
+		three={two="three", four="five"},
+		})
+
 # func to_pretty() -> Variant:
 # 	return {name=name}

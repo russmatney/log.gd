@@ -156,6 +156,16 @@ func test_array_of_dictionaries_with_newlines() -> void:
 		"[color=red][ [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]val[/color][color=red] }[/color][color=red], [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]another[/color][color=red] }[/color][color=red] ][/color]"
 		)
 
+func test_nested_dictionaries() -> void:
+	var val: Variant = {one={some="val", foo="bar"}, two={some="another", vals="each"}}
+	var s: String = Log.to_pretty(val, {newlines=true})
+	print(s)
+	Log.prn(val)
+	# TODO find a more reasonable way to assert on this
+	# assert_str(s).is_equal(
+	# 	"[color=red]{ [/color]\n<TAB><LF><TAB><LF><TAB>[ color=magenta]\"one\": { <LF><TAB><TAB>\"some\": val, <LF><TAB><TAB>\"foo\": bar[/color] }, <LF><TAB><LF><TAB><LF><TAB>\"two\": { <LF><TAB><TAB><TAB><TAB><LF><TAB><TAB>\"some\": anotherred], <LF><TAB><TAB><TAB><TAB><LF><TAB><TAB>\"vals\": each[color=red] ][/color] } }]}"
+	# 	)
+
 ## custom object ##########################################
 
 class ExampleObj:

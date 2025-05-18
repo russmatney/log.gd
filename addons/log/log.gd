@@ -479,14 +479,19 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		var last: Variant
 		if len(msg) > 0:
 			last = (msg as Dictionary).keys()[-1]
+		var indent_updated = false
 		for k: Variant in (msg as Dictionary).keys():
 			var val: Variant
 			if k in Log.get_dictionary_skip_keys():
 				val = "..."
 			else:
-				opts.indent_level += 1
+				if not indent_updated:
+					indent_updated = true
+					# prints("updating opts.indent_level", opts.indent_level)
+					opts.indent_level += 1
 				val = Log.to_pretty(msg[k], opts)
 			if newlines and ct > 1:
+				# prints("applying more tabs", indent_level)
 				tmp += "\n\t" \
 					+ range(indent_level)\
 					.map(func(_i: int) -> String: return "\t")\
@@ -496,6 +501,7 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 			if last and str(k) != str(last):
 				tmp += Log.color_wrap(", ", opts)
 		tmp += Log.color_wrap(" }", opts)
+		opts.indent_level -= 1 # ugh! updating the dict in-place
 		return tmp
 
 	# strings
