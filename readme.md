@@ -55,3 +55,23 @@ This makes Godot's `Output` buffer much more readable! And now, I can't live wit
   - [Settings](https://russmatney.github.io/log.gd/#/?id=settings)
   - [Implementation](https://russmatney.github.io/log.gd/#/implementation)
 - [Log.gd on the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)
+
+## Other Godot Loggers
+
+There are some other great printers/loggers with a variety of features - check
+them out!
+
+- [gg.print](https://github.com/graydoubt/gg_print)
+- [Loggie](https://github.com/Shiva-Shadowsong/loggie)
+- [LogFox](https://github.com/HakaikuXiao/LogFox) - comparing values across runs
+- [GoLogger](https://github.com/Burloe/GoLogger) - more production/release angled
+- [https://github.com/ClumsyInker/godot-editor-log-highlighter](https://github.com/ClumsyInker/godot-editor-log-highlighter)
+- [https://github.com/albinaask/Log](https://github.com/albinaask/Log)
+- [https://gitlab.com/godot-stuff/gs-logger](https://gitlab.com/godot-stuff/gs-logger)
+- [https://github.com/JohnDevlopment/godot-jlogger](https://github.com/JohnDevlopment/godot-jlogger)
+- [https://github.com/raldone01/godot_addon_gdlogging_assetlib](https://github.com/raldone01/godot_addon_gdlogging_assetlib)
+- [https://codeberg.org/Taffer/godot-logger](https://codeberg.org/Taffer/godot-logger)
+- [https://github.com/DawnGroveStudios/GodotLogger](https://github.com/DawnGroveStudios/GodotLogger)
+- [https://github.com/ZeeWeasel/LogDuck](https://github.com/ZeeWeasel/LogDuck)
+- [https://github.com/DaviD4Chirino/Awesome-Debug-Log](https://github.com/DaviD4Chirino/Awesome-Debug-Log)
+

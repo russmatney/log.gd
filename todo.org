@@ -32,10 +32,18 @@ CLOSED: [2024-03-21 Thu 18:33]
 CLOSED: [2024-06-22 Sat 10:01]
 ** [X] add static typing everywhere
 CLOSED: [2025-01-29 Wed 11:40]
-** [ ] Docs: 'Example' page
-walk through the ExampleScene.gd
-with individual line-by-line output screenshots
-** [ ] readme/docs content
+** [X] docs for public api
+CLOSED: [2025-06-25 Wed 10:43]
+*** Log.to_pretty
+*** `to_pretty()`, `data()`
+*** Log.set_color_scheme(scheme) and related
+** [X] readme link, docs install instructions
+CLOSED: [2025-06-25 Wed 10:43]
+** [X] better public obj -> rich-string function
+CLOSED: [2025-06-25 Wed 10:43]
+no more wrap it in [] nonsense
+** SKIP readme/docs content
+CLOSED: [2025-06-25 Wed 10:44]
 *** preview (short-version) of docs example page
 *** non-Log.gd-based godot printing quick hits
 - print, prints, printt, print_rich
@@ -56,18 +64,14 @@ func to_printable():
 *** _not_ a production log-to-file helper
 but maybe that's a future direction?
 *** prior art
-** [ ] docs for public api
-*** Log.to_pretty
-*** `to_pretty()`, `data()`
-*** Log.set_color_scheme(scheme) and related
-** [ ] readme link, docs install instructions
+** [ ] Docs: 'Example' page
+walk through the ExampleScene.gd
+with individual line-by-line output screenshots
 ** [ ] Example scene should have buttons for printing more things
 the example outputs could also colorize and print the source code - that output might
 be a fun sharable version of the tutorial (i.e. the tutorial is all printed via Log.gd)
 ** [ ] docs full api page
 ** [ ] call-site prefix test coverage
-** [ ] better public obj -> rich-string function
-no more wrap it in [] nonsense
 ** [ ] comb docs for todos
 * v1.0.0
 ** [ ] list prior art (other godot asset lib loggers)
@@ -87,6 +91,10 @@ could read/write from a ~res://log.gd~ for opts.
 - specify colors for types
 - specify to_printable overrides
   - for eg, a fallback for PandoraEntities
+
+--
+
+this is possible via the registry - but it's not yet documented
 ** [ ] configurable colors and multiple schemas
 - pretty colors
 - terminal-safe colors
