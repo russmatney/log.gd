@@ -140,12 +140,15 @@ static var COLORS_TERMINAL_SAFE: Dictionary = {
 	"ADDONS": "red",
 	"TEST": "green",
 	",": "red",
-	"(": "red",
-	")": "red",
-	"[": "red",
-	"]": "red",
-	"{": "red",
-	"}": "red",
+	"(": ["red", "blue", "green", "pink", "orange"],
+	")": ["red", "blue", "green", "pink", "orange"],
+	"[": ["red", "blue", "green", "pink", "orange"],
+	"]": ["red", "blue", "green", "pink", "orange"],
+	"{": ["red", "blue", "green", "pink", "orange"],
+	"}": ["red", "blue", "green", "pink", "orange"],
+	"<": ["red", "blue", "green", "pink", "orange"],
+	">": ["red", "blue", "green", "pink", "orange"],
+	"|": ["red", "blue", "green", "pink", "orange"],
 	"&": "orange",
 	"^": "orange",
 	"dict_key": "magenta",
@@ -197,12 +200,15 @@ static var COLORS_PRETTY_DARK_V1: Dictionary = {
 	"ADDONS": "peru",
 	"TEST": "green_yellow",
 	",": "crimson",
-	"(": "crimson",
-	")": "crimson",
-	"[": "crimson",
-	"]": "crimson",
-	"{": "crimson",
-	"}": "crimson",
+	"(": ["crimson", "cornflower_blue", "dark_green", "peru"],
+	")": ["crimson", "cornflower_blue", "dark_green", "peru"],
+	"[": ["crimson", "cornflower_blue", "dark_green", "peru"],
+	"]": ["crimson", "cornflower_blue", "dark_green", "peru"],
+	"{": ["crimson", "cornflower_blue", "dark_green", "peru"],
+	"}": ["crimson", "cornflower_blue", "dark_green", "peru"],
+	"<": ["crimson", "cornflower_blue", "dark_green", "peru"],
+	">": ["crimson", "cornflower_blue", "dark_green", "peru"],
+	"|": ["crimson", "cornflower_blue", "dark_green", "peru"],
 	"&": "coral",
 	"^": "coral",
 	"dict_key": "cadet_blue",
@@ -254,12 +260,15 @@ static var COLORS_PRETTY_LIGHT_V1: Dictionary = {
 	"ADDONS": "dark_red",
 	"TEST": "dark_green",
 	",": "crimson",
-	"(": "crimson",
-	")": "crimson",
-	"[": "crimson",
-	"]": "crimson",
-	"{": "crimson",
-	"}": "crimson",
+	"(": ["crimson", "cornflower_blue", "dark_green", "coral"],
+	")": ["crimson", "cornflower_blue", "dark_green", "coral"],
+	"[": ["crimson", "cornflower_blue", "dark_green", "coral"],
+	"]": ["crimson", "cornflower_blue", "dark_green", "coral"],
+	"{": ["crimson", "cornflower_blue", "dark_green", "coral"],
+	"}": ["crimson", "cornflower_blue", "dark_green", "coral"],
+	"<": ["crimson", "cornflower_blue", "dark_green", "coral"],
+	">": ["crimson", "cornflower_blue", "dark_green", "coral"],
+	"|": ["crimson", "cornflower_blue", "dark_green", "coral"],
 	"&": "coral",
 	"^": "coral",
 	"dict_key": "dark_slate_blue",
@@ -355,8 +364,8 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	if not should_use_color(opts):
 		return str(s)
 
-	var color: String = opts.get("color", "")
-	if color == "":
+	var color: Variant = opts.get("color", "")
+	if color == null or (color is String and color == ""):
 		var s_type: Variant = opts.get("typeof", typeof(s))
 		if s_type is String:
 			# type overwrites
@@ -373,8 +382,18 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 			# all other types
 			color = colors.get(s_type)
 
-	if color == "":
+	if color is String and color == "":
 		print("Log.gd could not determine color for object: %s type: (%s)" % [str(s), typeof(s)])
+
+	if color is Array:
+		# support rainbow delimiters
+		color = color[opts.get("delimiter_index", 0) % len(color)]
+
+	if s is String:
+		if s == "[":
+			s = "[lb]"
+		if s == "]":
+			s = "[rb]"
 
 	return "[color=%s]%s[/color]" % [color, s]
 
@@ -419,8 +438,12 @@ static func clear_type_overwrites() -> void:
 static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 	var newlines: bool = opts.get("newlines", false)
 	var indent_level: int = opts.get("indent_level", 0)
+	var delimiter_index: int = opts.get("delimiter_index", 0)
 	if not "indent_level" in opts:
 		opts["indent_level"] = indent_level
+
+	if not "delimiter_index" in opts:
+		opts["delimiter_index"] = delimiter_index
 
 	var theme: Dictionary = opts.get("built_color_theme", get_color_theme(opts))
 	if not "built_color_theme" in opts:
@@ -458,7 +481,11 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 			if newlines:
 				msg_array.append("...")
 
-		var tmp: String = Log.color_wrap("[ ", opts)
+		# shouldn't we be incrementing index_level here?
+		# var tmp: String = str(Log.color_wrap("(", opts), Log.color_wrap("|", opts), " ")
+		var tmp: String = str(Log.color_wrap("[", opts), " ")
+		print(tmp)
+		opts["delimiter_index"] += 1
 		var last: int = len(msg) - 1
 		for i: int in range(len(msg)):
 			if newlines and last > 1:
@@ -469,12 +496,15 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 				opts.duplicate(true))
 			if i != last:
 				tmp += Log.color_wrap(", ", opts)
-		tmp += Log.color_wrap(" ]", opts)
+		opts["delimiter_index"] -= 1
+		# tmp += str(" ", Log.color_wrap("|", opts), Log.color_wrap(")", opts))
+		tmp += str(" ", Log.color_wrap("]", opts))
 		return tmp
 
 	# dictionary
 	elif msg is Dictionary:
 		var tmp: String = Log.color_wrap("{ ", opts)
+		opts["delimiter_index"] += 1
 		var ct: int = len(msg)
 		var last: Variant
 		if len(msg) > 0:
@@ -500,6 +530,7 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 			tmp += "%s: %s" % [key, val]
 			if last and str(k) != str(last):
 				tmp += Log.color_wrap(", ", opts)
+		opts["delimiter_index"] -= 1
 		tmp += Log.color_wrap(" }", opts)
 		opts.indent_level -= 1 # ugh! updating the dict in-place
 		return tmp

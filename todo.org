@@ -73,6 +73,10 @@ be a fun sharable version of the tutorial (i.e. the tutorial is all printed via 
 ** [ ] docs full api page
 ** [ ] call-site prefix test coverage
 ** [ ] comb docs for todos
+* v0.8.0
+** [ ] rainbow delimiters
+** [ ] fix closing [/color] noise
+** [ ] tests covering rainbow delimiters
 * v1.0.0
 ** [ ] list prior art (other godot asset lib loggers)
 ** [ ] consider csharp support + implementation

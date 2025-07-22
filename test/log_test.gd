@@ -37,7 +37,7 @@ func test_already_colorized_string() -> void:
 ## color ##########################################
 
 func test_color() -> void:
-	# test for printing colors, not log.gd color nuances
+	# test for printing colors (Color.new(0, 0, 0, 0)), not log.gd color nuances
 	pass
 
 ## numbers ##########################################
@@ -165,6 +165,18 @@ func test_nested_dictionaries() -> void:
 	# assert_str(s).is_equal(
 	# 	"[color=red]{ [/color]\n<TAB><LF><TAB><LF><TAB>[ color=magenta]\"one\": { <LF><TAB><TAB>\"some\": val, <LF><TAB><TAB>\"foo\": bar[/color] }, <LF><TAB><LF><TAB><LF><TAB>\"two\": { <LF><TAB><TAB><TAB><TAB><LF><TAB><TAB>\"some\": anotherred], <LF><TAB><TAB><TAB><TAB><LF><TAB><TAB>\"vals\": each[color=red] ][/color] } }]}"
 	# 	)
+
+## rainbow delimiters #####################################
+
+func test_rainbow_delimiters() -> void:
+	print_rich("[lb] hi [rb]")
+	var val: Variant = [[1, 2], [[3, 4, [5]]]]
+	var s: String = Log.to_pretty(val, {newlines=false})
+	print(s)
+	Log.pr(val)
+	assert_str(val).is_equal(
+		"[color=red]([/color][color=red]|[/color] [color=blue]([/color][color=blue]|[/color] [color=green]1[/color][color=red], [/color][color=green]2[/color] [color=blue]|[/color][color=blue])[/color][color=red], [/color][color=blue]([/color][color=blue]|[/color] [color=green]([/color][color=green]|[/color] [color=green]3[/color][color=red], [/color][color=green]4[/color][color=red], [/color][color=pink]([/color][color=pink]|[/color] [color=green]5[/color] [color=pink]|[/color][color=pink])[/color] [color=green]|[/color][color=green])[/color] [color=blue]|[/color][color=blue])[/color] [color=red]|[/color][color=red])[/color]"
+		)
 
 ## custom object ##########################################
 
