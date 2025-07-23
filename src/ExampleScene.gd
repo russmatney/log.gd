@@ -48,6 +48,8 @@ func _ready() -> void:
 
 	run_showcase()
 
+	print_rich_debugging()
+
 func print_header(header: String) -> void:
 	print(str("\n\n\t====", header, "====\n\n"))
 
@@ -112,3 +114,17 @@ func run_showcase() -> void:
 
 # func to_pretty() -> Variant:
 # 	return {name=name}
+
+func print_rich_debugging() -> void:
+	# Godot 4.4.1 has a `[` parsing bug - already fixed by Godot 4.5
+	# here's a bunch of test prints reproducing the issue
+	print_rich("[color=red][[/color]")
+	print_rich("[lb] hi [rb]")
+	print_rich("[color=red][[/color] [color=blue]1, 2[/color] [color=green]][/color]")
+	print_rich("[color=red][ [color=blue]1, 2[/color] [color=green]][/color]")
+	print_rich("[color=red][lb][/color] [color=blue]1, 2[/color] [color=green]][/color]")
+	print_rich("[color=red][lb] [color=blue]1, 2[/color] [color=green]][/color]")
+	print_rich("[color=red]/[[/color] [color=blue]1, 2[/color] [color=green]][/color]")
+	print_rich("[color=red]\\[[/color] [color=blue]1, 2[/color] [color=green]][/color]")
+	print_rich("[ [color=blue]1, 2[/color] [color=green]][/color]")
+	print_rich("[color=red]'['[/color] [color=blue]1, 2[/color] [color=green]][/color]")

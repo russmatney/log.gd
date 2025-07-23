@@ -142,40 +142,100 @@ func test_log_packed_string_array() -> void:
 func test_log_dictionary() -> void:
 	var val: String = Log.to_pretty({some="val", another=2})
 	assert_str(val).is_equal(
-		"[color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]val[/color][color=red], [/color][color=magenta]\"another\"[/color]: [color=green]2[/color][color=red] }[/color]")
+		"[color=red]{ [/color][color=orange]\"some\"[/color]: [color=pink]val[/color][color=red], [/color][color=orange]\"another\"[/color]: [color=green]2[/color][color=red] }[/color]"
+		)
 
 func test_array_of_dictionaries() -> void:
 	var val: String = Log.to_pretty([{some="val"},{some="another"}])
 	assert_str(val).is_equal(
-		"[color=red][ [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]val[/color][color=red] }[/color][color=red], [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]another[/color][color=red] }[/color][color=red] ][/color]"
+		"[color=red][ [/color][color=blue]{ [/color][color=cyan]\"some\"[/color]: [color=pink]val[/color][color=blue] }[/color][color=red], [/color][color=blue]{ [/color][color=cyan]\"some\"[/color]: [color=pink]another[/color][color=blue] }[/color][color=red] ][/color]"
 		)
 
 func test_array_of_dictionaries_with_newlines() -> void:
 	var val: String = Log.to_pretty([{some="val"},{some="another"}], {newlines=true})
 	assert_str(val).is_equal(
-		"[color=red][ [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]val[/color][color=red] }[/color][color=red], [/color][color=red]{ [/color][color=magenta]\"some\"[/color]: [color=pink]another[/color][color=red] }[/color][color=red] ][/color]"
+		"[color=red][ [/color][color=blue]{ [/color][color=cyan]\"some\"[/color]: [color=pink]val[/color][color=blue] }[/color][color=red], [/color][color=blue]{ [/color][color=cyan]\"some\"[/color]: [color=pink]another[/color][color=blue] }[/color][color=red] ][/color]"
+		)
+
+func test_nested_dictionaries_no_newlines() -> void:
+	var val: Variant = {one={some="val", foo="bar"}, two={some="another", vals="each"}}
+	var s: String = Log.to_pretty(val, {newlines=false})
+	assert_str(s).is_equal(
+		"[color=red]{ [/color][color=orange]\"one\"[/color]: [color=blue]{ [/color][color=cyan]\"some\"[/color]: [color=pink]val[/color][color=red], [/color][color=cyan]\"foo\"[/color]: [color=pink]bar[/color][color=blue] }[/color][color=red], [/color][color=orange]\"two\"[/color]: [color=blue]{ [/color][color=cyan]\"some\"[/color]: [color=pink]another[/color][color=red], [/color][color=cyan]\"vals\"[/color]: [color=pink]each[/color][color=blue] }[/color][color=red] }[/color]"
 		)
 
 func test_nested_dictionaries() -> void:
 	var val: Variant = {one={some="val", foo="bar"}, two={some="another", vals="each"}}
 	var s: String = Log.to_pretty(val, {newlines=true})
-	print(s)
-	Log.prn(val)
-	# TODO find a more reasonable way to assert on this
-	# assert_str(s).is_equal(
-	# 	"[color=red]{ [/color]\n<TAB><LF><TAB><LF><TAB>[ color=magenta]\"one\": { <LF><TAB><TAB>\"some\": val, <LF><TAB><TAB>\"foo\": bar[/color] }, <LF><TAB><LF><TAB><LF><TAB>\"two\": { <LF><TAB><TAB><TAB><TAB><LF><TAB><TAB>\"some\": anotherred], <LF><TAB><TAB><TAB><TAB><LF><TAB><TAB>\"vals\": each[color=red] ][/color] } }]}"
-	# 	)
+	assert_str(s).is_equal(
+		"[color=red]{ [/color]
+	[color=orange]\"one\"[/color]: [color=blue]{ [/color]
+		[color=cyan]\"some\"[/color]: [color=pink]val[/color][color=red], [/color]
+		[color=cyan]\"foo\"[/color]: [color=pink]bar[/color][color=blue] }[/color][color=red], [/color]
+	[color=orange]\"two\"[/color]: [color=blue]{ [/color]
+		[color=cyan]\"some\"[/color]: [color=pink]another[/color][color=red], [/color]
+		[color=cyan]\"vals\"[/color]: [color=pink]each[/color][color=blue] }[/color][color=red] }[/color]"
+		)
+
+func test_indentation_across_nuanced_nesting() -> void:
+	var val: Variant = {
+		zero=[
+			{name="Fred Flintstone", home="bedrock"},
+			{name="Barney Rubble"},
+			{name="Dino Spimony", friends=[{name="Arnold", has_a="cool room"}]},
+			],
+		one={
+			some="val",
+			foo="bar",
+			nested={dict="tionary", nd="such"}
+			},
+		two=3,
+		three=[1,2,3,4],
+		four={
+			some="another",
+			vals="each"
+			}
+		}
+
+	var s: String = Log.to_pretty(val, {newlines=true})
+
+	assert_str(s).is_equal(
+		"[color=red]{ [/color]
+	[color=orange]\"zero\"[/color]: [color=blue][ [/color]
+	[color=green]{ [/color]
+		[color=magenta]\"name\"[/color]: [color=pink]Fred Flintstone[/color][color=red], [/color]
+		[color=magenta]\"home\"[/color]: [color=pink]bedrock[/color][color=green] }[/color][color=red], [/color]
+	[color=green]{ [/color][color=magenta]\"name\"[/color]: [color=pink]Barney Rubble[/color][color=green] }[/color][color=red], [/color]
+	[color=green]{ [/color]
+		[color=magenta]\"name\"[/color]: [color=pink]Dino Spimony[/color][color=red], [/color]
+		[color=magenta]\"friends\"[/color]: [color=pink][ [/color][color=orange]{ [/color]
+			[color=cyan]\"name\"[/color]: [color=pink]Arnold[/color][color=red], [/color]
+			[color=cyan]\"has_a\"[/color]: [color=pink]cool room[/color][color=orange] }[/color][color=pink] ][/color][color=green] }[/color][color=blue] ][/color][color=red], [/color]
+	[color=orange]\"one\"[/color]: [color=blue]{ [/color]
+		[color=cyan]\"some\"[/color]: [color=pink]val[/color][color=red], [/color]
+		[color=cyan]\"foo\"[/color]: [color=pink]bar[/color][color=red], [/color]
+		[color=cyan]\"nested\"[/color]: [color=green]{ [/color]
+			[color=magenta]\"dict\"[/color]: [color=pink]tionary[/color][color=red], [/color]
+			[color=magenta]\"nd\"[/color]: [color=pink]such[/color][color=green] }[/color][color=blue] }[/color][color=red], [/color]
+	[color=orange]\"two\"[/color]: [color=green]3[/color][color=red], [/color]
+	[color=orange]\"three\"[/color]: [color=blue][ [/color]
+	[color=green]1[/color][color=red], [/color]
+	[color=green]2[/color][color=red], [/color]
+	[color=green]3[/color][color=red], [/color]
+	[color=green]4[/color][color=blue] ][/color][color=red], [/color]
+	[color=orange]\"four\"[/color]: [color=blue]{ [/color]
+		[color=cyan]\"some\"[/color]: [color=pink]another[/color][color=red], [/color]
+		[color=cyan]\"vals\"[/color]: [color=pink]each[/color][color=blue] }[/color][color=red] }[/color]"
+		)
+
 
 ## rainbow delimiters #####################################
 
 func test_rainbow_delimiters() -> void:
-	print_rich("[lb] hi [rb]")
 	var val: Variant = [[1, 2], [[3, 4, [5]]]]
 	var s: String = Log.to_pretty(val, {newlines=false})
-	print(s)
-	Log.pr(val)
-	assert_str(val).is_equal(
-		"[color=red]([/color][color=red]|[/color] [color=blue]([/color][color=blue]|[/color] [color=green]1[/color][color=red], [/color][color=green]2[/color] [color=blue]|[/color][color=blue])[/color][color=red], [/color][color=blue]([/color][color=blue]|[/color] [color=green]([/color][color=green]|[/color] [color=green]3[/color][color=red], [/color][color=green]4[/color][color=red], [/color][color=pink]([/color][color=pink]|[/color] [color=green]5[/color] [color=pink]|[/color][color=pink])[/color] [color=green]|[/color][color=green])[/color] [color=blue]|[/color][color=blue])[/color] [color=red]|[/color][color=red])[/color]"
+	assert_str(s).is_equal(
+		"[color=red][ [/color][color=blue][ [/color][color=green]1[/color][color=red], [/color][color=green]2[/color][color=blue] ][/color][color=red], [/color][color=blue][ [/color][color=green][ [/color][color=green]3[/color][color=red], [/color][color=green]4[/color][color=red], [/color][color=pink][ [/color][color=green]5[/color][color=pink] ][/color][color=green] ][/color][color=blue] ][/color][color=red] ][/color]"
 		)
 
 ## custom object ##########################################
@@ -193,7 +253,7 @@ func test_custom_to_pretty() -> void:
 	var val: String = Log.to_pretty(obj)
 	var id: int = obj.get_instance_id()
 	assert_str(val).is_equal(
-		"[color=red]{ [/color][color=magenta]\"val\"[/color]: [color=red]([/color][color=green]1.0[/color][color=red],[/color][color=green]2.0[/color][color=red])[/color][color=red], [/color][color=magenta]\"id\"[/color]: [color=green]%s[/color][color=red] }[/color]"
+		"[color=red]{ [/color][color=orange]\"val\"[/color]: [color=blue]([/color][color=green]1.0[/color][color=red],[/color][color=green]2.0[/color][color=blue])[/color][color=red], [/color][color=orange]\"id\"[/color]: [color=green]%s[/color][color=red] }[/color]"
 		% str(id))
 
 # TODO class_name
@@ -228,7 +288,7 @@ func test_custom_resource_register_overwrite() -> void:
 
 	var val: String = Log.to_pretty(tp)
 	assert_str(val).is_equal(
-		"[color=red]{ [/color][color=magenta]\"name\"[/color]: [color=pink]Hanz[/color][color=red], [/color][color=magenta]\"level\"[/color]: [color=green]3[/color][color=red] }[/color]"
+		"[color=red]{ [/color][color=orange]\"name\"[/color]: [color=pink]Hanz[/color][color=red], [/color][color=orange]\"level\"[/color]: [color=green]3[/color][color=red] }[/color]"
 		)
 
 ## color schemes ##########################################
