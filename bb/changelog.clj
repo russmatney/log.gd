@@ -79,7 +79,7 @@
 (defn all-tags [{:keys [dir]}]
   (->
     ^{:out :string :dir (str dir)}
-    (process/$ git describe --tags --abbrev=0)
+    (process/$ git tag)
     (process/check)
     ((fn [res]
        (when (#{0} (:exit res))

@@ -1,6 +1,66 @@
 # CHANGELOG
 
 
+## Unreleased
+
+
+## v0.0.8
+
+
+### 23 Jul 2025
+
+- ([`29fdd7f`](https://github.com/russmatney/log.gd/commit/29fdd7f)) release: v0.0.8
+- ([`d70c597`](https://github.com/russmatney/log.gd/commit/d70c597)) docs: rainbow delimiter mention and image
+- ([`6a1f413`](https://github.com/russmatney/log.gd/commit/6a1f413)) feat: cycle colors on dictionary keys too, plus restore tests
+
+  > This also moves back to the original square brace usage - there's a
+  > parsing bug in Godot 4.4.1 that leads to extra [/color] showing up, but
+  > it's been fixed in Godot 4.5, so I'm gonna leave it for now.
+
+
+### 22 Jul 2025
+
+- ([`04ba989`](https://github.com/russmatney/log.gd/commit/04ba989)) wip: rainbow delimiters, square brace workaround
+
+  > Pulls in the quick rainbow-delimiter impl from dothop, and the temporary
+  > square brace workaround which uses (| |) in place of [ ] for now.
+  > 
+  > It's not very readable - hopefully there's a better option available,
+  > needs more digging.
+
+
+### 25 Jun 2025
+
+- ([`39a9616`](https://github.com/russmatney/log.gd/commit/39a9616)) docs: add prior art, resized images
+
+  > Prepping for the new godot asset store
+
+
+### 18 May 2025
+
+- ([`c7e51a2`](https://github.com/russmatney/log.gd/commit/c7e51a2)) wip: fix indentation bug, unit test with no assertion
+
+  > Need to find a better way to test log's output - these raw string
+  > comparisons are a bit of a pain to read and write.
+  > 
+  > Fixes the bug, at least.
+
+
+### 16 May 2025
+
+- ([`69a0d9b`](https://github.com/russmatney/log.gd/commit/69a0d9b)) chore: drop light theme setting
+- ([`eee26b3`](https://github.com/russmatney/log.gd/commit/eee26b3)) docs: bit more for the TLDR
+- ([`8326aa9`](https://github.com/russmatney/log.gd/commit/8326aa9)) docs: call out as a `prints` replacement
+- ([`3933e07`](https://github.com/russmatney/log.gd/commit/3933e07)) docs: add line-number prefix to tldr
+
+### 14 May 2025
+
+- ([`071600a`](https://github.com/russmatney/log.gd/commit/071600a): GP Garcia) Update .gitattributes
+
+### 11 May 2025
+
+- ([`1d8d6c6`](https://github.com/russmatney/log.gd/commit/1d8d6c6)) chore: changelog updates
+
 ## v0.0.7
 
 
@@ -276,6 +336,12 @@
 ### 12 Apr 2024
 
 - ([`d06b6bb`](https://github.com/russmatney/log.gd/commit/d06b6bb)) chore: misc bb release improvements
+
+## v0.0.5
+
+
+### 12 Apr 2024
+
 - ([`f583a19`](https://github.com/russmatney/log.gd/commit/f583a19)) chore: new version: v0.0.5
 - ([`d13aea0`](https://github.com/russmatney/log.gd/commit/d13aea0)) docs: update changelog
 - ([`8abba09`](https://github.com/russmatney/log.gd/commit/8abba09)) fix: don't over indent arrays of dicts
@@ -383,6 +449,12 @@
 ### 21 Mar 2024
 
 - ([`6ba4738`](https://github.com/russmatney/log.gd/commit/6ba4738)) docs: misc todos
+
+## v0.0.4
+
+
+### 21 Mar 2024
+
 - ([`c34c260`](https://github.com/russmatney/log.gd/commit/c34c260)) chore: new version: v0.0.4
 - ([`7e5bcbd`](https://github.com/russmatney/log.gd/commit/7e5bcbd)) refactor: update repo name from log to log.gd
 
@@ -395,6 +467,12 @@
 - ([`0c3e360`](https://github.com/russmatney/log.gd/commit/0c3e360)) fix: correct readme image urls
 - ([`6b2a31a`](https://github.com/russmatney/log.gd/commit/6b2a31a)) docs: v1 docs site with quick hits
 - ([`fdfa25b`](https://github.com/russmatney/log.gd/commit/fdfa25b)) docs: init basic docsify pages
+
+## v0.0.3
+
+
+### 21 Mar 2024
+
 - ([`ff22e41`](https://github.com/russmatney/log.gd/commit/ff22e41)) chore: new version: v0.0.3
 - ([`15ee689`](https://github.com/russmatney/log.gd/commit/15ee689)) chore: new version: v0.0.2
 - ([`02f5951`](https://github.com/russmatney/log.gd/commit/02f5951)) feat: automate more of the release flow
@@ -403,7 +481,19 @@
   > 
   > Would be cool to error out if there's already a git-diff here as well.
 
+
+## v0.0.2
+
+
+### 21 Mar 2024
+
 - ([`097b950`](https://github.com/russmatney/log.gd/commit/097b950)) chore: new version: v0.0.2
+
+## v0.0.1
+
+
+### 21 Mar 2024
+
 - ([`03043d0`](https://github.com/russmatney/log.gd/commit/03043d0)) chore: version and changelog update
 - ([`c0a9e37`](https://github.com/russmatney/log.gd/commit/c0a9e37)) docs: extend changelog to specify a latest version label
 
