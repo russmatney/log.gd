@@ -93,6 +93,11 @@ and `Dictionaries`), but it's also very useful for other gdscript primitives,
 like `Vectors`, `NodePaths`, and `StringNames`. Support for more types is easily
 added, feel free to create an issue!
 
+Support for "rainbow-delimiters" (cycling colors on nested brackets and
+dictionary keys) was added in `v0.0.8`!
+
+![Rainbow Delimiters](/assets/rainbow_delimiters.png)
+
 ### Call-site prefixes
 
 Log's print functions will prefix the output with the name of the script the log
