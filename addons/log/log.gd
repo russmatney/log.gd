@@ -353,6 +353,9 @@ static func get_color_theme(opts: Dictionary = {}) -> Dictionary:
 	return theme
 
 static func should_use_color(opts: Dictionary = {}) -> bool:
+	if OS.has_feature("ios") or OS.has_feature("web"):
+		# ios and web (and likely others) don't handle colors well
+		return false
 	if Log.get_disable_colors():
 		return false
 	# supports per-print color skipping
