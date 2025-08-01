@@ -73,12 +73,26 @@ be a fun sharable version of the tutorial (i.e. the tutorial is all printed via 
 ** [ ] docs full api page
 ** [ ] call-site prefix test coverage
 ** [ ] comb docs for todos
-* v0.8.0
-** [ ] rainbow delimiters
-** [ ] fix closing [/color] noise
-** [ ] tests covering rainbow delimiters
+* v0.0.8
+** [X] rainbow delimiters
+CLOSED: [2025-08-01 Fri 17:33]
+** SKIP fix closing [/color] noise
+CLOSED: [2025-08-01 Fri 17:33]
+already fixed in godot 4.5
+** [X] tests covering rainbow delimiters
+CLOSED: [2025-08-01 Fri 17:34]
+* v0.1.0
+** [X] configurable colors and multiple schemas
+CLOSED: [2025-08-01 Fri 17:34]
+- pretty colors
+- terminal-safe colors
+- custom color dictionary
+
+done via BYO-LogColorTheme
+
 * v1.0.0
-** [ ] list prior art (other godot asset lib loggers)
+** [X] list prior art (other godot asset lib loggers)
+CLOSED: [2025-08-01 Fri 17:34]
 ** [ ] consider csharp support + implementation
 ** [ ] configurable per-type prettyprint overrides
 example: i want to impl a to_printable for PandoraEntities without subclassing it
@@ -99,10 +113,6 @@ could read/write from a ~res://log.gd~ for opts.
 --
 
 this is possible via the registry - but it's not yet documented
-** [ ] configurable colors and multiple schemas
-- pretty colors
-- terminal-safe colors
-- custom color dictionary
 ** [ ] hide/show logs based on arbitrary categories
 https://mastodon.gamedev.place/deck/@brycedixon@peoplemaking.games/112140962069868440
 ** [ ] hide/show logs based on script name

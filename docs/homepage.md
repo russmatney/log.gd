@@ -137,12 +137,14 @@ Log.register_type_overwrite(some_obj.get_class(),
 
 See the [type handlers functions](/?id=type-handlers).
 
-### Color Themes
+### Bring Your Own Color Theme!
 
-There is very rough color theme support. I'd like to develop this further, and
-possibly align it more strongly with Godot's editor color themes.
+As of `v0.0.9` you can create your own `LogColorTheme` and set it via the
+`Project > Settings > Log.gd`.
 
-For now it's a bit hard-coded...
+Log ships with an initial dark and light theme - feel free to duplicate and
+customize as you would. I'd love to provide more themes out of the box, feel
+free to share them via PR or otherwise.
 
 ## Public API
 
