@@ -49,15 +49,13 @@ static func get_setting(key: String) -> Variant:
 const KEY_PREFIX: String = "log_gd/config"
 static var is_config_setup: bool = false
 
-const KEY_COLOR_THEME: String = "%s/color_theme" % KEY_PREFIX
-const KEY_COLOR_THEME_RESOURCE: String = "log_color_theme"
+const KEY_COLOR_THEME_DICT: String = "log_color_theme_dict"
 const KEY_COLOR_THEME_RESOURCE_PATH: String = "%s/color_resource_path" % KEY_PREFIX
 const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
 const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
 const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
 
 const CONFIG_DEFAULTS := {
-		KEY_COLOR_THEME: LOG_THEME_PRETTY_DARK_V1,
 		KEY_COLOR_THEME_RESOURCE_PATH: "res://addons/log/default_color_theme.tres",
 		KEY_DISABLE_COLORS: false,
 		KEY_MAX_ARRAY_SIZE: 20,
@@ -67,14 +65,13 @@ const CONFIG_DEFAULTS := {
 # settings setup ####################################
 
 static func setup_settings(opts: Dictionary = {}) -> void:
-	initialize_setting(KEY_COLOR_THEME, CONFIG_DEFAULTS[KEY_COLOR_THEME], TYPE_STRING, PROPERTY_HINT_ENUM,
-		"%s,%s,%s" % [LOG_THEME_TERMSAFE, LOG_THEME_PRETTY_DARK_V1, LOG_THEME_PRETTY_LIGHT_V1])
 	initialize_setting(KEY_COLOR_THEME_RESOURCE_PATH, CONFIG_DEFAULTS[KEY_COLOR_THEME_RESOURCE_PATH], TYPE_STRING, PROPERTY_HINT_FILE)
 	initialize_setting(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS], TYPE_BOOL)
 	initialize_setting(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE], TYPE_BOOL)
 	initialize_setting(KEY_SKIP_KEYS, CONFIG_DEFAULTS[KEY_SKIP_KEYS], TYPE_PACKED_STRING_ARRAY)
 
-	ProjectSettings.save()
+	# do we need this?
+	# ProjectSettings.save()
 
 # config setup ####################################
 
@@ -83,13 +80,13 @@ static func rebuild_config(opts: Dictionary = {}) -> void:
 		var val: Variant = get_setting(key)
 		if val == null:
 			val = CONFIG_DEFAULTS[key]
-		if val != null:
-			Log.config[key] = val
 
-			# hardcoding a resource-load b/c it seems like custom-resources can't be loaded by the project settings
-			# https://github.com/godotengine/godot/issues/96219
-			if key == KEY_COLOR_THEME_RESOURCE_PATH:
-				Log.config[KEY_COLOR_THEME_RESOURCE] = load(val)
+		Log.config[key] = val
+
+		# hardcoding a resource-load b/c it seems like custom-resources can't be loaded by the project settings
+		# https://github.com/godotengine/godot/issues/96219
+		if val != null and key == KEY_COLOR_THEME_RESOURCE_PATH:
+			Log.config[KEY_COLOR_THEME_DICT] = load(val).to_color_dict()
 
 	Log.is_config_setup = true
 
@@ -106,29 +103,12 @@ static func get_dictionary_skip_keys() -> Array:
 static func get_disable_colors() -> bool:
 	return Log.config.get(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS])
 
-static var warned_about_missing_theme := false
 static func get_config_color_theme() -> Dictionary:
-	var color_res: LogColorTheme = Log.config.get(KEY_COLOR_THEME_RESOURCE)
-	if color_res != null:
-		# print("found color theme resource!", color_res)
-		var colors := color_res.to_color_dict()
-		# print("SRC color: ", colors.get("SRC", "no src color found!"))
-		return colors
-	print("coudl not find color theme resource, using config color theme")
-
-	var theme_id: String = Log.config.get(KEY_COLOR_THEME, CONFIG_DEFAULTS[KEY_COLOR_THEME])
-	match theme_id:
-		LOG_THEME_TERMSAFE:
-			return Log.COLORS_TERMINAL_SAFE
-		LOG_THEME_PRETTY_DARK_V1:
-			return Log.COLORS_PRETTY_DARK_V1
-		LOG_THEME_PRETTY_LIGHT_V1:
-			return Log.COLORS_PRETTY_LIGHT_V1
-		_:
-			if not warned_about_missing_theme:
-				print("Unknown LOG_THEME '%s', using fallback: '%s'" % [theme_id, LOG_THEME_TERMSAFE])
-				warned_about_missing_theme = true
-			return Log.COLORS_TERMINAL_SAFE
+	var color_dict = Log.config.get(KEY_COLOR_THEME_DICT)
+	if color_dict != null:
+		return color_dict
+	print("Falling back to TERM_SAFE colors")
+	return Log.COLORS_TERM_SAFE
 
 # config setters ###################################################################
 
@@ -137,20 +117,13 @@ static func get_config_color_theme() -> Dictionary:
 ## [br][br]
 ## Useful to declutter the output if the environment does not support colors.
 ## Note that some environments support only a subset of colors - you may prefer
-## [code]set_colors_termsafe()[/code] or otherwise setting the theme to 'TERMSAFE'.
+## [code]set_colors_termsafe()[/code].
 static func disable_colors() -> void:
 	Log.config[KEY_DISABLE_COLORS] = true
 
 ## Re-enable color-wrapping output.
 static func enable_colors() -> void:
 	Log.config[KEY_DISABLE_COLORS] = false
-
-## DEPRECATED
-static func set_color_scheme(theme: String) -> void:
-	set_color_theme(theme)
-
-static func set_color_theme(theme: String) -> void:
-	Log.config[KEY_COLOR_THEME] = theme
 
 ## colors ###########################################################################
 
@@ -168,27 +141,25 @@ static func set_color_theme(theme: String) -> void:
 # - orange
 # - gray
 
-const LOG_THEME_TERMSAFE: String = "TERMSAFE"
-const LOG_THEME_PRETTY_DARK_V1: String = "PRETTY_V1"
-const LOG_THEME_PRETTY_LIGHT_V1: String = "PRETTY_LIGHT_V1"
+static var TERMSAFE_RAINBOW: Array = ["red", "blue", "green", "pink", "orange"]
 
-static var COLORS_TERMINAL_SAFE: Dictionary = {
+static var COLORS_TERM_SAFE: Dictionary = {
 	"SRC": "cyan",
 	"ADDONS": "red",
 	"TEST": "green",
 	",": "red",
-	"(": ["red", "blue", "green", "pink", "orange"],
-	")": ["red", "blue", "green", "pink", "orange"],
-	"[": ["red", "blue", "green", "pink", "orange"],
-	"]": ["red", "blue", "green", "pink", "orange"],
-	"{": ["red", "blue", "green", "pink", "orange"],
-	"}": ["red", "blue", "green", "pink", "orange"],
-	"<": ["red", "blue", "green", "pink", "orange"],
-	">": ["red", "blue", "green", "pink", "orange"],
-	"|": ["red", "blue", "green", "pink", "orange"],
+	"(": TERMSAFE_RAINBOW,
+	")": TERMSAFE_RAINBOW,
+	"[": TERMSAFE_RAINBOW,
+	"]": TERMSAFE_RAINBOW,
+	"{": TERMSAFE_RAINBOW,
+	"}": TERMSAFE_RAINBOW,
+	"<": TERMSAFE_RAINBOW,
+	">": TERMSAFE_RAINBOW,
+	"|": TERMSAFE_RAINBOW,
 	"&": "orange",
 	"^": "orange",
-	"dict_key": ["magenta", "orange", "cyan"],
+	"dict_key": TERMSAFE_RAINBOW,
 	"vector_value": "green",
 	"class_name": "magenta",
 	TYPE_NIL: "pink",
@@ -232,66 +203,7 @@ static var COLORS_TERMINAL_SAFE: Dictionary = {
 	TYPE_MAX: "pink",
 	}
 
-static var COLORS_PRETTY_DARK_V1: Dictionary = {
-	"SRC": "aquamarine",
-	"ADDONS": "peru",
-	"TEST": "green_yellow",
-	",": "crimson",
-	"(": ["crimson", "cornflower_blue", "coral", "pink", "peru"],
-	")": ["crimson", "cornflower_blue", "coral", "pink", "peru"],
-	"[": ["crimson", "cornflower_blue", "coral", "pink", "peru"],
-	"]": ["crimson", "cornflower_blue", "coral", "pink", "peru"],
-	"{": ["crimson", "cornflower_blue", "coral", "pink", "peru"],
-	"}": ["crimson", "cornflower_blue", "coral", "pink", "peru"],
-	"<": ["crimson", "cornflower_blue", "coral", "pink", "peru"],
-	">": ["crimson", "cornflower_blue", "coral", "pink", "peru"],
-	"|": ["crimson", "cornflower_blue", "coral", "pink", "peru"],
-	"&": "coral",
-	"^": "coral",
-	"dict_key": ["coral", "cadet_blue", "pink", "peru"],
-	"vector_value": "cornflower_blue",
-	"class_name": "cadet_blue",
-	TYPE_NIL: "coral",
-	TYPE_BOOL: "pink",
-	TYPE_INT: "cornflower_blue",
-	TYPE_FLOAT: "cornflower_blue",
-	TYPE_STRING: "dark_gray",
-	TYPE_VECTOR2: "cornflower_blue",
-	TYPE_VECTOR2I: "cornflower_blue",
-	TYPE_RECT2: "cornflower_blue",
-	TYPE_RECT2I: "cornflower_blue",
-	TYPE_VECTOR3: "cornflower_blue",
-	TYPE_VECTOR3I: "cornflower_blue",
-	TYPE_TRANSFORM2D: "pink",
-	TYPE_VECTOR4: "cornflower_blue",
-	TYPE_VECTOR4I: "cornflower_blue",
-	TYPE_PLANE: "pink",
-	TYPE_QUATERNION: "pink",
-	TYPE_AABB: "pink",
-	TYPE_BASIS: "pink",
-	TYPE_TRANSFORM3D: "pink",
-	TYPE_PROJECTION: "pink",
-	TYPE_COLOR: "pink",
-	TYPE_STRING_NAME: "pink",
-	TYPE_NODE_PATH: "pink",
-	TYPE_RID: "pink",
-	TYPE_OBJECT: "pink",
-	TYPE_CALLABLE: "pink",
-	TYPE_SIGNAL: "pink",
-	TYPE_DICTIONARY: "pink",
-	TYPE_ARRAY: "pink",
-	TYPE_PACKED_BYTE_ARRAY: "pink",
-	TYPE_PACKED_INT32_ARRAY: "pink",
-	TYPE_PACKED_INT64_ARRAY: "pink",
-	TYPE_PACKED_FLOAT32_ARRAY: "pink",
-	TYPE_PACKED_FLOAT64_ARRAY: "pink",
-	TYPE_PACKED_STRING_ARRAY: "pink",
-	TYPE_PACKED_VECTOR2_ARRAY: "pink",
-	TYPE_PACKED_VECTOR3_ARRAY: "pink",
-	TYPE_PACKED_COLOR_ARRAY: "pink",
-	TYPE_MAX: "pink",
-	}
-
+# TODO lift into default light theme resource
 static var COLORS_PRETTY_LIGHT_V1: Dictionary = {
 	"SRC": "dark_cyan",
 	"ADDONS": "dark_red",
@@ -354,38 +266,18 @@ static var COLORS_PRETTY_LIGHT_V1: Dictionary = {
 
 ## set color theme ####################################
 
-## Use the terminal safe color scheme, which should handle colors in most tty-like environments.
+## Use the terminal safe color scheme, which should support colors in most tty-like environments.
 static func set_colors_termsafe() -> void:
-	set_color_theme(LOG_THEME_TERMSAFE)
+	Log.config[KEY_COLOR_THEME_DICT] = Log.COLORS_TERM_SAFE
 
-## Use prettier colors - looks nice in most dark godot themes.
-##
-## [br][br]
-## Hopefully we'll support more themes (including light themes) soon!
+## Use prettier colors - i.e. whatever LogColorTheme is configured.
 static func set_colors_pretty() -> void:
-	set_color_theme(LOG_THEME_PRETTY_DARK_V1)
-
-static var theme_overwrites: Dictionary = {}
-
-## Merge per type color adjustments.
-##
-## [br][br]
-## Expects a Dictionary from [code]{typeof(obj): Color}[/code].
-## See [code]COLORS_TERMINAL_SAFE[/code] for an example.
-static func merge_theme_overwrites(colors: Dictionary) -> void:
-	theme_overwrites.merge(colors, true)
-
-static func clear_theme_overwrites() -> void:
-	theme_overwrites = {}
-
-static func get_color_theme(opts: Dictionary = {}) -> Dictionary:
-	var theme: Dictionary = opts.get("color_theme", {})
-	# fill in any missing vals with the set theme, then the term-safe fallbacks
-	# theme.merge(Log.theme_overwrites)
-	theme.merge(Log.get_config_color_theme())
-	# theme.merge(Log.COLORS_TERMINAL_SAFE)
-	# print(theme)
-	return theme
+	var theme_path: Variant = Log.config.get(KEY_COLOR_THEME_RESOURCE_PATH)
+	# TODO proper string, file, resource load check here
+	if theme_path != null:
+		Log.config[KEY_COLOR_THEME_DICT] = load(theme_path).to_color_dict()
+	else:
+		print("WARNING no color theme resource path to load!")
 
 static func should_use_color(opts: Dictionary = {}) -> bool:
 	if OS.has_feature("ios") or OS.has_feature("web"):
@@ -400,7 +292,7 @@ static func should_use_color(opts: Dictionary = {}) -> bool:
 
 static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	# don't rebuild the theme every time
-	var colors: Dictionary = opts.get("built_color_theme", get_color_theme(opts))
+	var colors: Dictionary = Log.config[KEY_COLOR_THEME_DICT]
 
 	if not should_use_color(opts):
 		return str(s)
@@ -428,9 +320,15 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 
 	if color is Array:
 		# support rainbow delimiters
-		color = color[opts.get("delimiter_index", 0) % len(color)]
+		if opts.get("typeof", "") == "dict_key":
+			# subtract 1 for dict_keys
+			# we the keys are 'down' a nesting level, but we want the curly + dict keys to match
+			color = color[opts.get("delimiter_index", 0) - 1 % len(color)]
+		else:
+			color = color[opts.get("delimiter_index", 0) % len(color)]
 
 	if color is Color:
+		# get the colors back to something bb_code can handle
 		color = color.to_html(false)
 
 	return "[color=%s]%s[/color]" % [color, s]
@@ -482,10 +380,6 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 
 	if not "delimiter_index" in opts:
 		opts["delimiter_index"] = delimiter_index
-
-	var theme: Dictionary = opts.get("built_color_theme", get_color_theme(opts))
-	if not "built_color_theme" in opts:
-		opts["built_color_theme"] = theme
 
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
 		return str("invalid instance: ", msg)
@@ -552,11 +446,9 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 			else:
 				if not indent_updated:
 					indent_updated = true
-					# prints("updating opts.indent_level", opts.indent_level)
-					opts.indent_level += 1
+					opts["indent_level"] += 1
 				val = Log.to_pretty(msg[k], opts)
 			if newlines and ct > 1:
-				# prints("applying more tabs", indent_level)
 				tmp += "\n\t" \
 					+ range(indent_level)\
 					.map(func(_i: int) -> String: return "\t")\
@@ -567,7 +459,7 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 				tmp += Log.color_wrap(", ", opts)
 		opts["delimiter_index"] -= 1
 		tmp += Log.color_wrap(" }", opts)
-		opts.indent_level -= 1 # ugh! updating the dict in-place
+		opts["indent_level"] -= 1 # ugh! updating the dict in-place
 		return tmp
 
 	# strings
@@ -583,6 +475,10 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		return str(Log.color_wrap("&", opts), '"%s"' % msg)
 	elif msg is NodePath:
 		return str(Log.color_wrap("^", opts), '"%s"' % msg)
+
+	elif msg is Color:
+		# probably too opinionated, but seeing 4 floats for color is noisey
+		return Log.color_wrap(msg.to_html(), Log.assoc(opts, "typeof", TYPE_COLOR))
 
 	# vectors
 	elif msg is Vector2 or msg is Vector2i:
