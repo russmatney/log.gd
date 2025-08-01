@@ -41,7 +41,24 @@ const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
 const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
 const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
 
+static func initialize_setting(key: String, default_value: Variant, type: int, hint: int = PROPERTY_HINT_NONE, hint_string: String = "") -> void:
+	if not ProjectSettings.has_setting(key):
+		ProjectSettings.set(key, default_value)
+	ProjectSettings.set_initial_value(key, default_value)
+	ProjectSettings.add_property_info({name=key, type=type, hint=hint, hint_string=hint_string})
+
+static func get_setting(key: String) -> Variant:
+	if ProjectSettings.has_setting(key):
+		return ProjectSettings.get_setting(key)
+	return
+
 static func setup_config(opts: Dictionary = {}) -> void:
+	initialize_setting(KEY_COLOR_THEME, LOG_THEME_PRETTY_DARK_V1, TYPE_STRING, PROPERTY_HINT_ENUM,
+		"%s,%s,%s" % [LOG_THEME_TERMSAFE, LOG_THEME_PRETTY_DARK_V1, LOG_THEME_PRETTY_LIGHT_V1])
+	initialize_setting(KEY_DISABLE_COLORS, false, TYPE_BOOL)
+	initialize_setting(KEY_MAX_ARRAY_SIZE, 20, TYPE_BOOL)
+	initialize_setting(KEY_SKIP_KEYS, ["layer_0/tile_data"], TYPE_PACKED_STRING_ARRAY)
+
 	var keys: Array = opts.get("keys", [
 		KEY_COLOR_THEME,
 		KEY_DISABLE_COLORS,
@@ -50,24 +67,13 @@ static func setup_config(opts: Dictionary = {}) -> void:
 		])
 
 	for key: String in keys:
-		if ProjectSettings.has_setting(key):
-			Log.config[key] = ProjectSettings.get_setting(key)
-		else:
-			var val: Variant = Log.config[key]
-			if val != null:
-				ProjectSettings.set_setting(key, val)
-				ProjectSettings.set_initial_value(key, val)
+		var val: Variant = get_setting(key)
+		if val != null:
+			Log.config[key] = val
 
 	Log.is_config_setup = true
 
-static var config: Dictionary = {
-	KEY_COLOR_THEME: LOG_THEME_TERMSAFE,
-	KEY_DISABLE_COLORS: false,
-	KEY_MAX_ARRAY_SIZE: 20,
-	KEY_SKIP_KEYS: [
-		"layer_0/tile_data", # skip huge tilemap arrays
-		],
-	}
+static var config: Dictionary = {}
 
 # config getters ###################################################################
 
