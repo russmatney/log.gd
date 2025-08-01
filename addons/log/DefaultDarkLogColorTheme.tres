@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="LogColorTheme" load_steps=2 format=3 uid="uid://c2tfr7nw4y7ll"]
+
+[ext_resource type="Script" uid="uid://br8socgd1vvih" path="res://addons/log/log_color_theme.gd" id="1_6x53w"]
+
+[resource]
+script = ExtResource("1_6x53w")
