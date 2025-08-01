@@ -4,12 +4,76 @@
 ## Unreleased
 
 
+### 1 Aug 2025
+
+- ([`06b96e6`](https://github.com/russmatney/log.gd/commit/06b96e6)) feat: Bring Your Own Color Theme!
+
+  > Docs covering this fancy new feat
+
+- ([`d86bae0`](https://github.com/russmatney/log.gd/commit/d86bae0)) refactor: split out color_theme_light/dark, more clean up
+
+  > Moves the termsafe color fallback into the new resource class as well -
+  > better to keep that giant list of type-maps together.
+
+- ([`ee983dd`](https://github.com/russmatney/log.gd/commit/ee983dd)) refactor: misc color theme clean up, drops theme-overwrite features
+
+  > Now that users can specify colors via their own color theme resource,
+  > there's no need for color-theme-overwrite features. Please let me know
+  > if you were using this and why!
+
+- ([`d25606a`](https://github.com/russmatney/log.gd/commit/d25606a)) wip: proof of concept for BYO-colors
+
+  > I'd hoped to load the LogColorTheme via project settings directly, but
+  > we'll have to settle for a resource_path for now. Fortunately selecting
+  > from project settings is a file-input, so it's not completely an empty
+  > string field.
+
+- ([`89964f9`](https://github.com/russmatney/log.gd/commit/89964f9)) wip: more toying with color theme custom resources
+
+  > Not working yet - learning about editorPlugins vs actual game runtime rn.
+
+- ([`b882f2c`](https://github.com/russmatney/log.gd/commit/b882f2c)) wip: toying with a LogColorTheme custom resource
+- ([`542d33b`](https://github.com/russmatney/log.gd/commit/542d33b)) feat: enum type hint for color theme
+
+  > Much nicer to select from a drop down than 'know' the supported theme
+  > keys.
+  > 
+  > I toyed with moving these to EditorSettings, but unfortunately they
+  > aren't available at runtime - so they're staying in ProjectSettings for
+  > now. If you want a per-user overwrite, i suppose you could use feature
+  > tags?
+
+
+### 25 Jul 2025
+
+- ([`67cacea`](https://github.com/russmatney/log.gd/commit/67cacea)) fix: disable colors in ios and web
+
+  > ios and web look terrible with colors enabled - all the escape codes
+  > clutter it up like cray cray.
+  > 
+  > We can get more sophisticated and prevent these from being called a
+  > million times per log later on.
+
+- ([`79b045b`](https://github.com/russmatney/log.gd/commit/79b045b)) fix: prevent a million logs when no theme is found
+
+  > Closes #7
+
+
+### 23 Jul 2025
+
+- ([`7474546`](https://github.com/russmatney/log.gd/commit/7474546)) fix: better dark theme colors
+
+  > I like the rainbow-delim feature quite alot, but the colors across the
+  > themes are not great yet. Need to work toward exposing these so they
+  > aren't so tied to the code.
+
+
 ## v0.0.8
 
 
 ### 23 Jul 2025
 
-- ([`29fdd7f`](https://github.com/russmatney/log.gd/commit/29fdd7f)) release: v0.0.8
+- ([`59f12d5`](https://github.com/russmatney/log.gd/commit/59f12d5)) release: v0.0.8
 - ([`d70c597`](https://github.com/russmatney/log.gd/commit/d70c597)) docs: rainbow delimiter mention and image
 - ([`6a1f413`](https://github.com/russmatney/log.gd/commit/6a1f413)) feat: cycle colors on dictionary keys too, plus restore tests
 
@@ -514,6 +578,12 @@
 
 - ([`7e210ae`](https://github.com/russmatney/log.gd/commit/7e210ae)) feat: generating initial changelog
 - ([`f3be3be`](https://github.com/russmatney/log.gd/commit/f3be3be)) wip: bb code gathering commits per tag
+
+## v0.0.0
+
+
+### 21 Mar 2024
+
 - ([`e00bc10`](https://github.com/russmatney/log.gd/commit/e00bc10)) feat: plugin version, split out todos
 - ([`1c7b719`](https://github.com/russmatney/log.gd/commit/1c7b719)) chore: expand ci to cover more godot versions
 
