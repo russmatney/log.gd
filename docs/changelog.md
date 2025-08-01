@@ -4,8 +4,14 @@
 ## Unreleased
 
 
+## v0.0.9
+
+
 ### 1 Aug 2025
 
+- ([`ba54359`](https://github.com/russmatney/log.gd/commit/ba54359)) feat: update log to v0.0.9
+- ([`c745cc1`](https://github.com/russmatney/log.gd/commit/c745cc1)) docs: basic string on LogColorTheme
+- ([`e76efbc`](https://github.com/russmatney/log.gd/commit/e76efbc)) docs: update changelog
 - ([`06b96e6`](https://github.com/russmatney/log.gd/commit/06b96e6)) feat: Bring Your Own Color Theme!
 
   > Docs covering this fancy new feat
