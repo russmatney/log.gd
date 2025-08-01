@@ -1,3 +1,9 @@
+## LogColorTheme - Bring Your Own Color Theme to Log.gd!
+## [br][br]
+## Create a new resource of this type, and assign this via the Project Settings.
+## [br][br]
+## Be sure to enable Log.gd via Project > Plugins to see this type in the editor!
+##
 @tool
 extends Resource
 class_name LogColorTheme
