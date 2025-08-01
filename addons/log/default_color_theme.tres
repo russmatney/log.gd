@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="LogColorTheme" load_steps=2 format=3 uid="uid://c2tfr7nw4y7ll"]
+
+[ext_resource type="Script" uid="uid://br8socgd1vvih" path="res://addons/log/log_color_theme.gd" id="1_6x53w"]
+
+[resource]
+script = ExtResource("1_6x53w")
+color_src_prefix = Color(0.498039, 1, 0.831373, 1)
+color_addons_prefix = Color(0.803922, 0.521569, 0.247059, 1)
+color_test_prefix = Color(0.678431, 1, 0.184314, 1)
+color_comma = Color(0.862745, 0.0784314, 0.235294, 1)
+color_ampersand = Color(1, 0.498039, 0.313726, 1)
+color_pipe = Color(1, 0.498039, 0.313726, 1)
+color_carrot = Color(1, 0.498039, 0.313726, 1)
+colors_parens = Array[Color]([Color(0.862745, 0.0784314, 0.235294, 1), Color(0.392157, 0.584314, 0.929412, 1), Color(1, 0.498039, 0.313726, 1), Color(1, 0.752941, 0.796078, 1), Color(0.803922, 0.521569, 0.247059, 1)])
+colors_square_braces = Array[Color]([Color(0.862745, 0.0784314, 0.235294, 1), Color(0.392157, 0.584314, 0.929412, 1), Color(1, 0.498039, 0.313726, 1), Color(1, 0.752941, 0.796078, 1), Color(0.803922, 0.521569, 0.247059, 1)])
+colors_curly_braces = Array[Color]([Color(0.862745, 0.0784314, 0.235294, 1), Color(0.392157, 0.584314, 0.929412, 1), Color(1, 0.498039, 0.313726, 1), Color(1, 0.752941, 0.796078, 1), Color(0.803922, 0.521569, 0.247059, 1)])
+colors_angle_braces = Array[Color]([Color(0.862745, 0.0784314, 0.235294, 1), Color(0.392157, 0.584314, 0.929412, 1), Color(1, 0.498039, 0.313726, 1), Color(1, 0.752941, 0.796078, 1), Color(0.803922, 0.521569, 0.247059, 1)])
+colors_dict_keys = Array[Color]([Color(1, 0.498039, 0.313726, 1), Color(0.372549, 0.619608, 0.627451, 1), Color(1, 0.752941, 0.796078, 1), Color(0.803922, 0.521569, 0.247059, 1)])
+color_nil = Color(1, 0.498039, 0.313726, 1)
+color_bool = Color(1, 0.752941, 0.796078, 1)
+color_int = Color(0.392157, 0.584314, 0.929412, 1)
+color_float = Color(0.392157, 0.584314, 0.929412, 1)
+color_vectors = Color(0.392157, 0.584314, 0.929412, 1)
+color_rects = Color(0.392157, 0.584314, 0.929412, 1)
+color_class_name = Color(0.372549, 0.619608, 0.627451, 1)
+color_string = Color(0.662745, 0.662745, 0.662745, 1)
+color_string_name = Color(1, 0.752941, 0.796078, 1)
+color_node_path = Color(1, 0.752941, 0.796078, 1)

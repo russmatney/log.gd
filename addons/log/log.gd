@@ -37,6 +37,7 @@ const KEY_PREFIX: String = "log_gd/config"
 static var is_config_setup: bool = false
 
 const KEY_COLOR_THEME: String = "%s/color_theme" % KEY_PREFIX
+const KEY_COLOR_RESOURCE: String = "%s/color_resource" % KEY_PREFIX
 const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
 const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
 const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
@@ -52,15 +53,23 @@ static func get_setting(key: String) -> Variant:
 		return ProjectSettings.get_setting(key)
 	return
 
-static func setup_config(opts: Dictionary = {}) -> void:
+static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_COLOR_THEME, LOG_THEME_PRETTY_DARK_V1, TYPE_STRING, PROPERTY_HINT_ENUM,
 		"%s,%s,%s" % [LOG_THEME_TERMSAFE, LOG_THEME_PRETTY_DARK_V1, LOG_THEME_PRETTY_LIGHT_V1])
+
+	var default_color_resource := load("res://addons/log/default_color_theme.tres")
+	initialize_setting(KEY_COLOR_RESOURCE, default_color_resource, TYPE_OBJECT, PROPERTY_HINT_RESOURCE_TYPE, "LogColorTheme")
+
 	initialize_setting(KEY_DISABLE_COLORS, false, TYPE_BOOL)
 	initialize_setting(KEY_MAX_ARRAY_SIZE, 20, TYPE_BOOL)
 	initialize_setting(KEY_SKIP_KEYS, ["layer_0/tile_data"], TYPE_PACKED_STRING_ARRAY)
 
+	ProjectSettings.save()
+
+static func rebuild_config(opts: Dictionary = {}) -> void:
 	var keys: Array = opts.get("keys", [
 		KEY_COLOR_THEME,
+		KEY_COLOR_RESOURCE,
 		KEY_DISABLE_COLORS,
 		KEY_MAX_ARRAY_SIZE,
 		KEY_SKIP_KEYS,
@@ -88,6 +97,13 @@ static func get_disable_colors() -> bool:
 
 static var warned_about_missing_theme := false
 static func get_config_color_theme() -> Dictionary:
+	var color_res: LogColorTheme = Log.config.get(KEY_COLOR_RESOURCE)
+	if color_res != null:
+		# print("found color theme resource!", color_res)
+		var colors := color_res.to_color_dict()
+		# print("SRC color: ", colors.get("SRC", "no src color found!"))
+		return colors
+
 	var theme_id: String = Log.config.get(KEY_COLOR_THEME, LOG_THEME_TERMSAFE)
 	match theme_id:
 		LOG_THEME_TERMSAFE:
@@ -394,12 +410,15 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 			# all other types
 			color = colors.get(s_type)
 
-	if color is String and color == "":
+	if color is String and color == "" or color == null:
 		print("Log.gd could not determine color for object: %s type: (%s)" % [str(s), typeof(s)])
 
 	if color is Array:
 		# support rainbow delimiters
 		color = color[opts.get("delimiter_index", 0) % len(color)]
+
+	if color is Color:
+		color = color.to_html(false)
 
 	return "[color=%s]%s[/color]" % [color, s]
 
@@ -639,7 +658,7 @@ static func log_prefix(stack: Array) -> String:
 
 static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	if not Log.is_config_setup:
-		setup_config()
+		rebuild_config()
 
 	if not msgs is Array:
 		msgs = [msgs]
@@ -740,3 +759,12 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
 	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
 	push_error(m)
+
+
+## Pretty-print the passed arguments in a single line.
+static func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
+	msgs = msgs.filter(Log.is_not_default)
+	var m: String = Log.to_printable(msgs, {stack=get_stack()})
+	print(m)
+	print_rich(m)

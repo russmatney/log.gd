@@ -22,6 +22,7 @@ class ExampleObj:
 
 func _ready() -> void:
 	Log.pr("Hi there!")
+	Log._internal_debug("Hi there!")
 
 	Log.pr("an array of vectors", [
 		1, 2.0, Vector2(3, 4), Vector3i(1, 3, 0), Vector4(1.1, 2.2, 3.4, 4000)
@@ -48,7 +49,7 @@ func _ready() -> void:
 
 	run_showcase()
 
-	print_rich_debugging()
+	# print_rich_debugging()
 
 func print_header(header: String) -> void:
 	print(str("\n\n\t====", header, "====\n\n"))
