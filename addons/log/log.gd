@@ -13,7 +13,7 @@
 ## there is a [code]register_type_overwrite(key, handler)[/code] helper.
 ##
 ## [br][br]
-## You can find up to date docs and examples in the Log.gd repo and docs site:
+## You can find up-to-date docs and examples in the Log.gd repo and docs site:
 ## [br]
 ## - https://github.com/russmatney/log.gd
 ## [br]
@@ -56,7 +56,7 @@ const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
 const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
 
 const CONFIG_DEFAULTS := {
-		KEY_COLOR_THEME_RESOURCE_PATH: "res://addons/log/default_color_theme.tres",
+		KEY_COLOR_THEME_RESOURCE_PATH: "res://addons/log/color_theme_dark.tres",
 		KEY_DISABLE_COLORS: false,
 		KEY_MAX_ARRAY_SIZE: 20,
 		KEY_SKIP_KEYS: ["layer_0/tile_data"],
@@ -70,11 +70,9 @@ static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE], TYPE_BOOL)
 	initialize_setting(KEY_SKIP_KEYS, CONFIG_DEFAULTS[KEY_SKIP_KEYS], TYPE_PACKED_STRING_ARRAY)
 
-	# do we need this?
-	# ProjectSettings.save()
-
 # config setup ####################################
 
+static var config: Dictionary = {}
 static func rebuild_config(opts: Dictionary = {}) -> void:
 	for key: String in CONFIG_DEFAULTS.keys():
 		var val: Variant = get_setting(key)
@@ -90,8 +88,6 @@ static func rebuild_config(opts: Dictionary = {}) -> void:
 
 	Log.is_config_setup = true
 
-static var config: Dictionary = {}
-
 # config getters ###################################################################
 
 static func get_max_array_size() -> int:
@@ -103,14 +99,17 @@ static func get_dictionary_skip_keys() -> Array:
 static func get_disable_colors() -> bool:
 	return Log.config.get(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS])
 
+static var warned_about_termsafe_fallback := false
 static func get_config_color_theme() -> Dictionary:
 	var color_dict = Log.config.get(KEY_COLOR_THEME_DICT)
 	if color_dict != null:
 		return color_dict
-	print("Falling back to TERM_SAFE colors")
-	return Log.COLORS_TERM_SAFE
+	if not warned_about_termsafe_fallback:
+		print("Falling back to TERM_SAFE colors")
+		warned_about_termsafe_fallback = true
+	return LogColorTheme.COLORS_TERM_SAFE
 
-# config setters ###################################################################
+## config setters ###################################################################
 
 ## Disable color-wrapping output.
 ##
@@ -125,150 +124,11 @@ static func disable_colors() -> void:
 static func enable_colors() -> void:
 	Log.config[KEY_DISABLE_COLORS] = false
 
-## colors ###########################################################################
-
-# terminal safe colors:
-# - black
-# - red
-# - green
-# - yellow
-# - blue
-# - magenta
-# - pink
-# - purple
-# - cyan
-# - white
-# - orange
-# - gray
-
-static var TERMSAFE_RAINBOW: Array = ["red", "blue", "green", "pink", "orange"]
-
-static var COLORS_TERM_SAFE: Dictionary = {
-	"SRC": "cyan",
-	"ADDONS": "red",
-	"TEST": "green",
-	",": "red",
-	"(": TERMSAFE_RAINBOW,
-	")": TERMSAFE_RAINBOW,
-	"[": TERMSAFE_RAINBOW,
-	"]": TERMSAFE_RAINBOW,
-	"{": TERMSAFE_RAINBOW,
-	"}": TERMSAFE_RAINBOW,
-	"<": TERMSAFE_RAINBOW,
-	">": TERMSAFE_RAINBOW,
-	"|": TERMSAFE_RAINBOW,
-	"&": "orange",
-	"^": "orange",
-	"dict_key": TERMSAFE_RAINBOW,
-	"vector_value": "green",
-	"class_name": "magenta",
-	TYPE_NIL: "pink",
-	TYPE_BOOL: "pink",
-	TYPE_INT: "green",
-	TYPE_FLOAT: "green",
-	TYPE_STRING: "pink",
-	TYPE_VECTOR2: "green",
-	TYPE_VECTOR2I: "green",
-	TYPE_RECT2: "green",
-	TYPE_RECT2I: "green",
-	TYPE_VECTOR3: "green",
-	TYPE_VECTOR3I: "green",
-	TYPE_TRANSFORM2D: "pink",
-	TYPE_VECTOR4: "green",
-	TYPE_VECTOR4I: "green",
-	TYPE_PLANE: "pink",
-	TYPE_QUATERNION: "pink",
-	TYPE_AABB: "pink",
-	TYPE_BASIS: "pink",
-	TYPE_TRANSFORM3D: "pink",
-	TYPE_PROJECTION: "pink",
-	TYPE_COLOR: "pink",
-	TYPE_STRING_NAME: "pink",
-	TYPE_NODE_PATH: "pink",
-	TYPE_RID: "pink",
-	TYPE_OBJECT: "pink",
-	TYPE_CALLABLE: "pink",
-	TYPE_SIGNAL: "pink",
-	TYPE_DICTIONARY: "pink",
-	TYPE_ARRAY: "pink",
-	TYPE_PACKED_BYTE_ARRAY: "pink",
-	TYPE_PACKED_INT32_ARRAY: "pink",
-	TYPE_PACKED_INT64_ARRAY: "pink",
-	TYPE_PACKED_FLOAT32_ARRAY: "pink",
-	TYPE_PACKED_FLOAT64_ARRAY: "pink",
-	TYPE_PACKED_STRING_ARRAY: "pink",
-	TYPE_PACKED_VECTOR2_ARRAY: "pink",
-	TYPE_PACKED_VECTOR3_ARRAY: "pink",
-	TYPE_PACKED_COLOR_ARRAY: "pink",
-	TYPE_MAX: "pink",
-	}
-
-# TODO lift into default light theme resource
-static var COLORS_PRETTY_LIGHT_V1: Dictionary = {
-	"SRC": "dark_cyan",
-	"ADDONS": "dark_red",
-	"TEST": "dark_green",
-	",": "crimson",
-	"(": ["crimson", "cornflower_blue", "dark_green", "coral"],
-	")": ["crimson", "cornflower_blue", "dark_green", "coral"],
-	"[": ["crimson", "cornflower_blue", "dark_green", "coral"],
-	"]": ["crimson", "cornflower_blue", "dark_green", "coral"],
-	"{": ["crimson", "cornflower_blue", "dark_green", "coral"],
-	"}": ["crimson", "cornflower_blue", "dark_green", "coral"],
-	"<": ["crimson", "cornflower_blue", "dark_green", "coral"],
-	">": ["crimson", "cornflower_blue", "dark_green", "coral"],
-	"|": ["crimson", "cornflower_blue", "dark_green", "coral"],
-	"&": "coral",
-	"^": "coral",
-	"dict_key": ["dark_slate_blue", "cornflower_blue", "dark_green"],
-	"vector_value": "dark_orchid",
-	"class_name": "cadet_blue",
-	TYPE_NIL: "coral",
-	TYPE_BOOL: "dark_red",
-	TYPE_INT: "dark_orchid",
-	TYPE_FLOAT: "dark_orchid",
-	TYPE_STRING: "dark_red",
-	TYPE_VECTOR2: "cornflower_blue",
-	TYPE_VECTOR2I: "cornflower_blue",
-	TYPE_RECT2: "cornflower_blue",
-	TYPE_RECT2I: "cornflower_blue",
-	TYPE_VECTOR3: "cornflower_blue",
-	TYPE_VECTOR3I: "cornflower_blue",
-	TYPE_TRANSFORM2D: "dark_red",
-	TYPE_VECTOR4: "dark_orchid",
-	TYPE_VECTOR4I: "dark_orchid",
-	TYPE_PLANE: "dark_red",
-	TYPE_QUATERNION: "dark_red",
-	TYPE_AABB: "dark_red",
-	TYPE_BASIS: "dark_red",
-	TYPE_TRANSFORM3D: "dark_red",
-	TYPE_PROJECTION: "dark_red",
-	TYPE_COLOR: "dark_red",
-	TYPE_STRING_NAME: "dark_red",
-	TYPE_NODE_PATH: "dark_red",
-	TYPE_RID: "dark_red",
-	TYPE_OBJECT: "dark_red",
-	TYPE_CALLABLE: "dark_red",
-	TYPE_SIGNAL: "dark_red",
-	TYPE_DICTIONARY: "dark_red",
-	TYPE_ARRAY: "dark_red",
-	TYPE_PACKED_BYTE_ARRAY: "dark_red",
-	TYPE_PACKED_INT32_ARRAY: "dark_red",
-	TYPE_PACKED_INT64_ARRAY: "dark_red",
-	TYPE_PACKED_FLOAT32_ARRAY: "dark_red",
-	TYPE_PACKED_FLOAT64_ARRAY: "dark_red",
-	TYPE_PACKED_STRING_ARRAY: "dark_red",
-	TYPE_PACKED_VECTOR2_ARRAY: "dark_red",
-	TYPE_PACKED_VECTOR3_ARRAY: "dark_red",
-	TYPE_PACKED_COLOR_ARRAY: "dark_red",
-	TYPE_MAX: "dark_red",
-	}
-
 ## set color theme ####################################
 
 ## Use the terminal safe color scheme, which should support colors in most tty-like environments.
 static func set_colors_termsafe() -> void:
-	Log.config[KEY_COLOR_THEME_DICT] = Log.COLORS_TERM_SAFE
+	Log.config[KEY_COLOR_THEME_DICT] = LogColorTheme.COLORS_TERM_SAFE
 
 ## Use prettier colors - i.e. whatever LogColorTheme is configured.
 static func set_colors_pretty() -> void:
@@ -278,6 +138,8 @@ static func set_colors_pretty() -> void:
 		Log.config[KEY_COLOR_THEME_DICT] = load(theme_path).to_color_dict()
 	else:
 		print("WARNING no color theme resource path to load!")
+
+## applying colors ####################################
 
 static func should_use_color(opts: Dictionary = {}) -> bool:
 	if OS.has_feature("ios") or OS.has_feature("web"):
@@ -291,8 +153,7 @@ static func should_use_color(opts: Dictionary = {}) -> bool:
 	return true
 
 static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
-	# don't rebuild the theme every time
-	var colors: Dictionary = Log.config[KEY_COLOR_THEME_DICT]
+	var colors: Dictionary = get_config_color_theme()
 
 	if not should_use_color(opts):
 		return str(s)
@@ -320,7 +181,7 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 
 	if color is Array:
 		# support rainbow delimiters
-		if opts.get("typeof", "") == "dict_key":
+		if opts.get("typeof", "") in ["dict_key"]:
 			# subtract 1 for dict_keys
 			# we the keys are 'down' a nesting level, but we want the curly + dict keys to match
 			color = color[opts.get("delimiter_index", 0) - 1 % len(color)]
@@ -369,8 +230,11 @@ static func clear_type_overwrites() -> void:
 ## Returns the passed object as a bb-colorized string.
 ##
 ## [br][br]
-## Useful for feeding directly into a RichTextLabel, but also the core
-## of Log.gd's functionality.
+## The core of Log.gd's functionality.
+##
+## [br][br]
+## Can be useful to feed directly into a RichTextLabel.
+##
 static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 	var newlines: bool = opts.get("newlines", false)
 	var indent_level: int = opts.get("indent_level", 0)
@@ -677,3 +541,12 @@ static func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Varian
 	var m: String = Log.to_printable(msgs, {stack=get_stack()})
 	print("_internal_debug: ", m)
 	print_rich(m)
+
+
+## DEPRECATED
+static func merge_theme_overwrites(_opts = {}) -> void:
+	pass
+
+## DEPRECATED
+static func clear_theme_overwrites() -> void:
+	pass

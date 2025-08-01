@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="LogColorTheme" load_steps=2 format=3 uid="uid://biby87a3dypvn"]
+
+[ext_resource type="Script" uid="uid://br8socgd1vvih" path="res://addons/log/log_color_theme.gd" id="1_kcklq"]
+
+[resource]
+script = ExtResource("1_kcklq")
+color_src_prefix = Color(0, 0.545098, 0.545098, 1)
+color_addons_prefix = Color(0.545098, 0, 0, 1)
+color_test_prefix = Color(0, 0.392157, 0, 1)
+color_comma = Color(0.862745, 0.0784314, 0.235294, 1)
+color_ampersand = Color(1, 0.498039, 0.313726, 1)
+color_pipe = Color(1, 0.498039, 0.313726, 1)
+color_carrot = Color(1, 0.498039, 0.313726, 1)
+colors_rainbow_delims = Array[Color]([Color(0.862745, 0.0784314, 0.235294, 1), Color(0, 0, 0.545098, 1), Color(0.294118, 0, 0.509804, 1), Color(0.501961, 0.501961, 0, 1), Color(0.545098, 0.270588, 0.0745098, 1)])
+color_nil = Color(1, 0.498039, 0.313726, 1)
+color_bool = Color(0.545098, 0, 0, 1)
+color_int = Color(0.6, 0.196078, 0.8, 1)
+color_float = Color(0.6, 0.196078, 0.8, 1)
+color_vectors = Color(0.392157, 0.584314, 0.929412, 1)
+color_rects = Color(0.392157, 0.584314, 0.929412, 1)
+color_class_name = Color(0.372549, 0.619608, 0.627451, 1)
+color_string = Color(0.545098, 0, 0, 1)
+color_string_name = Color(0.545098, 0, 0, 1)
+color_node_path = Color(0.545098, 0, 0, 1)
+color_type_color = Color(0.545098, 0, 0, 1)
+color_rid = Color(0.545098, 0, 0, 1)
+color_object = Color(0.545098, 0, 0, 1)
+color_callable = Color(0.545098, 0, 0, 1)
+color_signal = Color(0.545098, 0, 0, 1)
+color_array = Color(0.545098, 0, 0, 1)
+color_dictionary = Color(0.545098, 0, 0, 1)
+color_packed_array = Color(0.545098, 0, 0, 1)
+color_type_max = Color(0.545098, 0, 0, 1)

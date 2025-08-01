@@ -2,9 +2,6 @@
 extends Resource
 class_name LogColorTheme
 
-func _init() -> void:
-	print("log color theme init")
-
 ## prefixes ########################################
 
 @export var color_src_prefix: Color = "aquamarine"
@@ -20,7 +17,7 @@ func _init() -> void:
 
 @export var colors_rainbow_delims: Array[Color] = ["crimson", "cornflower_blue", "coral", "pink", "peru"]
 
-@export var colors_dict_keys: Array[Color] = ["coral", "cadet_blue", "pink", "peru"]
+# @export var colors_dict_keys: Array[Color] = ["coral", "cadet_blue", "pink", "peru"]
 
 ## types ############################################
 
@@ -37,6 +34,17 @@ func _init() -> void:
 @export var color_string_name: Color = "pink"
 @export var color_node_path: Color = "pink"
 
+@export var color_type_color: Color = "pink"
+@export var color_rid: Color = "pink"
+@export var color_object: Color = "pink"
+@export var color_callable: Color = "pink"
+@export var color_signal: Color = "pink"
+
+@export var color_array: Color = "pink"
+@export var color_dictionary: Color = "pink"
+@export var color_packed_array: Color = "pink"
+@export var color_type_max: Color = "pink"
+
 ## to_color_dict ############################################
 
 func to_color_dict() -> Dictionary:
@@ -46,10 +54,13 @@ func to_color_dict() -> Dictionary:
 	color_dict["ADDONS"] = color_addons_prefix
 	color_dict["TEST"] = color_test_prefix
 
-	color_dict[","] = color_comma
 	color_dict["|"] = color_pipe
 	color_dict["&"] = color_ampersand
 	color_dict["^"] = color_carrot
+
+	# consider rainbow for commas too
+	# color_dict[","] = colors_rainbow_delims
+	color_dict[","] = color_comma
 
 	color_dict["("] = colors_rainbow_delims
 	color_dict[")"] = colors_rainbow_delims
@@ -60,7 +71,7 @@ func to_color_dict() -> Dictionary:
 	color_dict["<"] = colors_rainbow_delims
 	color_dict[">"] = colors_rainbow_delims
 
-	color_dict["dict_key"] = colors_dict_keys
+	color_dict["dict_key"] = colors_rainbow_delims
 	color_dict["vector_value"] = color_float
 	color_dict["class_name"] = color_class_name
 
@@ -89,28 +100,107 @@ func to_color_dict() -> Dictionary:
 	color_dict[TYPE_STRING_NAME] = color_string_name
 	color_dict[TYPE_NODE_PATH] = color_node_path
 
-	color_dict[TYPE_COLOR] = "pink"
-	color_dict[TYPE_RID] = "pink"
-	color_dict[TYPE_OBJECT] = "pink"
-	color_dict[TYPE_CALLABLE] = "pink"
-	color_dict[TYPE_SIGNAL] = "pink"
+	color_dict[TYPE_COLOR] = color_type_color
+	color_dict[TYPE_RID] = color_rid
+	color_dict[TYPE_OBJECT] = color_object
+	color_dict[TYPE_CALLABLE] = color_callable
+	color_dict[TYPE_SIGNAL] = color_signal
 
 	# Do these ever get through if we're walking these ourselves?
-	color_dict[TYPE_DICTIONARY] = "pink"
-	color_dict[TYPE_ARRAY] = "pink"
+	color_dict[TYPE_DICTIONARY] = color_dictionary
+	color_dict[TYPE_ARRAY] = color_array
 
 	# Maybe want a hint/label before array openers?
-	color_dict[TYPE_PACKED_BYTE_ARRAY] = "pink"
-	color_dict[TYPE_PACKED_INT32_ARRAY] = "pink"
-	color_dict[TYPE_PACKED_INT64_ARRAY] = "pink"
-	color_dict[TYPE_PACKED_FLOAT32_ARRAY] = "pink"
-	color_dict[TYPE_PACKED_FLOAT64_ARRAY] = "pink"
-	color_dict[TYPE_PACKED_STRING_ARRAY] = "pink"
-	color_dict[TYPE_PACKED_VECTOR2_ARRAY] = "pink"
-	color_dict[TYPE_PACKED_VECTOR3_ARRAY] = "pink"
-	color_dict[TYPE_PACKED_COLOR_ARRAY] = "pink"
+	color_dict[TYPE_PACKED_BYTE_ARRAY] = color_packed_array
+	color_dict[TYPE_PACKED_INT32_ARRAY] = color_packed_array
+	color_dict[TYPE_PACKED_INT64_ARRAY] = color_packed_array
+	color_dict[TYPE_PACKED_FLOAT32_ARRAY] = color_packed_array
+	color_dict[TYPE_PACKED_FLOAT64_ARRAY] = color_packed_array
+	color_dict[TYPE_PACKED_STRING_ARRAY] = color_packed_array
+	color_dict[TYPE_PACKED_VECTOR2_ARRAY] = color_packed_array
+	color_dict[TYPE_PACKED_VECTOR3_ARRAY] = color_packed_array
+	color_dict[TYPE_PACKED_COLOR_ARRAY] = color_packed_array
 
-	color_dict[TYPE_MAX] = "pink"
+	color_dict[TYPE_MAX] = color_type_max
 
 
 	return color_dict
+
+
+### static term safe helpers
+
+# terminal safe colors:
+# - black
+# - red
+# - green
+# - yellow
+# - blue
+# - magenta
+# - pink
+# - purple
+# - cyan
+# - white
+# - orange
+# - gray
+
+static var TERMSAFE_RAINBOW: Array = ["red", "blue", "green", "pink", "orange"]
+
+static var COLORS_TERM_SAFE: Dictionary = {
+	"SRC": "cyan",
+	"ADDONS": "red",
+	"TEST": "green",
+	",": "red",
+	"(": TERMSAFE_RAINBOW,
+	")": TERMSAFE_RAINBOW,
+	"[": TERMSAFE_RAINBOW,
+	"]": TERMSAFE_RAINBOW,
+	"{": TERMSAFE_RAINBOW,
+	"}": TERMSAFE_RAINBOW,
+	"<": TERMSAFE_RAINBOW,
+	">": TERMSAFE_RAINBOW,
+	"|": TERMSAFE_RAINBOW,
+	"&": "orange",
+	"^": "orange",
+	"dict_key": TERMSAFE_RAINBOW,
+	"vector_value": "green",
+	"class_name": "magenta",
+	TYPE_NIL: "pink",
+	TYPE_BOOL: "pink",
+	TYPE_INT: "green",
+	TYPE_FLOAT: "green",
+	TYPE_STRING: "pink",
+	TYPE_VECTOR2: "green",
+	TYPE_VECTOR2I: "green",
+	TYPE_RECT2: "green",
+	TYPE_RECT2I: "green",
+	TYPE_VECTOR3: "green",
+	TYPE_VECTOR3I: "green",
+	TYPE_TRANSFORM2D: "pink",
+	TYPE_VECTOR4: "green",
+	TYPE_VECTOR4I: "green",
+	TYPE_PLANE: "pink",
+	TYPE_QUATERNION: "pink",
+	TYPE_AABB: "pink",
+	TYPE_BASIS: "pink",
+	TYPE_TRANSFORM3D: "pink",
+	TYPE_PROJECTION: "pink",
+	TYPE_COLOR: "pink",
+	TYPE_STRING_NAME: "pink",
+	TYPE_NODE_PATH: "pink",
+	TYPE_RID: "pink",
+	TYPE_OBJECT: "pink",
+	TYPE_CALLABLE: "pink",
+	TYPE_SIGNAL: "pink",
+	TYPE_DICTIONARY: "pink",
+	TYPE_ARRAY: "pink",
+	TYPE_PACKED_BYTE_ARRAY: "pink",
+	TYPE_PACKED_INT32_ARRAY: "pink",
+	TYPE_PACKED_INT64_ARRAY: "pink",
+	TYPE_PACKED_FLOAT32_ARRAY: "pink",
+	TYPE_PACKED_FLOAT64_ARRAY: "pink",
+	TYPE_PACKED_STRING_ARRAY: "pink",
+	TYPE_PACKED_VECTOR2_ARRAY: "pink",
+	TYPE_PACKED_VECTOR3_ARRAY: "pink",
+	TYPE_PACKED_COLOR_ARRAY: "pink",
+	TYPE_MAX: "pink",
+	}

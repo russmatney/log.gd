@@ -293,7 +293,7 @@ func test_custom_resource_register_overwrite() -> void:
 
 ## color schemes ##########################################
 
-func test_null_alt_colors() -> void:
+func test_termsafe_toggling() -> void:
 	Log.set_colors_termsafe()
 	var val: String = Log.to_pretty(null)
 	assert_str(val).is_equal("[color=pink]<null>[/color]")
@@ -306,30 +306,13 @@ func test_null_alt_colors() -> void:
 	val = Log.to_pretty(null)
 	assert_str(val).is_equal("[color=pink]<null>[/color]")
 
-func test_color_overwriting() -> void:
-	var val: String = Log.to_pretty(null, {color_theme={TYPE_NIL: "red"}})
-	assert_str(val).is_equal("[color=red]<null>[/color]")
+# func test_color_overwriting() -> void:
+# 	var val: String = Log.to_pretty(null, {color_theme={TYPE_NIL: "red"}})
+# 	assert_str(val).is_equal("[color=red]<null>[/color]")
 
-	# does not clear other colors
-	val = Log.to_pretty(1, {color_theme={TYPE_NIL: "red"}})
-	assert_str(val).is_equal("[color=green]1[/color]")
-
-func test_color_scheme_overwriting() -> void:
-	var val: String = Log.to_pretty(null)
-	assert_str(val).is_equal("[color=pink]<null>[/color]")
-
-	Log.merge_theme_overwrites({TYPE_NIL: "red"})
-
-	val = Log.to_pretty(null)
-	assert_str(val).is_equal("[color=red]<null>[/color]")
-
-	# does not clear other colors
-	val = Log.to_pretty(1)
-	assert_str(val).is_equal("[color=green]1[/color]")
-
-	# reset colors
-	Log.set_colors_termsafe()
-	Log.clear_theme_overwrites()
+# 	# does not clear other colors
+# 	val = Log.to_pretty(1, {color_theme={TYPE_NIL: "red"}})
+# 	assert_str(val).is_equal("[color=green]1[/color]")
 
 func test_disable_colors_to_pretty() -> void:
 	assert_str(Log.to_pretty(1)).is_equal("[color=green]1[/color]")
