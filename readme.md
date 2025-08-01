@@ -56,6 +56,8 @@ This makes Godot's `Output` buffer much more readable! And now, I can't live wit
   - [Implementation](https://russmatney.github.io/log.gd/#/implementation)
 - [Log.gd on the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)
 
+- [Color Constants Cheatsheet](https://raw.githubusercontent.com/godotengine/godot-docs/master/img/color_constants.png)
+
 ## Other Godot Loggers
 
 There are some other great printers/loggers with a variety of features - check

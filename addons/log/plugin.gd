@@ -2,7 +2,6 @@
 extends EditorPlugin
 
 func _enter_tree() -> void:
-	Log.pr("log addon entered tree")
 	Log.setup_settings()
 	Log.rebuild_config()
 	ProjectSettings.settings_changed.connect(on_settings_changed)
@@ -10,6 +9,3 @@ func _enter_tree() -> void:
 func on_settings_changed() -> void:
 	# TODO only run if some log-specific setting has changed
 	Log.rebuild_config()
-
-func _ready() -> void:
-	Log.pr("log plugin ready?")

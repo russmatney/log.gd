@@ -2,6 +2,9 @@
 extends Resource
 class_name LogColorTheme
 
+func _init() -> void:
+	print("log color theme init")
+
 ## prefixes ########################################
 
 @export var color_src_prefix: Color = "aquamarine"
@@ -14,10 +17,8 @@ class_name LogColorTheme
 @export var color_ampersand: Color = "coral"
 @export var color_pipe: Color = "coral"
 @export var color_carrot: Color = "coral"
-@export var colors_parens: Array[Color] = ["crimson", "cornflower_blue", "coral", "pink", "peru"]
-@export var colors_square_braces: Array[Color] = ["crimson", "cornflower_blue", "coral", "pink", "peru"]
-@export var colors_curly_braces: Array[Color] = ["crimson", "cornflower_blue", "coral", "pink", "peru"]
-@export var colors_angle_braces: Array[Color] = ["crimson", "cornflower_blue", "coral", "pink", "peru"]
+
+@export var colors_rainbow_delims: Array[Color] = ["crimson", "cornflower_blue", "coral", "pink", "peru"]
 
 @export var colors_dict_keys: Array[Color] = ["coral", "cadet_blue", "pink", "peru"]
 
@@ -50,14 +51,14 @@ func to_color_dict() -> Dictionary:
 	color_dict["&"] = color_ampersand
 	color_dict["^"] = color_carrot
 
-	color_dict["("] = colors_parens
-	color_dict[")"] = colors_parens
-	color_dict["["] = colors_square_braces
-	color_dict["]"] = colors_square_braces
-	color_dict["{"] = colors_curly_braces
-	color_dict["}"] = colors_curly_braces
-	color_dict["<"] = colors_angle_braces
-	color_dict[">"] = colors_angle_braces
+	color_dict["("] = colors_rainbow_delims
+	color_dict[")"] = colors_rainbow_delims
+	color_dict["["] = colors_rainbow_delims
+	color_dict["]"] = colors_rainbow_delims
+	color_dict["{"] = colors_rainbow_delims
+	color_dict["}"] = colors_rainbow_delims
+	color_dict["<"] = colors_rainbow_delims
+	color_dict[">"] = colors_rainbow_delims
 
 	color_dict["dict_key"] = colors_dict_keys
 	color_dict["vector_value"] = color_float

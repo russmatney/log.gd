@@ -31,16 +31,7 @@ static func assoc(opts: Dictionary, key: String, val: Variant) -> Dictionary:
 	_opts[key] = val
 	return _opts
 
-# config ####################################
-
-const KEY_PREFIX: String = "log_gd/config"
-static var is_config_setup: bool = false
-
-const KEY_COLOR_THEME: String = "%s/color_theme" % KEY_PREFIX
-const KEY_COLOR_RESOURCE: String = "%s/color_resource" % KEY_PREFIX
-const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
-const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
-const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
+# settings helpers ####################################
 
 static func initialize_setting(key: String, default_value: Variant, type: int, hint: int = PROPERTY_HINT_NONE, hint_string: String = "") -> void:
 	if not ProjectSettings.has_setting(key):
@@ -53,32 +44,52 @@ static func get_setting(key: String) -> Variant:
 		return ProjectSettings.get_setting(key)
 	return
 
+# settings keys and default ####################################
+
+const KEY_PREFIX: String = "log_gd/config"
+static var is_config_setup: bool = false
+
+const KEY_COLOR_THEME: String = "%s/color_theme" % KEY_PREFIX
+const KEY_COLOR_THEME_RESOURCE: String = "log_color_theme"
+const KEY_COLOR_THEME_RESOURCE_PATH: String = "%s/color_resource_path" % KEY_PREFIX
+const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
+const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
+const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
+
+const CONFIG_DEFAULTS := {
+		KEY_COLOR_THEME: LOG_THEME_PRETTY_DARK_V1,
+		KEY_COLOR_THEME_RESOURCE_PATH: "res://addons/log/default_color_theme.tres",
+		KEY_DISABLE_COLORS: false,
+		KEY_MAX_ARRAY_SIZE: 20,
+		KEY_SKIP_KEYS: ["layer_0/tile_data"],
+	}
+
+# settings setup ####################################
+
 static func setup_settings(opts: Dictionary = {}) -> void:
-	initialize_setting(KEY_COLOR_THEME, LOG_THEME_PRETTY_DARK_V1, TYPE_STRING, PROPERTY_HINT_ENUM,
+	initialize_setting(KEY_COLOR_THEME, CONFIG_DEFAULTS[KEY_COLOR_THEME], TYPE_STRING, PROPERTY_HINT_ENUM,
 		"%s,%s,%s" % [LOG_THEME_TERMSAFE, LOG_THEME_PRETTY_DARK_V1, LOG_THEME_PRETTY_LIGHT_V1])
-
-	var default_color_resource := load("res://addons/log/default_color_theme.tres")
-	initialize_setting(KEY_COLOR_RESOURCE, default_color_resource, TYPE_OBJECT, PROPERTY_HINT_RESOURCE_TYPE, "LogColorTheme")
-
-	initialize_setting(KEY_DISABLE_COLORS, false, TYPE_BOOL)
-	initialize_setting(KEY_MAX_ARRAY_SIZE, 20, TYPE_BOOL)
-	initialize_setting(KEY_SKIP_KEYS, ["layer_0/tile_data"], TYPE_PACKED_STRING_ARRAY)
+	initialize_setting(KEY_COLOR_THEME_RESOURCE_PATH, CONFIG_DEFAULTS[KEY_COLOR_THEME_RESOURCE_PATH], TYPE_STRING, PROPERTY_HINT_FILE)
+	initialize_setting(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS], TYPE_BOOL)
+	initialize_setting(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE], TYPE_BOOL)
+	initialize_setting(KEY_SKIP_KEYS, CONFIG_DEFAULTS[KEY_SKIP_KEYS], TYPE_PACKED_STRING_ARRAY)
 
 	ProjectSettings.save()
 
-static func rebuild_config(opts: Dictionary = {}) -> void:
-	var keys: Array = opts.get("keys", [
-		KEY_COLOR_THEME,
-		KEY_COLOR_RESOURCE,
-		KEY_DISABLE_COLORS,
-		KEY_MAX_ARRAY_SIZE,
-		KEY_SKIP_KEYS,
-		])
+# config setup ####################################
 
-	for key: String in keys:
+static func rebuild_config(opts: Dictionary = {}) -> void:
+	for key: String in CONFIG_DEFAULTS.keys():
 		var val: Variant = get_setting(key)
+		if val == null:
+			val = CONFIG_DEFAULTS[key]
 		if val != null:
 			Log.config[key] = val
+
+			# hardcoding a resource-load b/c it seems like custom-resources can't be loaded by the project settings
+			# https://github.com/godotengine/godot/issues/96219
+			if key == KEY_COLOR_THEME_RESOURCE_PATH:
+				Log.config[KEY_COLOR_THEME_RESOURCE] = load(val)
 
 	Log.is_config_setup = true
 
@@ -87,24 +98,25 @@ static var config: Dictionary = {}
 # config getters ###################################################################
 
 static func get_max_array_size() -> int:
-	return Log.config.get(KEY_MAX_ARRAY_SIZE, 20)
+	return Log.config.get(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE])
 
 static func get_dictionary_skip_keys() -> Array:
-	return Log.config.get(KEY_SKIP_KEYS, [])
+	return Log.config.get(KEY_SKIP_KEYS, CONFIG_DEFAULTS[KEY_SKIP_KEYS])
 
 static func get_disable_colors() -> bool:
-	return Log.config.get(KEY_DISABLE_COLORS, false)
+	return Log.config.get(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS])
 
 static var warned_about_missing_theme := false
 static func get_config_color_theme() -> Dictionary:
-	var color_res: LogColorTheme = Log.config.get(KEY_COLOR_RESOURCE)
+	var color_res: LogColorTheme = Log.config.get(KEY_COLOR_THEME_RESOURCE)
 	if color_res != null:
 		# print("found color theme resource!", color_res)
 		var colors := color_res.to_color_dict()
 		# print("SRC color: ", colors.get("SRC", "no src color found!"))
 		return colors
+	print("coudl not find color theme resource, using config color theme")
 
-	var theme_id: String = Log.config.get(KEY_COLOR_THEME, LOG_THEME_TERMSAFE)
+	var theme_id: String = Log.config.get(KEY_COLOR_THEME, CONFIG_DEFAULTS[KEY_COLOR_THEME])
 	match theme_id:
 		LOG_THEME_TERMSAFE:
 			return Log.COLORS_TERMINAL_SAFE
@@ -369,9 +381,10 @@ static func clear_theme_overwrites() -> void:
 static func get_color_theme(opts: Dictionary = {}) -> Dictionary:
 	var theme: Dictionary = opts.get("color_theme", {})
 	# fill in any missing vals with the set theme, then the term-safe fallbacks
-	theme.merge(Log.theme_overwrites)
+	# theme.merge(Log.theme_overwrites)
 	theme.merge(Log.get_config_color_theme())
-	theme.merge(Log.COLORS_TERMINAL_SAFE)
+	# theme.merge(Log.COLORS_TERMINAL_SAFE)
+	# print(theme)
 	return theme
 
 static func should_use_color(opts: Dictionary = {}) -> bool:
@@ -761,10 +774,10 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 	push_error(m)
 
 
-## Pretty-print the passed arguments in a single line.
+## Helper that will both print() and print_rich() the enriched string
 static func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
 	var m: String = Log.to_printable(msgs, {stack=get_stack()})
-	print(m)
+	print("_internal_debug: ", m)
 	print_rich(m)
