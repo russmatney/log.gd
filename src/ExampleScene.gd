@@ -107,11 +107,13 @@ func run_showcase() -> void:
 	print(self)
 	Log.pr(self)
 
-	Log.prn({
+	var nested_dicts: Dictionary = {
 		one={two="three", four="five"},
 		two={two="three", four={five="five", six="six"}},
 		three={two="three", four="five"},
-		})
+		}
+	Log.prn(nested_dicts)
+	Log.pr(nested_dicts)
 
 # func to_pretty() -> Variant:
 # 	return {name=name}

@@ -49,7 +49,9 @@ static func get_setting(key: String) -> Variant:
 const KEY_PREFIX: String = "log_gd/config"
 static var is_config_setup: bool = false
 
+# TODO drop this key
 const KEY_COLOR_THEME_DICT: String = "log_color_theme_dict"
+const KEY_COLOR_THEME: String = "log_color_theme"
 const KEY_COLOR_THEME_RESOURCE_PATH: String = "%s/color_resource_path" % KEY_PREFIX
 const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
 const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
@@ -84,7 +86,8 @@ static func rebuild_config(opts: Dictionary = {}) -> void:
 		# hardcoding a resource-load b/c it seems like custom-resources can't be loaded by the project settings
 		# https://github.com/godotengine/godot/issues/96219
 		if val != null and key == KEY_COLOR_THEME_RESOURCE_PATH:
-			Log.config[KEY_COLOR_THEME_DICT] = load(val).to_color_dict()
+			Log.config[KEY_COLOR_THEME] = load(val)
+			Log.config[KEY_COLOR_THEME_DICT] = Log.config[KEY_COLOR_THEME].to_color_dict()
 
 	Log.is_config_setup = true
 
@@ -99,8 +102,10 @@ static func get_dictionary_skip_keys() -> Array:
 static func get_disable_colors() -> bool:
 	return Log.config.get(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS])
 
+# TODO refactor away from the dict, create a termsafe LogColorTheme fallback
 static var warned_about_termsafe_fallback := false
-static func get_config_color_theme() -> Dictionary:
+static func get_config_color_theme_dict() -> Dictionary:
+	var color_theme = Log.config.get(KEY_COLOR_THEME)
 	var color_dict = Log.config.get(KEY_COLOR_THEME_DICT)
 	if color_dict != null:
 		return color_dict
@@ -108,6 +113,11 @@ static func get_config_color_theme() -> Dictionary:
 		print("Falling back to TERM_SAFE colors")
 		warned_about_termsafe_fallback = true
 	return LogColorTheme.COLORS_TERM_SAFE
+
+static func get_config_color_theme() -> LogColorTheme:
+	var color_theme = Log.config.get(KEY_COLOR_THEME)
+	# TODO better warnings, fallbacks
+	return color_theme
 
 ## config setters ###################################################################
 
@@ -135,7 +145,8 @@ static func set_colors_pretty() -> void:
 	var theme_path: Variant = Log.config.get(KEY_COLOR_THEME_RESOURCE_PATH)
 	# TODO proper string, file, resource load check here
 	if theme_path != null:
-		Log.config[KEY_COLOR_THEME_DICT] = load(theme_path).to_color_dict()
+		Log.config[KEY_COLOR_THEME] = load(theme_path)
+		Log.config[KEY_COLOR_THEME_DICT] = Log.config[KEY_COLOR_THEME].to_color_dict()
 	else:
 		print("WARNING no color theme resource path to load!")
 
@@ -153,7 +164,9 @@ static func should_use_color(opts: Dictionary = {}) -> bool:
 	return true
 
 static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
-	var colors: Dictionary = get_config_color_theme()
+	# TODO refactor to use the color theme directly
+	var colors: Dictionary = get_config_color_theme_dict()
+	var color_theme: LogColorTheme = get_config_color_theme()
 
 	if not should_use_color(opts):
 		return str(s)
@@ -192,6 +205,9 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 		# get the colors back to something bb_code can handle
 		color = color.to_html(false)
 
+	if color_theme.has_bg():
+		var bg_color: String = color_theme.get_bg_color(opts.get("delimiter_index", 0)).to_html(false)
+		return "[bgcolor=%s][color=%s]%s[/color][/bgcolor]" % [bg_color, color, s]
 	return "[color=%s]%s[/color]" % [color, s]
 
 ## overwrites ###########################################################################
@@ -283,7 +299,7 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		var last: int = len(msg) - 1
 		for i: int in range(len(msg)):
 			if newlines and last > 1:
-				tmp += "\n\t"
+				tmp += Log.color_wrap("\n\t", opts)
 			tmp += Log.to_pretty(msg[i],
 				# duplicate here to prevent indenting-per-msg
 				# e.g. when printing an array of dictionaries
@@ -313,12 +329,12 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 					opts["indent_level"] += 1
 				val = Log.to_pretty(msg[k], opts)
 			if newlines and ct > 1:
-				tmp += "\n\t" \
-					+ range(indent_level)\
+				tmp += Log.color_wrap("\n\t", opts) \
+					+ Log.color_wrap(range(indent_level)\
 					.map(func(_i: int) -> String: return "\t")\
-					.reduce(func(a: String, b: Variant) -> String: return str(a, b), "")
+					.reduce(func(a: String, b: Variant) -> String: return str(a, b), ""), opts)
 			var key: String = Log.color_wrap('"%s"' % k, Log.assoc(opts, "typeof", "dict_key"))
-			tmp += "%s: %s" % [key, val]
+			tmp += "%s%s%s" % [key, Log.color_wrap(": ", opts), val]
 			if last and str(k) != str(last):
 				tmp += Log.color_wrap(", ", opts)
 		opts["delimiter_index"] -= 1
@@ -331,8 +347,9 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		if msg == "":
 			return '""'
 		if "[color=" in msg and "[/color]" in msg:
-			# assumes the string is already colorized
-			# NOT PERFECT! could use a regex for something more robust
+			# passes through strings that might already be colorized?
+			# can't remember this use-case
+			# perhaps should use a regex and unit tests for something more robust
 			return msg
 		return Log.color_wrap(msg, opts)
 	elif msg is StringName:
@@ -342,7 +359,7 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 
 	elif msg is Color:
 		# probably too opinionated, but seeing 4 floats for color is noisey
-		return Log.color_wrap(msg.to_html(), Log.assoc(opts, "typeof", TYPE_COLOR))
+		return Log.color_wrap(msg.to_html(false), Log.assoc(opts, "typeof", TYPE_COLOR))
 
 	# vectors
 	elif msg is Vector2 or msg is Vector2i:
