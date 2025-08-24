@@ -25,10 +25,9 @@
 > Available on the [Godot Asset
 > Library](https://godotengine.org/asset-library/asset/2696) and [Github](https://github.com/russmatney/log.gd).
 
-> I gave a Lightning talk about this addon at Godot Con Boston!
-> Here are [the
+> I gave [a Lightning talk](https://youtu.be/4Fv9YXHMA_U) about this addon at
+> Godot Con Boston! Here are [the
 > slides](https://docs.google.com/presentation/d/1Tlz8bLD4Uqltruwj7OmKIOr_InZrkWIvSDHUkQ_iJdY/edit#slide=id.p).
-> Video link to come soon!
 
 Log.gd provides a drop-in replacement for GDScript's `print(...)` function.
 
