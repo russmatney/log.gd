@@ -20,6 +20,10 @@
   </a>
 </p>
 
+<hr>
+
+<img src="/assets/Log_logo_2_4x.png">
+
 # Log.gd, a Godot pretty printer
 
 > Available on the [Godot Asset
