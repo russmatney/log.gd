@@ -271,7 +271,7 @@ static func clear_type_overwrites() -> void:
 ## Can be useful to feed directly into a RichTextLabel.
 ##
 static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
-	var newlines: bool = opts.get("newlines", false)
+	var newlines: bool = opts.get("newlines", Log.get_use_newlines())
 	var indent_level: int = opts.get("indent_level", 0)
 	var delimiter_index: int = opts.get("delimiter_index", 0)
 	if not "indent_level" in opts:
@@ -525,7 +525,7 @@ static func log(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF"
 static func prn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines()})
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true})
 	print_rich(m)
 
 ## Like [code]Log.prn()[/code], but also calls push_warning() with the pretty string.
@@ -534,8 +534,8 @@ static func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 	msgs = msgs.filter(Log.is_not_default)
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=yellow][WARN][/color]")
-	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=Log.get_use_newlines()}))
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines(), pretty=true})
+	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), pretty=true})
 	push_warning(m)
 
 ## Like [code]Log.prn()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
@@ -545,8 +545,8 @@ static func todo(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 	msgs.push_front("[TODO]")
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=yellow][WARN][/color]")
-	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=Log.get_use_newlines()}))
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines(), pretty=true})
+	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), pretty=true})
 	push_warning(m)
 
 ## Like [code]Log.prn()[/code], but also calls push_error() with the pretty string.
@@ -555,8 +555,8 @@ static func err(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF"
 	msgs = msgs.filter(Log.is_not_default)
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=red][ERR][/color]")
-	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=Log.get_use_newlines()}))
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines(), pretty=true})
+	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), pretty=true})
 	push_error(m)
 
 ## Like [code]Log.prn()[/code], but also calls push_error() with the pretty string.
@@ -565,8 +565,8 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 	msgs = msgs.filter(Log.is_not_default)
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=red][ERR][/color]")
-	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=Log.get_use_newlines()}))
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines(), pretty=true})
+	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), pretty=true})
 	push_error(m)
 
 
