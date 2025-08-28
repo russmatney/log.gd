@@ -10,6 +10,8 @@ func _enter_tree() -> void:
 	#Log.disable_newlines()
 	#Log.enable_newlines()
 
+	#Log.set_log_level(Log.Levels.WARN)
+
 	#print(Log.config)
 	Log.info(Log.config)
 
@@ -78,12 +80,12 @@ func showcase_easy_newlines() -> void:
 
 func showcase_levels() -> void:
 	print_header("Levels")
-	Log.log(example_object)
-	Log.info(example_object)
-	Log.warn(example_object)
-	Log.todo(example_object)
-	Log.err(example_object)
-	Log.error(example_object)
+	Log.log("Log.log()")
+	Log.info("Log.info()")
+	Log.warn("Log.warn()")
+	Log.todo("Log.todo()")
+	Log.err("Log.err()")
+	Log.error("Log.error()")
 
 func showcase_colors() -> void:
 	print_header("Custom Colors")
