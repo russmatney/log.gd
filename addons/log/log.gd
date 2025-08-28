@@ -234,16 +234,16 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 		if opts.get("typeof", "") in ["dict_key"]:
 			# subtract 1 for dict_keys
 			# we the keys are 'down' a nesting level, but we want the curly + dict keys to match
-			color = color[opts.get("delimiter_index", 0) - 1 % len(color)]
+			color = color[opts.get("newline_depth", 0) - 1 % len(color)]
 		else:
-			color = color[opts.get("delimiter_index", 0) % len(color)]
+			color = color[opts.get("newline_depth", 0) % len(color)]
 
 	if color is Color:
 		# get the colors back to something bb_code can handle
 		color = color.to_html(false)
 
 	if color_theme and color_theme.has_bg():
-		var bg_color: String = color_theme.get_bg_color(opts.get("delimiter_index", 0)).to_html(false)
+		var bg_color: String = color_theme.get_bg_color(opts.get("newline_depth", 0)).to_html(false)
 		return "[bgcolor=%s][color=%s]%s[/color][/bgcolor]" % [bg_color, color, s]
 	return "[color=%s]%s[/color]" % [color, s]
 
@@ -293,7 +293,6 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 	var newline_depth: int = opts.get("newline_depth", 0)
 	var newline_max_depth: int = opts.get("newline_max_depth", Log.get_newline_max_depth())
 	var indent_level: int = opts.get("indent_level", 0)
-	var delimiter_index: int = opts.get("delimiter_index", 0)
 
 	if not newlines:
 		newline_max_depth = 0
@@ -309,9 +308,6 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 
 	if not "indent_level" in opts:
 		opts["indent_level"] = indent_level
-
-	if not "delimiter_index" in opts:
-		opts["delimiter_index"] = delimiter_index
 
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
 		return str("invalid instance: ", msg)
@@ -347,7 +343,6 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 
 		# shouldn't we be incrementing index_level here?
 		var tmp: String = Log.color_wrap("[ ", opts)
-		opts["delimiter_index"] += 1
 		opts["newline_depth"] += 1
 		var last: int = len(msg) - 1
 		for i: int in range(len(msg)):
@@ -359,7 +354,6 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 				opts.duplicate(true))
 			if i != last:
 				tmp += Log.color_wrap(", ", opts)
-		opts["delimiter_index"] -= 1
 		opts["newline_depth"] -= 1
 		tmp += Log.color_wrap(" ]", opts)
 		return tmp
@@ -367,7 +361,6 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 	# dictionary
 	elif msg is Dictionary:
 		var tmp: String = Log.color_wrap("{ ", opts)
-		opts["delimiter_index"] += 1
 		opts["newline_depth"] += 1
 		var ct: int = len(msg)
 		var last: Variant
@@ -392,7 +385,6 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 			tmp += "%s%s%s" % [key, Log.color_wrap(": ", opts), val]
 			if last and str(k) != str(last):
 				tmp += Log.color_wrap(", ", opts)
-		opts["delimiter_index"] -= 1
 		opts["newline_depth"] -= 1
 		tmp += Log.color_wrap(" }", opts)
 		opts["indent_level"] -= 1 # ugh! updating the dict in-place
