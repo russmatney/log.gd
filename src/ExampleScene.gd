@@ -12,6 +12,8 @@ func _enter_tree() -> void:
 
 	#Log.set_log_level(Log.Levels.WARN)
 
+	#Log.disable_warn_todo()
+
 	#print(Log.config)
 	Log.info(Log.config)
 
