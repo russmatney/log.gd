@@ -346,10 +346,10 @@ func test_disable_newline_via_config() -> void:
 	const OUTPUT_WITHOUT_NEWLINES: String = "{ \"one\": 1, \"two\": 2 }"
 
 	Log.disable_colors()
-	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=Log.get_use_newlines()})).is_equal(OUTPUT_WITH_NEWLINES)
+	assert_str(Log.to_pretty(INPUT)).is_equal(OUTPUT_WITH_NEWLINES)
 
 	Log.disable_newlines()
-	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=Log.get_use_newlines()})).is_equal(OUTPUT_WITHOUT_NEWLINES)
+	assert_str(Log.to_pretty(INPUT)).is_equal(OUTPUT_WITHOUT_NEWLINES)
 
 	Log.enable_newlines()
-	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=Log.get_use_newlines()})).is_equal(OUTPUT_WITH_NEWLINES)
+	assert_str(Log.to_pretty(INPUT)).is_equal(OUTPUT_WITH_NEWLINES)
