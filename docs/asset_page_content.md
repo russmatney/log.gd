@@ -18,6 +18,7 @@ This makes Godot's `Output` buffer much more readable!
   and dictionaries
 - Both add prefix with the calling filename and line number (e.g. `[Player:34]`)
 - Both color the output values based on the value's type
+- `Log.info(...)`, `Log.warn(...)`, `Log.error(...)` offer differing log levels
 
 ### Links
 
@@ -95,13 +96,13 @@ For now it's a bit hard-coded...
 
 - `Log.pr(...)`, `Log.info(...)`
   - pretty-print without newlines
-- `Log.prn(...)`
-  - pretty-print with newlines
-- `Log.warn(...)`
-  - pretty-print with newlines
+- `Log.prn(...)`, `Log.prnn(...)`, `Log.prnnn(...)`
+  - pretty-print with limited newlines
+- `Log.warn(...)`, `Log.todo(...)`
+  - pretty-print without newlines
   - push a warning via `push_warning`
 - `Log.err(...)`, `Log.error(...)`
-  - pretty-print with newlines
+  - pretty-print without newlines
   - push a error via `push_error`
 
 These functions all take up to 7 args.
@@ -129,6 +130,8 @@ A few functions I use to tweak things at run time (e.g. when running tests).
 - `Log.set_colors_pretty()`
 - `Log.enable_newlines()`
 - `Log.disable_newlines()`
+- `Log.set_newline_max_depth(new_depth: int)`
+- `Log.reset_newline_max_depth()`
 
 ### Type Handlers
 
@@ -158,4 +161,9 @@ Settings instead of Project-wide ones. I'll be moving things around soon!
 - `use_newlines` (`true`)
   - Setting to false disables newlines in `Log.prn()`, `Log.warn()`,
   `Log.todo()`, `Log.err()`, and `Log.error()`.
+- `use_newlines` (`false`)
+  - Setting to true disables enables newlines across all log functions.
+- `newline_max_depth` (`-1`)
+  - Limits the object depth where newlines are printed.  Negative values don't
+  limit object depth.
 
