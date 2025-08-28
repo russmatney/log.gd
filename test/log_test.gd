@@ -1,5 +1,9 @@
 extends GdUnitTestSuite
 
+func before_test() -> void:
+	Log.config = {}
+	Log.is_config_setup = false
+
 ## null ##########################################
 
 func test_null() -> void:
@@ -326,3 +330,26 @@ func test_disable_colors_via_config() -> void:
 
 	Log.enable_colors()
 	assert_str(Log.to_pretty(1)).is_equal("[color=green]1[/color]")
+
+func test_disable_newline_to_pretty() -> void:
+	const INPUT: Dictionary = {"one": 1, "two": 2}
+	const OUTPUT_WITH_NEWLINES: String = "{ \n\t\"one\": 1, \n\t\"two\": 2 }"
+	const OUTPUT_WITHOUT_NEWLINES: String = "{ \"one\": 1, \"two\": 2 }"
+
+	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=true})).is_equal(OUTPUT_WITH_NEWLINES)
+	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=false})).is_equal(OUTPUT_WITHOUT_NEWLINES)
+
+
+func test_disable_newline_via_config() -> void:
+	const INPUT: Dictionary = {"one": 1, "two": 2}
+	const OUTPUT_WITH_NEWLINES: String = "{ \n\t\"one\": 1, \n\t\"two\": 2 }"
+	const OUTPUT_WITHOUT_NEWLINES: String = "{ \"one\": 1, \"two\": 2 }"
+
+	Log.disable_colors()
+	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=Log.get_use_newlines()})).is_equal(OUTPUT_WITH_NEWLINES)
+
+	Log.disable_newlines()
+	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=Log.get_use_newlines()})).is_equal(OUTPUT_WITHOUT_NEWLINES)
+
+	Log.enable_newlines()
+	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=Log.get_use_newlines()})).is_equal(OUTPUT_WITH_NEWLINES)
