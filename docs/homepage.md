@@ -146,6 +146,16 @@ Log ships with an initial dark and light theme - feel free to duplicate and
 customize as you would. I'd love to provide more themes out of the box, feel
 free to share them via PR or otherwise.
 
+### Log Levels!
+
+Log.gd supports three log levels, `INFO`, `WARN`, and `ERR`.  These levels have
+matching logger functions for ease of use: `Log.info()`, `Log.warn()`, and
+`Log.err()`.  For convenience, `Log.error()` is available.
+
+`Log.todo()` is treated as a `WARN`-level log by default, but can be changed to
+an `INFO`-level log in Project Settings or via `Log.disable_warn_todo()`.
+
+
 ## Public API
 
 ### Print functions
@@ -154,12 +164,15 @@ free to share them via PR or otherwise.
   - pretty-print without newlines
 - `Log.prn(...)`, `Log.prnn(...)`, `Log.prnnn(...)`
   - pretty-print with limited newlines
-- `Log.warn(...)`, `Log.todo(...)`
+- `Log.warn(...)`
   - pretty-print without newlines
   - push a warning via `push_warning`
 - `Log.err(...)`, `Log.error(...)`
   - pretty-print without newlines
   - push a error via `push_error`
+- `Log.todo(...)`
+  - pretty-print without newlines
+  - optionally push a warning via `push_warning`
 
 ?> These functions all take up to 7 args.
 We could support more, but you can also pass an Array or a Dictionary if you
@@ -188,6 +201,9 @@ A few functions I use to tweak things at run time (e.g. when running tests).
 - `Log.disable_newlines()`
 - `Log.set_newline_max_depth(new_depth: int)`
 - `Log.reset_newline_max_depth()`
+- `Log.set_log_level()`
+- `Log.disable_warn_todo()`
+- `Log.enable_warn_todo()`
 
 ### Type Handlers
 
@@ -219,6 +235,11 @@ There are a few Log.gd options available in Project Settings.
 - `newline_max_depth` (`-1`)
   - Limits the object depth where newlines are printed.  Negative values don't
   limit object depth.
+- `log_level` (`Info`)
+  - Sets the project-wide, minimum level to log.
+- `warn_todo` (`true`)
+  - Setting true causes `Log.todo()` to be treated as a warn-level log, false
+  and it gets treated as an info-level log.
 
 ## Other Godot Loggers
 
