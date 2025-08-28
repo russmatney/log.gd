@@ -346,6 +346,7 @@ func test_disable_newline_via_config() -> void:
 	const OUTPUT_WITHOUT_NEWLINES: String = "{ \"one\": 1, \"two\": 2 }"
 
 	Log.disable_colors()
+	Log.enable_newlines()
 	assert_str(Log.to_pretty(INPUT)).is_equal(OUTPUT_WITH_NEWLINES)
 
 	Log.disable_newlines()
@@ -353,3 +354,32 @@ func test_disable_newline_via_config() -> void:
 
 	Log.enable_newlines()
 	assert_str(Log.to_pretty(INPUT)).is_equal(OUTPUT_WITH_NEWLINES)
+
+func test_newline_max_depth_to_pretty() -> void:
+	const INPUT: Dictionary = {"one": 1, "two": {"three": 3, "four": 4}}
+	const OUTPUT_DEPTH_0: String = "{ \"one\": 1, \"two\": { \"three\": 3, \"four\": 4 } }"
+	const OUTPUT_DEPTH_1: String = "{ \n\t\"one\": 1, \n\t\"two\": { \"three\": 3, \"four\": 4 } }"
+	const OUTPUT_DEPTH_2: String = "{ \n\t\"one\": 1, \n\t\"two\": { \n\t\t\"three\": 3, \n\t\t\"four\": 4 } }"
+
+	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=true, newline_max_depth=0})).is_equal(OUTPUT_DEPTH_0)
+	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=true, newline_max_depth=1})).is_equal(OUTPUT_DEPTH_1)
+	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=true, newline_max_depth=2})).is_equal(OUTPUT_DEPTH_2)
+
+
+func test_newline_max_depth_via_config() -> void:
+	const INPUT: Dictionary = {"one": 1, "two": {"three": 3, "four": 4}}
+	const OUTPUT_DEPTH_0: String = "{ \"one\": 1, \"two\": { \"three\": 3, \"four\": 4 } }"
+	const OUTPUT_DEPTH_1: String = "{ \n\t\"one\": 1, \n\t\"two\": { \"three\": 3, \"four\": 4 } }"
+	const OUTPUT_DEPTH_2: String = "{ \n\t\"one\": 1, \n\t\"two\": { \n\t\t\"three\": 3, \n\t\t\"four\": 4 } }"
+
+	Log.disable_colors()
+	Log.enable_newlines()
+
+	Log.set_newline_max_depth(0)
+	assert_str(Log.to_pretty(INPUT)).is_equal(OUTPUT_DEPTH_0)
+
+	Log.set_newline_max_depth(1)
+	assert_str(Log.to_pretty(INPUT)).is_equal(OUTPUT_DEPTH_1)
+
+	Log.set_newline_max_depth(2)
+	assert_str(Log.to_pretty(INPUT)).is_equal(OUTPUT_DEPTH_2)
