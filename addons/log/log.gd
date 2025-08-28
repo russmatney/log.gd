@@ -59,6 +59,7 @@ const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
 const KEY_USE_NEWLINES: String = "%s/use_newlines" % KEY_PREFIX
 const KEY_NEWLINE_MAX_DEPTH: String = "%s/newline_max_depth" % KEY_PREFIX
 const KEY_LOG_LEVEL: String = "%s/log_level" % KEY_PREFIX
+const KEY_WARN_TODO: String = "%s/warn_todo" % KEY_PREFIX
 
 enum Levels {
 		INFO,
@@ -73,7 +74,8 @@ const CONFIG_DEFAULTS := {
 		KEY_SKIP_KEYS: ["layer_0/tile_data"],
 		KEY_USE_NEWLINES: false,
 		KEY_NEWLINE_MAX_DEPTH: -1,
-		KEY_LOG_LEVEL: Levels.INFO
+		KEY_LOG_LEVEL: Levels.INFO,
+		KEY_WARN_TODO: true,
 	}
 
 # settings setup ####################################
@@ -86,6 +88,7 @@ static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_USE_NEWLINES, CONFIG_DEFAULTS[KEY_USE_NEWLINES], TYPE_BOOL)
 	initialize_setting(KEY_NEWLINE_MAX_DEPTH, CONFIG_DEFAULTS[KEY_NEWLINE_MAX_DEPTH], TYPE_INT)
 	initialize_setting(KEY_LOG_LEVEL, CONFIG_DEFAULTS[KEY_LOG_LEVEL], TYPE_INT, PROPERTY_HINT_ENUM, "Info,Warn,Error")
+	initialize_setting(KEY_WARN_TODO, CONFIG_DEFAULTS[KEY_WARN_TODO], TYPE_BOOL)
 
 # config setup ####################################
 
@@ -144,6 +147,9 @@ static func get_newline_max_depth() -> int:
 static func get_log_level() -> int:
 	return Log.config.get(KEY_LOG_LEVEL, CONFIG_DEFAULTS[KEY_LOG_LEVEL])
 
+static func get_warn_todo() -> int:
+	return Log.config.get(KEY_WARN_TODO, CONFIG_DEFAULTS[KEY_WARN_TODO])
+
 ## config setters ###################################################################
 
 ## Disable color-wrapping output.
@@ -170,6 +176,14 @@ static func disable_newlines() -> void:
 ## Re-enable newlines in pretty-print output.
 static func enable_newlines() -> void:
 	Log.config[KEY_USE_NEWLINES] = true
+
+## Disable warning on Log.todo().
+static func disable_warn_todo() -> void:
+	Log.config[KEY_WARN_TODO] = false
+
+## Re-enable warning on Log.todo().
+static func enable_warn_todo() -> void:
+	Log.config[KEY_WARN_TODO] = true
 
 ## Set the maximum depth of an object that will get its own newline.
 ##
@@ -605,15 +619,20 @@ static func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 
 ## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
 static func todo(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+	if get_warn_todo() and get_log_level() > Log.Levels.WARN:
+		return
+	elif not get_warn_todo() and get_log_level() > Log.Levels.INFO:
+		return
 	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
 	msgs.push_front("[TODO]")
 	var rich_msgs: Array = msgs.duplicate()
-	rich_msgs.push_front("[color=yellow][WARN][/color]")
+	if get_warn_todo():
+		rich_msgs.push_front("[color=yellow][WARN][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
-	# skip the 'color' features in warnings to keep them readable in the debugger
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), disable_colors=true})
-	push_warning(m)
+	if get_warn_todo():
+		var m: String = Log.to_printable(msgs, {stack=get_stack(), disable_colors=true})
+		push_warning(m)
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
 static func err(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
