@@ -32,10 +32,6 @@ enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/log/p
 report/godot/push_error=true
 settings/common/update_notification_enabled=false
 
-[log_gd]
-
-config/color_resource_path="uid://biihit5thq2qq"
-
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
