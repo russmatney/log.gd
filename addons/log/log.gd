@@ -56,12 +56,14 @@ const KEY_COLOR_THEME_RESOURCE_PATH: String = "%s/color_resource_path" % KEY_PRE
 const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
 const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
 const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
+const KEY_USE_NEWLINES: String = "%s/use_newlines" % KEY_PREFIX
 
 const CONFIG_DEFAULTS := {
 		KEY_COLOR_THEME_RESOURCE_PATH: "res://addons/log/color_theme_dark.tres",
 		KEY_DISABLE_COLORS: false,
 		KEY_MAX_ARRAY_SIZE: 20,
 		KEY_SKIP_KEYS: ["layer_0/tile_data"],
+		KEY_USE_NEWLINES: true,
 	}
 
 # settings setup ####################################
@@ -69,15 +71,17 @@ const CONFIG_DEFAULTS := {
 static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_COLOR_THEME_RESOURCE_PATH, CONFIG_DEFAULTS[KEY_COLOR_THEME_RESOURCE_PATH], TYPE_STRING, PROPERTY_HINT_FILE)
 	initialize_setting(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS], TYPE_BOOL)
-	initialize_setting(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE], TYPE_BOOL)
+	initialize_setting(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE], TYPE_INT)
 	initialize_setting(KEY_SKIP_KEYS, CONFIG_DEFAULTS[KEY_SKIP_KEYS], TYPE_PACKED_STRING_ARRAY)
+	initialize_setting(KEY_USE_NEWLINES, CONFIG_DEFAULTS[KEY_USE_NEWLINES], TYPE_BOOL)
 
 # config setup ####################################
 
 static var config: Dictionary = {}
 static func rebuild_config(opts: Dictionary = {}) -> void:
 	for key: String in CONFIG_DEFAULTS.keys():
-		var val: Variant = get_setting(key)
+		# Keep config set in code before to_printable() is called for the first time
+		var val: Variant = Log.config.get(key, get_setting(key))
 		if val == null:
 			val = CONFIG_DEFAULTS[key]
 
@@ -119,6 +123,9 @@ static func get_config_color_theme() -> LogColorTheme:
 	# TODO better warnings, fallbacks
 	return color_theme
 
+static func get_use_newlines() -> bool:
+	return Log.config.get(KEY_USE_NEWLINES, CONFIG_DEFAULTS[KEY_USE_NEWLINES])
+
 ## config setters ###################################################################
 
 ## Disable color-wrapping output.
@@ -133,6 +140,18 @@ static func disable_colors() -> void:
 ## Re-enable color-wrapping output.
 static func enable_colors() -> void:
 	Log.config[KEY_DISABLE_COLORS] = false
+
+## Disable newlines in pretty-print output.
+##
+## [br][br]
+## Useful if you want your log output on a single line, typically for use with
+## log aggregation tools.
+static func disable_newlines() -> void:
+	Log.config[KEY_USE_NEWLINES] = false
+
+## Re-enable newlines in pretty-print output.
+static func enable_newlines() -> void:
+	Log.config[KEY_USE_NEWLINES] = true
 
 ## set color theme ####################################
 
@@ -205,7 +224,7 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 		# get the colors back to something bb_code can handle
 		color = color.to_html(false)
 
-	if color_theme.has_bg():
+	if color_theme and color_theme.has_bg():
 		var bg_color: String = color_theme.get_bg_color(opts.get("delimiter_index", 0)).to_html(false)
 		return "[bgcolor=%s][color=%s]%s[/color][/bgcolor]" % [bg_color, color, s]
 	return "[color=%s]%s[/color]" % [color, s]
@@ -506,7 +525,7 @@ static func log(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF"
 static func prn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true})
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines()})
 	print_rich(m)
 
 ## Like [code]Log.prn()[/code], but also calls push_warning() with the pretty string.
@@ -515,8 +534,8 @@ static func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 	msgs = msgs.filter(Log.is_not_default)
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=yellow][WARN][/color]")
-	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
+	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=Log.get_use_newlines()}))
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines(), pretty=true})
 	push_warning(m)
 
 ## Like [code]Log.prn()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
@@ -526,8 +545,8 @@ static func todo(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 	msgs.push_front("[TODO]")
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=yellow][WARN][/color]")
-	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
+	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=Log.get_use_newlines()}))
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines(), pretty=true})
 	push_warning(m)
 
 ## Like [code]Log.prn()[/code], but also calls push_error() with the pretty string.
@@ -536,8 +555,8 @@ static func err(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF"
 	msgs = msgs.filter(Log.is_not_default)
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=red][ERR][/color]")
-	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
+	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=Log.get_use_newlines()}))
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines(), pretty=true})
 	push_error(m)
 
 ## Like [code]Log.prn()[/code], but also calls push_error() with the pretty string.
@@ -546,8 +565,8 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 	msgs = msgs.filter(Log.is_not_default)
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=red][ERR][/color]")
-	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=true}))
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=true, pretty=false})
+	print_rich(Log.to_printable(rich_msgs, {stack=get_stack(), newlines=Log.get_use_newlines()}))
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), newlines=Log.get_use_newlines(), pretty=true})
 	push_error(m)
 
 

@@ -7,6 +7,9 @@ func _enter_tree() -> void:
 	Log.set_colors_pretty()
 	# Log.disable_colors()
 
+	#Log.disable_newlines()
+	#Log.enable_newlines()
+
 	# print(Log.config)
 	Log.info(Log.config)
 

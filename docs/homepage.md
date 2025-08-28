@@ -183,6 +183,8 @@ A few functions I use to tweak things at run time (e.g. when running tests).
 - `Log.disable_colors()`
 - `Log.set_colors_termsafe()`
 - `Log.set_colors_pretty()`
+- `Log.enable_newlines()`
+- `Log.disable_newlines()`
 
 ### Type Handlers
 
@@ -209,6 +211,9 @@ There are a few Log.gd options available in Project Settings.
   - Disables colors at game startup.
 - `color_theme` (`PRETTY_DARK_V1`)
   - A text string name that aligns with (currently hard-coded) color themes.
+- `use_newlines` (`true`)
+  - Setting to false disables newlines in `Log.prn()`, `Log.warn()`,
+  `Log.todo()`, `Log.err()`, and `Log.error()`.
 
 ## Other Godot Loggers
 
