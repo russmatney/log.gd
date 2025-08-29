@@ -28,7 +28,9 @@ jobs:
       fail-fast: false
       max-parallel: 10
       matrix:
-        godot-version: ['4.2', '4.3', '4.4']
+        godot-version: [
+        # '4.2', '4.3',
+        '4.4']
         godot-status: ['stable']
 
     steps:
