@@ -1,10 +1,14 @@
 # CHANGELOG
 
 
-## Unreleased
+## v0.1.0
 
 
 ### 29 Aug 2025
+
+- ([`030d7fb`](https://github.com/russmatney/log.gd/commit/030d7fb)) docs: update changelog
+
+  > Lots of great stuff in here from @gofastlily!
 
 - ([`fb91ce3`](https://github.com/russmatney/log.gd/commit/fb91ce3): Lily) Add DEBUG log level below INFO
 - ([`56975aa`](https://github.com/russmatney/log.gd/commit/56975aa): Lily) Add optional dropdown for quick log-level changing
