@@ -84,3 +84,11 @@ them out!
 - [https://github.com/ZeeWeasel/LogDuck](https://github.com/ZeeWeasel/LogDuck)
 - [https://github.com/DaviD4Chirino/Awesome-Debug-Log](https://github.com/DaviD4Chirino/Awesome-Debug-Log)
 
+
+## Contributors
+
+Huge thanks to the Log.gd contributors!
+
+- [cridenour](https://github.com/cridenour)
+- [Gramps](https://github.com/Gramps)
+- [gofastlily](https://github.com/gofastlily)

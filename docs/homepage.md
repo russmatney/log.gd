@@ -215,7 +215,7 @@ There are a few Log.gd options available in Project Settings.
 - `color_theme` (`PRETTY_DARK_V1`)
   - A text string name that aligns with (currently hard-coded) color themes.
 - `use_newlines` (`false`)
-  - Setting to true disables enables newlines across all log functions.
+  - Setting to true enables newlines across all log functions.
 - `newline_max_depth` (`-1`)
   - Limits the object depth where newlines are printed.  Negative values don't
   limit object depth.
@@ -238,3 +238,12 @@ them out!
 - [https://github.com/DawnGroveStudios/GodotLogger](https://github.com/DawnGroveStudios/GodotLogger)
 - [https://github.com/ZeeWeasel/LogDuck](https://github.com/ZeeWeasel/LogDuck)
 - [https://github.com/DaviD4Chirino/Awesome-Debug-Log](https://github.com/DaviD4Chirino/Awesome-Debug-Log)
+
+## Contributors
+
+Huge thanks to the Log.gd contributors!
+
+- [cridenour](https://github.com/cridenour)
+- [Gramps](https://github.com/Gramps)
+- [gofastlily](https://github.com/gofastlily)
+
