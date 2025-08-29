@@ -4,6 +4,7 @@ extends EditorPlugin
 
 var override_log_level_option_button: OptionButton = OptionButton.new()
 
+var icon_debug: Texture2D = EditorInterface.get_editor_theme().get_icon("Debug", "EditorIcons")
 var icon_info: Texture2D = EditorInterface.get_editor_theme().get_icon("NodeInfo", "EditorIcons")
 var icon_warn: Texture2D = EditorInterface.get_editor_theme().get_icon("NodeWarning", "EditorIcons")
 var icon_err: Texture2D = EditorInterface.get_editor_theme().get_icon("StatusError", "EditorIcons")
@@ -11,9 +12,10 @@ var icon_err: Texture2D = EditorInterface.get_editor_theme().get_icon("StatusErr
 
 func _enter_tree() -> void:
 	override_log_level_option_button.visible = ProjectSettings.get_setting("log_gd/config/show_log_level_selector", false)
+	override_log_level_option_button.add_icon_item(icon_debug, "DEBUG")
 	override_log_level_option_button.add_icon_item(icon_info, "INFO")
 	override_log_level_option_button.add_icon_item(icon_warn, "WARN")
-	override_log_level_option_button.add_icon_item(icon_err, "ERR")
+	override_log_level_option_button.add_icon_item(icon_err, "ERROR")
 	override_log_level_option_button.select(Log.get_log_level())
 	override_log_level_option_button.item_selected.connect(override_log_level)
 	add_control_to_container(CONTAINER_TOOLBAR, override_log_level_option_button)
