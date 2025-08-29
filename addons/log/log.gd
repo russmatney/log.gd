@@ -39,11 +39,6 @@ static func initialize_setting(key: String, default_value: Variant, type: int, h
 	ProjectSettings.set_initial_value(key, default_value)
 	ProjectSettings.add_property_info({name=key, type=type, hint=hint, hint_string=hint_string})
 
-static func get_setting(key: String) -> Variant:
-	if ProjectSettings.has_setting(key):
-		return ProjectSettings.get_setting(key)
-	return
-
 # settings keys and default ####################################
 
 const KEY_PREFIX: String = "log_gd/config"
@@ -60,6 +55,7 @@ const KEY_USE_NEWLINES: String = "%s/use_newlines" % KEY_PREFIX
 const KEY_NEWLINE_MAX_DEPTH: String = "%s/newline_max_depth" % KEY_PREFIX
 const KEY_LOG_LEVEL: String = "%s/log_level" % KEY_PREFIX
 const KEY_WARN_TODO: String = "%s/warn_todo" % KEY_PREFIX
+const KEY_SHOW_LOG_LEVEL_SELECTOR: String = "%s/show_log_level_selector" % KEY_PREFIX
 
 enum Levels {
 		INFO,
@@ -76,6 +72,7 @@ const CONFIG_DEFAULTS := {
 		KEY_NEWLINE_MAX_DEPTH: -1,
 		KEY_LOG_LEVEL: Levels.INFO,
 		KEY_WARN_TODO: true,
+		KEY_SHOW_LOG_LEVEL_SELECTOR: false,
 	}
 
 # settings setup ####################################
@@ -89,6 +86,7 @@ static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_NEWLINE_MAX_DEPTH, CONFIG_DEFAULTS[KEY_NEWLINE_MAX_DEPTH], TYPE_INT)
 	initialize_setting(KEY_LOG_LEVEL, CONFIG_DEFAULTS[KEY_LOG_LEVEL], TYPE_INT, PROPERTY_HINT_ENUM, "Info,Warn,Error")
 	initialize_setting(KEY_WARN_TODO, CONFIG_DEFAULTS[KEY_WARN_TODO], TYPE_BOOL)
+	initialize_setting(KEY_SHOW_LOG_LEVEL_SELECTOR, CONFIG_DEFAULTS[KEY_SHOW_LOG_LEVEL_SELECTOR], TYPE_BOOL)
 
 # config setup ####################################
 
@@ -96,9 +94,7 @@ static var config: Dictionary = {}
 static func rebuild_config(opts: Dictionary = {}) -> void:
 	for key: String in CONFIG_DEFAULTS.keys():
 		# Keep config set in code before to_printable() is called for the first time
-		var val: Variant = Log.config.get(key, get_setting(key))
-		if val == null:
-			val = CONFIG_DEFAULTS[key]
+		var val: Variant = Log.config.get(key, ProjectSettings.get_setting(key, CONFIG_DEFAULTS[key]))
 
 		Log.config[key] = val
 
