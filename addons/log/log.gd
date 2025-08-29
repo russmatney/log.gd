@@ -579,8 +579,8 @@ static func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=yellow][WARN][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
-	# skip the 'pretty' features in warnings to keep them readable in the debugger
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), pretty=false})
+	# skip the 'color' features in warnings to keep them readable in the debugger
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), disable_colors=true})
 	push_warning(m)
 
 ## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
@@ -591,8 +591,8 @@ static func todo(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=yellow][WARN][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
-	# skip the 'pretty' features in warnings to keep them readable in the debugger
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), pretty=false})
+	# skip the 'color' features in warnings to keep them readable in the debugger
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), disable_colors=true})
 	push_warning(m)
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
@@ -602,8 +602,8 @@ static func err(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF"
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=red][ERR][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
-	# skip the 'pretty' features in errors to keep them readable in the debugger
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), pretty=false})
+	# skip the 'color' features in errors to keep them readable in the debugger
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), disable_colors=true})
 	push_error(m)
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
@@ -613,8 +613,8 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 	var rich_msgs: Array = msgs.duplicate()
 	rich_msgs.push_front("[color=red][ERR][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
-	# skip the 'pretty' features in errors to keep them readable in the debugger
-	var m: String = Log.to_printable(msgs, {stack=get_stack(), pretty=false})
+	# skip the 'color' features in errors to keep them readable in the debugger
+	var m: String = Log.to_printable(msgs, {stack=get_stack(), disable_colors=true})
 	push_error(m)
 
 
