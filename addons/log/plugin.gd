@@ -40,3 +40,4 @@ func on_settings_changed() -> void:
 func override_log_level(value: Log.Levels) -> void:
 	Log.set_log_level(value)
 	ProjectSettings.set_setting("log_gd/config/log_level", value)
+	ProjectSettings.save()
