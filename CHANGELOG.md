@@ -1,11 +1,24 @@
 # CHANGELOG
 
 
+## v0.1.1
+
+
+### 29 Aug 2025
+
+- ([`fe27f38`](https://github.com/russmatney/log.gd/commit/fe27f38)) fix: save ProjectSettings after setting new value
+
+  > Need to save the new log-level so it gets written to project.godot
+  > before starting the game.
+
+- ([`8c90957`](https://github.com/russmatney/log.gd/commit/8c90957)) chore: update clj-kondo cruft
+
 ## v0.1.0
 
 
 ### 29 Aug 2025
 
+- ([`2dc8ca9`](https://github.com/russmatney/log.gd/commit/2dc8ca9)) release: new version: v0.1.0
 - ([`030d7fb`](https://github.com/russmatney/log.gd/commit/030d7fb)) docs: update changelog
 
   > Lots of great stuff in here from @gofastlily!
