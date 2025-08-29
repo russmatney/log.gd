@@ -78,11 +78,6 @@ directly via the Godot Editor's `Asset Lib` tab.
 - Clone the [Repo](https://github.com/russmatney/log.gd) somewhere locally
 - Move the `addons/log/` folder into your game's `addons` directory
 
-### Manual Copy+Paste
-
-Log.gd is currently only one GDScript file! So you could just copy-paste [this
-file]() into your game and run for it.
-
 
 ## Features
 

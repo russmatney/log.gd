@@ -5,10 +5,6 @@ Log.gd provides a drop-in replacement for GDScript's `print(...)` function.
 It colors the output based on the value passed in, and adds a prefix based on
 the call-site's file and line number.
 
-![Dino output logs (light theme)](/assets/dino_example_output_light.png)
-
-![Dino output logs (dark theme)](/assets/dino_example_output_dark.png)
-
 This makes Godot's `Output` buffer much more readable!
 
 ### TLDR
@@ -19,23 +15,6 @@ This makes Godot's `Output` buffer much more readable!
 - Both add prefix with the calling filename and line number (e.g. `[Player:34]`)
 - Both color the output values based on the value's type
 - `Log.info(...)`, `Log.warn(...)`, `Log.error(...)` offer differing log levels
-
-### Links
-
-- [Docs](https://russmatney.github.io/log.gd/#/)
-  - [Installation](https://russmatney.github.io/log.gd/#/?id=install)
-  - [Features](https://russmatney.github.io/log.gd/#/?id=features)
-  - [Public API](https://russmatney.github.io/log.gd/#/?id=public-api)
-  - [Settings](https://russmatney.github.io/log.gd/#/?id=settings)
-  - [Implementation](https://russmatney.github.io/log.gd/#/implementation)
-- [Github](https://github.com/russmatney/log.gd)
-- [Log.gd on the Godot Asset Library](https://godotengine.org/asset-library/asset/2696)
-- [Log.gd on the (new!) Godot Asset Store](https://godotengine.org/asset-library/asset/2696)
-
-### Implementation and Quirks
-
-There is some documentation of GDScript features that Log.gd uses and some
-related quirks [on the Implementation Details page](https://russmatney.github.io/log.gd/#/implementation).
 
 ## Features
 
@@ -80,8 +59,6 @@ something like:
 Log.register_type_overwrite(some_obj.get_class(),
   func(val): return {name=val.name, level=val.level})
 ```
-
-See the [type handlers functions](/?id=type-handlers).
 
 ### Bring Your Own Color Theme!
 
@@ -189,11 +166,3 @@ Settings instead of Project-wide ones. I'll be moving things around soon!
   - Setting true causes `Log.todo()` to be treated as a `WARN`-level log, false
   and it gets treated as an `INFO`-level log.
 
-
-## Contributors
-
-Huge thanks to the Log.gd contributors!
-
-- [cridenour](https://github.com/cridenour)
-- [Gramps](https://github.com/Gramps)
-- [gofastlily](https://github.com/gofastlily)
