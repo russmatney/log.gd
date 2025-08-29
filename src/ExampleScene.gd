@@ -83,6 +83,7 @@ func showcase_easy_newlines() -> void:
 func showcase_levels() -> void:
 	print_header("Levels")
 	Log.log("Log.log()")
+	Log.debug("Log.debug()")
 	Log.info("Log.info()")
 	Log.warn("Log.warn()")
 	Log.todo("Log.todo()")
