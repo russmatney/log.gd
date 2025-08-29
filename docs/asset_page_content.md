@@ -162,8 +162,16 @@ Settings instead of Project-wide ones. I'll be moving things around soon!
   - Setting to false disables newlines in `Log.prn()`, `Log.warn()`,
   `Log.todo()`, `Log.err()`, and `Log.error()`.
 - `use_newlines` (`false`)
-  - Setting to true disables enables newlines across all log functions.
+  - Setting to true enables newlines across all log functions.
 - `newline_max_depth` (`-1`)
   - Limits the object depth where newlines are printed.  Negative values don't
   limit object depth.
 
+
+## Contributors
+
+Huge thanks to the Log.gd contributors!
+
+- [cridenour](https://github.com/cridenour)
+- [Gramps](https://github.com/Gramps)
+- [gofastlily](https://github.com/gofastlily)
