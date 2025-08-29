@@ -4,6 +4,80 @@
 ## Unreleased
 
 
+### 29 Aug 2025
+
+- ([`fb91ce3`](https://github.com/russmatney/log.gd/commit/fb91ce3): Lily) Add DEBUG log level below INFO
+- ([`56975aa`](https://github.com/russmatney/log.gd/commit/56975aa): Lily) Add optional dropdown for quick log-level changing
+- ([`476269f`](https://github.com/russmatney/log.gd/commit/476269f): Lily) Standalone reload scene plugin
+- ([`8bffc8c`](https://github.com/russmatney/log.gd/commit/8bffc8c): Lily) Factor out reload scene button
+
+### 28 Aug 2025
+
+- ([`dbde3ec`](https://github.com/russmatney/log.gd/commit/dbde3ec)) chore: include log logo import files
+- ([`6c765db`](https://github.com/russmatney/log.gd/commit/6c765db)) ci: drop godot 4.2 and 4.3
+
+  > The 4.3 tests are failing b/c vectors print as 1.0 vs 1 between the
+  > versions.
+  > 
+  > The 4.2 tests are failing b/c my gdunit version itself isn't 4.2
+  > compat (for whatever reason).
+  > 
+  > Log.gd likely works fine on these versions, but for now I just want the
+  > green checkmark - if there is a need to restore these, we can do so, but
+  > most likely folks are moving to 4.4 and 4.5 these days anyway.
+
+- ([`977e0ef`](https://github.com/russmatney/log.gd/commit/977e0ef)) docs: add contributors section
+- ([`516cb15`](https://github.com/russmatney/log.gd/commit/516cb15)) fix: just disable_colors on warns/errors
+- ([`44e9179`](https://github.com/russmatney/log.gd/commit/44e9179)) fix: drop/simplify some tests, drop cold-fire theme default
+
+  > Gets tests passing again! heh. Will return to these in a future branch.
+  > 
+  > The coldfire theme is cool, but not quite ready yet.
+
+- ([`768d599`](https://github.com/russmatney/log.gd/commit/768d599)) fix: ensure pretty=false on warning/error messages
+
+  > We want to skip-pretty on the push_warning/push_error calls to keep them
+  > readable in the debugger view.
+
+- ([`cc4932b`](https://github.com/russmatney/log.gd/commit/cc4932b): Lily) Update documentation
+- ([`4f1d041`](https://github.com/russmatney/log.gd/commit/4f1d041): Lily) Allow disabling of Log.todo() warning
+- ([`fa91648`](https://github.com/russmatney/log.gd/commit/fa91648): Lily) Add filtering by log level
+- ([`0897297`](https://github.com/russmatney/log.gd/commit/0897297): Lily) Remove delimiter_index in favor of newline_depth
+- ([`e48dc6a`](https://github.com/russmatney/log.gd/commit/e48dc6a): Lily) Reorganize the example scene and ensure all showcase output gets printed
+- ([`d011d06`](https://github.com/russmatney/log.gd/commit/d011d06): Lily) Implement prototype log features from Dot Hop
+
+  > https://github.com/russmatney/dothop/commit/1c6e31d24c6d62386f99cd696b89985540f8db12
+
+- ([`559a9c7`](https://github.com/russmatney/log.gd/commit/559a9c7): Lily) Use Log.get_use_newlines() within Log.to_pretty()
+
+### 27 Aug 2025
+
+- ([`a0ee1ce`](https://github.com/russmatney/log.gd/commit/a0ee1ce): Lily) Allow for single-line logs with Log.prn() and its aliases
+
+### 24 Aug 2025
+
+- ([`bfd25bc`](https://github.com/russmatney/log.gd/commit/bfd25bc)) feat: new logo on docs site, readme
+
+  > Need to get this updated on the asset lib too.
+
+- ([`51a4497`](https://github.com/russmatney/log.gd/commit/51a4497)) docs: add link to yt lightning talk
+
+### 10 Aug 2025
+
+- ([`e0b3351`](https://github.com/russmatney/log.gd/commit/e0b3351)) wip: coldfire theme, toying with bgcolor
+
+  > Lots to clean up, but initial bgcolor testing is very positive! Excited
+  > to add a coldfire and then autumnglow theme next.
+
+
+### 4 Aug 2025
+
+- ([`d9b29fa`](https://github.com/russmatney/log.gd/commit/d9b29fa)) docs: add changelog link to sidebar
+
+### 1 Aug 2025
+
+- ([`b3f3e45`](https://github.com/russmatney/log.gd/commit/b3f3e45)) docs: update changelog
+
 ## v0.0.9
 
 
