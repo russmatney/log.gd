@@ -51,7 +51,7 @@ This makes Godot's `Output` buffer much more readable! And now, I can't live wit
   include limited newlines + tabs when printing nested arrays and dictionaries
 - Both add prefix with the calling filename and line number (e.g. `[Player:34]`)
 - Both color the output values based on the value's type
-- `Log.info(...)`, `Log.warn(...)`, `Log.error(...)` offer differing log levels
+- `Log.debug(...)`, `Log.info(...)`, `Log.warn(...)`, `Log.error(...)` offer differing log levels
 
 ## Links
 

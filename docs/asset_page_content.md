@@ -14,7 +14,7 @@ This makes Godot's `Output` buffer much more readable!
   and dictionaries
 - Both add prefix with the calling filename and line number (e.g. `[Player:34]`)
 - Both color the output values based on the value's type
-- `Log.info(...)`, `Log.warn(...)`, `Log.error(...)` offer differing log levels
+- `Log.debug(...)`, `Log.info(...)`, `Log.warn(...)`, `Log.error(...)` offer differing log levels
 
 ## Features
 
@@ -71,9 +71,9 @@ free to share them via PR or otherwise.
 
 ### Log Levels!
 
-Log.gd supports three log levels, `INFO`, `WARN`, and `ERR`.  These levels have
-matching logger functions for ease of use: `Log.info()`, `Log.warn()`, and
-`Log.err()`.  For convenience, `Log.error()` is available.
+Log.gd supports four log levels, `DEBUG`, `INFO`, `WARN`, and `ERROR`.  These levels have
+matching logger functions for ease of use: `Log.debug()`, `Log.info()`, `Log.warn()`, and
+`Log.error()`.  For convenience, `Log.err()` is available.
 
 `Log.todo()` is treated as a `WARN`-level log by default, but can be changed to
 an `INFO`-level log in Project Settings or via `Log.disable_warn_todo()`.
@@ -82,7 +82,7 @@ an `INFO`-level log in Project Settings or via `Log.disable_warn_todo()`.
 
 ### Print functions
 
-- `Log.pr(...)`, `Log.info(...)`
+- `Log.pr(...)`, `Log.debug(...)`, `Log.info(...)`
   - pretty-print without newlines
 - `Log.prn(...)`, `Log.prnn(...)`, `Log.prnnn(...)`
   - pretty-print with limited newlines
