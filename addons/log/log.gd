@@ -663,6 +663,9 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 	var m: String = Log.to_printable(msgs, {stack=get_stack(), disable_colors=true})
 	push_error(m)
 
+static func blank() -> void:
+	print()
+
 
 ## Helper that will both print() and print_rich() the enriched string
 static func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
