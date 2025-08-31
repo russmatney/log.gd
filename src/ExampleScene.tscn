@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dv5fj7cdea0sh"]
+[gd_scene load_steps=8 format=3 uid="uid://dv5fj7cdea0sh"]
 
 [ext_resource type="Script" uid="uid://cq36gpa2xrlav" path="res://src/ExampleScene.gd" id="1_rghsl"]
 [ext_resource type="Script" uid="uid://bb583pa256cbc" path="res://src/SomeResource.gd" id="2_unowp"]
+[ext_resource type="Theme" uid="uid://o0twyvebgm22" path="res://src/theme_example_scene.tres" id="3_fuo7i"]
 
 [sub_resource type="Resource" id="Resource_d4rid"]
 script = ExtResource("2_unowp")
@@ -18,9 +19,302 @@ script = ExtResource("2_unowp")
 name = "wind bot"
 element = 3
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_87w40"]
+
 [node name="ExampleScene" type="CanvasLayer"]
+follow_viewport_enabled = true
 script = ExtResource("1_rghsl")
 some_custom_types = Array[ExtResource("2_unowp")]([SubResource("Resource_d4rid"), SubResource("Resource_hbyy1"), SubResource("Resource_6lcg3")])
 
 [node name="SomeNode" type="Node" parent="."]
 unique_name_in_owner = true
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+offset_right = 1280.0
+offset_bottom = 720.0
+theme = ExtResource("3_fuo7i")
+theme_override_styles/panel = SubResource("StyleBoxFlat_87w40")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="MarginContainerShowcases" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainerShowcases" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="ButtonRunShowcases" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run All Showcases"
+
+[node name="ButtonRunEasyNewlinesShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Easy Newlines Showcase"
+
+[node name="ButtonRunLogLevelsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Log Levels Showcase"
+
+[node name="ButtonRunColorsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Colors Showcase"
+
+[node name="ButtonRunIntsAndFloatsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Ints and Floats Showcase"
+
+[node name="ButtonRunVectorsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Vectors Showcase"
+
+[node name="ButtonRunStringsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Strings Showcase"
+
+[node name="ButtonRunArraysShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Arrays Showcase"
+
+[node name="ButtonRunDictionariesShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Dictionaries Showcase"
+
+[node name="ButtonRunObjectsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Objects Showcase"
+
+[node name="ButtonRunKnownBugsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+clip_contents = true
+layout_mode = 2
+text = "Run Known Bugs Showcase"
+
+[node name="MarginContainerOptions" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainerOptions" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+
+[node name="PanelContainerColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Use Colors"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="CheckButtonColors" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="PanelContainerPrettyColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Full Color Theme"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="CheckButtonPrettyColors" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="PanelContainerNewlines" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Use Newlines"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="CheckButtonNewlines" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="PanelContainerNewlineMaxDepth" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Newline Max Depth"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="SpinBoxNewlineMaxDepth" type="SpinBox" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(88, 31)
+layout_mode = 2
+size_flags_horizontal = 8
+min_value = -1.0
+max_value = 10.0
+rounded = true
+allow_greater = true
+allow_lesser = true
+alignment = 2
+
+[node name="PanelContainerLogLevel" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Log Level"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="OptionButtonLogLevel" type="OptionButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 4
+popup/item_0/text = "DEBUG"
+popup/item_0/id = 0
+popup/item_1/text = "INFO"
+popup/item_1/id = 1
+popup/item_2/text = "WARN"
+popup/item_2/id = 2
+popup/item_3/text = "ERROR"
+popup/item_3/id = 3
+
+[node name="PanelContainerWarnTodo" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Warn on Todo"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="CheckButtonWarnTodo" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunShowcases" to="." method="run_showcases"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunEasyNewlinesShowcase" to="." method="showcase_easy_newlines"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunLogLevelsShowcase" to="." method="showcase_log_levels"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunColorsShowcase" to="." method="showcase_colors"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunIntsAndFloatsShowcase" to="." method="showcase_ints_and_floats"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunVectorsShowcase" to="." method="showcase_vectors"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunStringsShowcase" to="." method="showcase_strings"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunArraysShowcase" to="." method="showcase_arrays"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunDictionariesShowcase" to="." method="showcase_dictionaries"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunObjectsShowcase" to="." method="showcase_objects"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunKnownBugsShowcase" to="." method="showcase_known_bugs"]
+[connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer/HBoxContainer/CheckButtonColors" to="." method="set_enable_colors"]
+[connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer/HBoxContainer/CheckButtonPrettyColors" to="." method="set_pretty_colors"]
+[connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer/HBoxContainer/CheckButtonNewlines" to="." method="set_enable_newlines"]
+[connection signal="value_changed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer/HBoxContainer/SpinBoxNewlineMaxDepth" to="." method="set_newline_max_depth"]
+[connection signal="item_selected" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer/HBoxContainer/OptionButtonLogLevel" to="." method="set_log_level"]
+[connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer/HBoxContainer/CheckButtonWarnTodo" to="." method="set_warn_todo"]
