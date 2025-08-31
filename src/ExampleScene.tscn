@@ -145,6 +145,36 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
+button_pressed = true
+
+[node name="PanelContainerPrettyColorsChoice" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+bbcode_enabled = true
+text = "[code]Log.to_pretty()[/code] Color"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="PanelContainerPrettyColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
 layout_mode = 2
@@ -173,6 +203,7 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
+button_pressed = true
 
 [node name="PanelContainerNewlines" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
 layout_mode = 2
@@ -232,6 +263,7 @@ layout_mode = 2
 size_flags_horizontal = 8
 min_value = -1.0
 max_value = 10.0
+value = -1.0
 rounded = true
 allow_greater = true
 allow_lesser = true
@@ -263,6 +295,7 @@ vertical_alignment = 1
 [node name="OptionButtonLogLevel" type="OptionButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+selected = 1
 item_count = 4
 popup/item_0/text = "DEBUG"
 popup/item_0/id = 0
@@ -300,6 +333,7 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
+button_pressed = true
 
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunShowcases" to="." method="run_showcases"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunEasyNewlinesShowcase" to="." method="showcase_easy_newlines"]
@@ -313,6 +347,7 @@ size_flags_horizontal = 8
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunObjectsShowcase" to="." method="showcase_objects"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunKnownBugsShowcase" to="." method="showcase_known_bugs"]
 [connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer/HBoxContainer/CheckButtonColors" to="." method="set_enable_colors"]
+[connection signal="color_changed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer/HBoxContainer/ColorPickerButton" to="." method="set_custom_color"]
 [connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer/HBoxContainer/CheckButtonPrettyColors" to="." method="set_pretty_colors"]
 [connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer/HBoxContainer/CheckButtonNewlines" to="." method="set_enable_newlines"]
 [connection signal="value_changed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer/HBoxContainer/SpinBoxNewlineMaxDepth" to="." method="set_newline_max_depth"]
