@@ -3,6 +3,9 @@ class_name ExampleScene
 extends CanvasLayer
 
 
+## Color used in the custom color showcase
+@export var custom_color: Color = Color.PURPLE
+
 ## An exported array of a custom resource
 @export var some_custom_types: Array[SomeResource] = []
 
@@ -25,6 +28,7 @@ var example_object: ExampleObj = ExampleObj.new({
 
 
 @onready var check_button_colors: CheckButton = %CheckButtonColors
+@onready var color_picker_button: ColorPickerButton = %ColorPickerButton
 @onready var check_button_pretty_colors: CheckButton = %CheckButtonPrettyColors
 @onready var check_button_newlines: CheckButton = %CheckButtonNewlines
 @onready var spin_box_newline_max_depth: SpinBox = %SpinBoxNewlineMaxDepth
@@ -34,6 +38,7 @@ var example_object: ExampleObj = ExampleObj.new({
 
 func _ready() -> void:
 	check_button_colors.set_pressed_no_signal(not Log.get_disable_colors())
+	color_picker_button.color = custom_color
 	check_button_pretty_colors.set_pressed_no_signal(true)
 	check_button_newlines.set_pressed_no_signal(Log.get_use_newlines())
 	spin_box_newline_max_depth.set_value_no_signal(Log.get_newline_max_depth())
@@ -49,6 +54,11 @@ func set_enable_colors(enable: bool) -> void:
 	else:
 		Log.disable_colors()
 		Log.log("Disabled colors")
+
+
+## Connected to ColorPickerButton.
+func set_custom_color(color: Color) -> void:
+	custom_color = color
 
 
 ## Connected to CheckButtonPrettyColors.
@@ -148,10 +158,10 @@ func showcase_colors() -> void:
 	print("Plain ol' print()")
 	print_rich(Log.to_pretty(
 			"Log.gd standard colors with [code]Log.to_pretty()[/code]",
-			{"color": "purple"}))
+			{"color": custom_color}))
 	print_rich(Log.to_pretty(
 			"Custom colors with [code]Log.to_pretty()[/code]",
-			{"color": "purple"}))
+			{"color": custom_color}))
 	print_rich(
 			Log.to_pretty("Disable colors with [code]Log.to_pretty()[/code]",
 			{"disable_colors": true}))
