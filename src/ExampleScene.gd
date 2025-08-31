@@ -229,11 +229,10 @@ func showcase_arrays() -> void:
 	Log.prn(simple_array)
 	Log.blank()
 
-	# Until Godot allows unpacking of arrays, I'm not exactly sure how to move
-	# this print statement into a variable effectively.
-	print(1, 2.0, [3, 4.0])
-	Log.log(1, 2.0, [3, 4.0])
-	Log.prn(1, 2.0, [3, 4.0])
+	var mixed_array: Array = [1, 2.0, [3, 4.0], "five", custom_color]
+	print.callv(mixed_array)
+	Log.log.callv(mixed_array)
+	Log.prn.callv(mixed_array)
 	Log.blank()
 
 	var nested_array: Array = [1, 2.0, [3, 4.0]]
