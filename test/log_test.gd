@@ -345,6 +345,8 @@ func test_disable_colors_via_config() -> void:
 	Log.enable_colors()
 	assert_str(Log.to_pretty(1)).is_equal("[color=green]1[/color]")
 
+## newlines ##########################################
+
 func test_disable_newline_to_pretty() -> void:
 	const INPUT: Dictionary = {"one": 1, "two": 2}
 	const OUTPUT_WITH_NEWLINES: String = "{ \n\t\"one\": 1, \n\t\"two\": 2 }"
@@ -352,7 +354,6 @@ func test_disable_newline_to_pretty() -> void:
 
 	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=true})).is_equal(OUTPUT_WITH_NEWLINES)
 	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=false})).is_equal(OUTPUT_WITHOUT_NEWLINES)
-
 
 func test_disable_newline_via_config() -> void:
 	const INPUT: Dictionary = {"one": 1, "two": 2}
@@ -379,7 +380,6 @@ func test_newline_max_depth_to_pretty() -> void:
 	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=true, newline_max_depth=1})).is_equal(OUTPUT_DEPTH_1)
 	assert_str(Log.to_pretty(INPUT, {disable_colors=true, newlines=true, newline_max_depth=2})).is_equal(OUTPUT_DEPTH_2)
 
-
 func test_newline_max_depth_via_config() -> void:
 	const INPUT: Dictionary = {"one": 1, "two": {"three": 3, "four": 4}}
 	const OUTPUT_DEPTH_0: String = "{ \"one\": 1, \"two\": { \"three\": 3, \"four\": 4 } }"
@@ -397,3 +397,43 @@ func test_newline_max_depth_via_config() -> void:
 
 	Log.set_newline_max_depth(2)
 	assert_str(Log.to_pretty(INPUT)).is_equal(OUTPUT_DEPTH_2)
+
+## timestamps ##########################################
+
+func test_show_timestamp() -> void:
+	Log.disable_colors()
+
+	Log.show_timestamps()
+	Log.to_printable(["test"])
+	assert_str(Log.to_printable(["test"])) \
+			.ends_with("test") \
+			.has_length(12, Comparator.GREATER_EQUAL) \
+			.has_length(13, Comparator.LESS_EQUAL)
+
+	Log.hide_timestamps()
+	assert_str(Log.to_printable(["test"])).is_equal("test")
+
+	Log.show_timestamps()
+	assert_str(Log.to_printable(["test"])) \
+			.ends_with("test") \
+			.has_length(12, Comparator.GREATER_EQUAL) \
+			.has_length(13, Comparator.LESS_EQUAL)
+
+func test_timestamp_human_readable() -> void:
+	Log.disable_colors()
+	Log.show_timestamps()
+
+	Log.use_timestamp_type(Log.TimestampTypes.HUMAN_12HR)
+	Log.use_timestamp_format("{hour}:{minute}:{second} {meridiem}")
+	Log.to_printable(["test"])
+	assert_str(Log.to_printable(["test"])) \
+			.ends_with("test") \
+			.has_length(15, Comparator.GREATER_EQUAL) \
+			.has_length(16, Comparator.LESS_EQUAL)
+
+	Log.use_timestamp_type(Log.TimestampTypes.HUMAN_24HR)
+	Log.use_timestamp_format(Log.CONFIG_DEFAULTS[Log.KEY_HUMAN_READABLE_TIMESTAMP_FORMAT])
+	Log.to_printable(["test"])
+	assert_str(Log.to_printable(["test"])) \
+			.ends_with("test") \
+			.has_length(13, Comparator.EQUAL)

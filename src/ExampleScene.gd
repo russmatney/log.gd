@@ -34,6 +34,9 @@ var example_object: ExampleObj = ExampleObj.new({
 @onready var spin_box_newline_max_depth: SpinBox = %SpinBoxNewlineMaxDepth
 @onready var option_button_log_level: OptionButton = %OptionButtonLogLevel
 @onready var check_button_warn_todo: CheckButton = %CheckButtonWarnTodo
+@onready var check_button_show_timestamps: CheckButton = %CheckButtonShowTimestamps
+@onready var option_button_timestamp_type: OptionButton = %OptionButtonTimestampType
+@onready var line_edit_timestamp_format: LineEdit = %LineEditTimestampFormat
 
 
 func _ready() -> void:
@@ -44,6 +47,9 @@ func _ready() -> void:
 	spin_box_newline_max_depth.set_value_no_signal(Log.get_newline_max_depth())
 	option_button_log_level.select(Log.get_log_level())
 	check_button_warn_todo.set_pressed_no_signal(Log.get_warn_todo())
+	check_button_show_timestamps.set_pressed_no_signal(Log.get_show_timestamps())
+	option_button_timestamp_type.select(Log.get_timestamp_type())
+	line_edit_timestamp_format.text = Log.get_timestamp_format()
 
 
 ## Connected to CheckButtonColors.
@@ -102,6 +108,35 @@ func set_warn_todo(enable: bool) -> void:
 	else:
 		Log.disable_warn_todo()
 		Log.log("Disabled warn todo")
+
+
+## Connected to CheckButtonShowTimestamps.
+func set_show_timestamps(enable: bool) -> void:
+	if enable:
+		Log.show_timestamps()
+		Log.log("Showing timestamps")
+	else:
+		Log.hide_timestamps()
+		Log.log("Hiding timestamps")
+
+
+## Connected to OptionButtonTimestampType.
+func set_timestamp_type(timestamp_type: int) -> void:
+	var timestamp_type_lookup: Array[String] = [
+		"Unix",
+		"Ticks (milliseconds)",
+		"Ticks (microseconds)",
+		"Human-readable 12-hour",
+		"Human-readable 24-hour",
+	]
+	Log.use_timestamp_type(timestamp_type)
+	Log.log("Timestamp Type: %s" % timestamp_type_lookup[timestamp_type])
+
+
+## Connected to TextEditTimestampFormat.
+func set_timestamp_format(format: String) -> void:
+	Log.use_timestamp_format(format)
+	Log.log("Timestamp format: %s" % format)
 
 
 ## Easily run all Log.gd showcases.
