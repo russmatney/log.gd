@@ -56,12 +56,23 @@ const KEY_NEWLINE_MAX_DEPTH: String = "%s/newline_max_depth" % KEY_PREFIX
 const KEY_LOG_LEVEL: String = "%s/log_level" % KEY_PREFIX
 const KEY_WARN_TODO: String = "%s/warn_todo" % KEY_PREFIX
 const KEY_SHOW_LOG_LEVEL_SELECTOR: String = "%s/show_log_level_selector" % KEY_PREFIX
+const KEY_SHOW_TIMESTAMPS: String = "%s/show_timestamps" % KEY_PREFIX
+const KEY_TIMESTAMP_TYPE: String = "%s/timestamp_type" % KEY_PREFIX
+const KEY_HUMAN_READABLE_TIMESTAMP_FORMAT: String = "%s/human_readable_timestamp_format" % KEY_PREFIX
 
 enum Levels {
 		DEBUG,
 		INFO,
 		WARN,
 		ERROR
+	}
+
+enum TimestampTypes {
+		UNIX,
+		TICKS_MSEC,
+		TICKS_USEC,
+		HUMAN_12HR,
+		HUMAN_24HR
 	}
 
 const CONFIG_DEFAULTS := {
@@ -74,6 +85,9 @@ const CONFIG_DEFAULTS := {
 		KEY_LOG_LEVEL: Levels.INFO,
 		KEY_WARN_TODO: true,
 		KEY_SHOW_LOG_LEVEL_SELECTOR: false,
+		KEY_SHOW_TIMESTAMPS: false,
+		KEY_TIMESTAMP_TYPE: TimestampTypes.HUMAN_12HR,
+		KEY_HUMAN_READABLE_TIMESTAMP_FORMAT: "{hour}:{minute}:{second}",
 	}
 
 # settings setup ####################################
@@ -88,6 +102,9 @@ static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_LOG_LEVEL, CONFIG_DEFAULTS[KEY_LOG_LEVEL], TYPE_INT, PROPERTY_HINT_ENUM, "DEBUG,INFO,WARN,ERROR")
 	initialize_setting(KEY_WARN_TODO, CONFIG_DEFAULTS[KEY_WARN_TODO], TYPE_BOOL)
 	initialize_setting(KEY_SHOW_LOG_LEVEL_SELECTOR, CONFIG_DEFAULTS[KEY_SHOW_LOG_LEVEL_SELECTOR], TYPE_BOOL)
+	initialize_setting(KEY_SHOW_TIMESTAMPS, CONFIG_DEFAULTS[KEY_SHOW_TIMESTAMPS], TYPE_BOOL)
+	initialize_setting(KEY_TIMESTAMP_TYPE, CONFIG_DEFAULTS[KEY_TIMESTAMP_TYPE], TYPE_INT, PROPERTY_HINT_ENUM, "UNIX,TICKS_MSEC,TICKS_USEC,HUMAN_12HR,HUMAN_24HR")
+	initialize_setting(KEY_HUMAN_READABLE_TIMESTAMP_FORMAT, CONFIG_DEFAULTS[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT], TYPE_STRING)
 
 # config setup ####################################
 
@@ -147,6 +164,16 @@ static func get_log_level() -> int:
 static func get_warn_todo() -> int:
 	return Log.config.get(KEY_WARN_TODO, CONFIG_DEFAULTS[KEY_WARN_TODO])
 
+static func get_show_timestamps() -> bool:
+	return Log.config.get(KEY_SHOW_TIMESTAMPS, CONFIG_DEFAULTS[KEY_SHOW_TIMESTAMPS])
+
+static func get_timestamp_type() -> TimestampTypes:
+	return Log.config.get(KEY_TIMESTAMP_TYPE, CONFIG_DEFAULTS[KEY_TIMESTAMP_TYPE])
+
+static func get_timestamp_format() -> String:
+	return Log.config.get(KEY_HUMAN_READABLE_TIMESTAMP_FORMAT, CONFIG_DEFAULTS[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT])
+
+
 ## config setters ###################################################################
 
 ## Disable color-wrapping output.
@@ -197,6 +224,22 @@ static func reset_newline_max_depth() -> void:
 ## Set the minimum level of logs that get printed
 static func set_log_level(new_log_level: int) -> void:
 	Log.config[KEY_LOG_LEVEL] = new_log_level
+
+## Show timestamps in log lines
+static func show_timestamps() -> void:
+	Log.config[KEY_SHOW_TIMESTAMPS] = true
+
+## Don't timestamps in log lines
+static func hide_timestamps() -> void:
+	Log.config[KEY_SHOW_TIMESTAMPS] = false
+
+## Use the given timestamp type
+static func use_timestamp_type(timestamp_type: Log.TimestampTypes) -> void:
+	Log.config[KEY_TIMESTAMP_TYPE] = timestamp_type
+
+## Use the given timestamp format
+static func use_timestamp_format(timestamp_format: String) -> void:
+	Log.config[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT] = timestamp_format
 
 ## set color theme ####################################
 
@@ -530,6 +573,8 @@ static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	var stack: Array = opts.get("stack", [])
 	var pretty: bool = opts.get("pretty", true)
 	var m: String = ""
+	if get_show_timestamps():
+		m = "%s " % Log.timestamp()
 	if len(stack) > 0:
 		var prefix: String = Log.log_prefix(stack)
 		var prefix_type: String
@@ -550,6 +595,43 @@ static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 		else:
 			m += "%s " % str(msg)
 	return m.trim_suffix(" ")
+
+static func timestamp() -> String:
+	match Log.get_timestamp_type():
+		Log.TimestampTypes.UNIX:
+			return "%d" % Time.get_unix_time_from_system()
+		Log.TimestampTypes.TICKS_MSEC:
+			return "%d" % Time.get_ticks_msec()
+		Log.TimestampTypes.TICKS_USEC:
+			return "%d" % Time.get_ticks_usec()
+		Log.TimestampTypes.HUMAN_12HR:
+			var time: Dictionary = Time.get_datetime_dict_from_system()
+			var hour: int = time.hour % 12
+			if hour == 0:
+				hour = 12
+			var meridiem: String = "AM" if time.hour < 12 else "PM"
+			return Log.get_timestamp_format().format({
+					"year": time.year,
+					"month": "%02d" % time.month,
+					"day": "%02d" % time.day,
+					"hour": hour,
+					"minute": "%02d" % time.minute,
+					"second": "%02d" % time.second,
+					"meridiem": meridiem,
+					"dst": time.dst
+				})
+		Log.TimestampTypes.HUMAN_24HR:
+			var time: Dictionary = Time.get_datetime_dict_from_system()
+			return Log.get_timestamp_format().format({
+					"year": time.year,
+					"month": "%02d" % time.month,
+					"day": "%02d" % time.day,
+					"hour": "%02d" % time.hour,
+					"minute": "%02d" % time.minute,
+					"second": "%02d" % time.second,
+					"dst": time.dst
+				})
+	return "%d" % Time.get_unix_time_from_system()
 
 ## public print fns ###########################################################################
 

@@ -48,7 +48,6 @@ alignment = 1
 
 [node name="MarginContainerShowcases" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="VBoxContainerShowcases" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases"]
 layout_mode = 2
@@ -115,7 +114,6 @@ size_flags_horizontal = 3
 
 [node name="VBoxContainerOptions" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions"]
 layout_mode = 2
-size_flags_horizontal = 4
 size_flags_vertical = 3
 
 [node name="PanelContainerColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
@@ -175,6 +173,7 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+color = Color(0.627451, 0.12549, 0.941176, 1)
 
 [node name="PanelContainerPrettyColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
 layout_mode = 2
@@ -335,6 +334,102 @@ layout_mode = 2
 size_flags_horizontal = 8
 button_pressed = true
 
+[node name="PanelContainerShowTimestamps" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Show Timestamps"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="CheckButtonShowTimestamps" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+button_pressed = true
+
+[node name="PanelContainerTimestampType" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Timestamp Type"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="OptionButtonTimestampType" type="OptionButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 1
+item_count = 5
+popup/item_0/text = "UNIX"
+popup/item_0/id = 0
+popup/item_1/text = "TICKS_MSEC"
+popup/item_1/id = 1
+popup/item_2/text = "TICKS_USEC"
+popup/item_2/id = 2
+popup/item_3/text = "HUMAN_12HR"
+popup/item_3/id = 3
+popup/item_4/text = "HUMAN_24HR"
+popup/item_4/id = 4
+
+[node name="PanelContainerTimestampFormat" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Timestamp Format"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="LineEditTimestampFormat" type="LineEdit" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunShowcases" to="." method="run_showcases"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunEasyNewlinesShowcase" to="." method="showcase_easy_newlines"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunLogLevelsShowcase" to="." method="showcase_log_levels"]
@@ -353,3 +448,6 @@ button_pressed = true
 [connection signal="value_changed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer/HBoxContainer/SpinBoxNewlineMaxDepth" to="." method="set_newline_max_depth"]
 [connection signal="item_selected" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer/HBoxContainer/OptionButtonLogLevel" to="." method="set_log_level"]
 [connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer/HBoxContainer/CheckButtonWarnTodo" to="." method="set_warn_todo"]
+[connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer/HBoxContainer/CheckButtonShowTimestamps" to="." method="set_show_timestamps"]
+[connection signal="item_selected" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer/HBoxContainer/OptionButtonTimestampType" to="." method="set_timestamp_type"]
+[connection signal="text_submitted" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer/HBoxContainer/LineEditTimestampFormat" to="." method="set_timestamp_format"]

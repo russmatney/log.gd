@@ -150,6 +150,12 @@ matching logger functions for ease of use: `Log.debug()`, `Log.info()`, `Log.war
 `Log.todo()` is treated as a `WARN`-level log by default, but can be changed to
 an `INFO`-level log in Project Settings or via `Log.disable_warn_todo()`.
 
+### Optionally Customizable Timestamps!
+
+Log.gd can prepend timestamps to log lines if needed.
+
+The timestamp options available are a Unix timestamp, the ticks in microseconds or nanoseconds, and human readable in 12 or 24 hour time.
+
 
 ## Public API
 
@@ -199,6 +205,10 @@ A few functions I use to tweak things at run time (e.g. when running tests).
 - `Log.set_log_level()`
 - `Log.disable_warn_todo()`
 - `Log.enable_warn_todo()`
+- `Log.show_timestamps()`
+- `Log.hide_timestamps()`
+- `Log.use_timestamp_type(timestamp_type: Log.TimestampTypes)`
+- `Log.use_timestamp_format(timestamp_format: String)`
 
 ### Type Handlers
 
@@ -209,6 +219,16 @@ You can 'register' handlers for built-in classes with the below functions.
 - `register_type_overwrites(overwrites: Dictionary)`
   - Overwrites is a dictionary like `{obj.get_class(): handler_func}`
 - `clear_type_overwrites()`
+
+### Timestamp Format
+
+The default timestamp format is `{hour}:{minute}:{second}`.  The supported
+fields are `year`, `month`, `day`, `weekday`, `hour`, `minute`, `second`,
+`meridiem` and `dst`.`
+
+Both `minute` and `second` have preceeding zeroes for both 12- and 24-hour time.
+`hour` only has a preceeding zero when using 24-hour time.  Both `month` and
+`day` also have preceeding zeroes for both 12- and 24-hour time.
 
 ## Settings
 
@@ -235,6 +255,14 @@ There are a few Log.gd options available in Project Settings.
 - `warn_todo` (`true`)
   - Setting true causes `Log.todo()` to be treated as a warn-level log, false
   and it gets treated as an info-level log.
+- `show_timestamps` (`false`)
+  - Setting to `true` prepends timestamps for log lines.
+- `timestamp_type` (`HUMAN_12HR`)
+  - Select the type of timestamp printed in the logs.  Options are `UNIX`,
+  `TICKS_MSEC`, `TICKS_USEC`, `HUMAN_12HR`, and `HUMAN_24HR`.
+- `human_readable_timestamp_format` (`{hour}:{minute}:{second}`)
+  - Custom format string for human-readable timestamps.  `meridiem` is only
+  available when using 12-hour time.
 
 ## Other Godot Loggers
 
