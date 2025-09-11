@@ -407,8 +407,8 @@ func test_show_timestamp() -> void:
 	Log.to_printable(["test"])
 	assert_str(Log.to_printable(["test"])) \
 			.ends_with("test") \
-			.has_length(12, Comparator.GREATER_EQUAL) \
-			.has_length(13, Comparator.LESS_EQUAL)
+			.has_length(13, Comparator.GREATER_EQUAL) \
+			.has_length(14, Comparator.LESS_EQUAL)
 
 	Log.hide_timestamps()
 	assert_str(Log.to_printable(["test"])).is_equal("test")
@@ -416,8 +416,8 @@ func test_show_timestamp() -> void:
 	Log.show_timestamps()
 	assert_str(Log.to_printable(["test"])) \
 			.ends_with("test") \
-			.has_length(12, Comparator.GREATER_EQUAL) \
-			.has_length(13, Comparator.LESS_EQUAL)
+			.has_length(13, Comparator.GREATER_EQUAL) \
+			.has_length(14, Comparator.LESS_EQUAL)
 
 func test_timestamp_human_readable() -> void:
 	Log.disable_colors()
@@ -428,12 +428,12 @@ func test_timestamp_human_readable() -> void:
 	Log.to_printable(["test"])
 	assert_str(Log.to_printable(["test"])) \
 			.ends_with("test") \
-			.has_length(15, Comparator.GREATER_EQUAL) \
-			.has_length(16, Comparator.LESS_EQUAL)
+			.has_length(16, Comparator.GREATER_EQUAL) \
+			.has_length(17, Comparator.LESS_EQUAL)
 
 	Log.use_timestamp_type(Log.TimestampTypes.HUMAN_24HR)
 	Log.use_timestamp_format(Log.CONFIG_DEFAULTS[Log.KEY_HUMAN_READABLE_TIMESTAMP_FORMAT])
 	Log.to_printable(["test"])
 	assert_str(Log.to_printable(["test"])) \
 			.ends_with("test") \
-			.has_length(13, Comparator.EQUAL)
+			.has_length(14, Comparator.EQUAL)

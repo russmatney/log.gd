@@ -574,7 +574,7 @@ static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	var pretty: bool = opts.get("pretty", true)
 	var m: String = ""
 	if get_show_timestamps():
-		m = "%s " % Log.timestamp()
+		m = "[%s]" % Log.timestamp()
 	if len(stack) > 0:
 		var prefix: String = Log.log_prefix(stack)
 		var prefix_type: String
