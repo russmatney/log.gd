@@ -1,11 +1,44 @@
 # CHANGELOG
 
 
+## v0.2.0
+
+
+### 20 Sep 2025
+
+- ([`ad681af`](https://github.com/russmatney/log.gd/commit/ad681af)) release: v0.2.0
+
+  > Optionally prepend timestamps
+
+
+### 11 Sep 2025
+
+- ([`55aa8d9`](https://github.com/russmatney/log.gd/commit/55aa8d9): Lily) Wrap timestamp in brackets
+
+### 10 Sep 2025
+
+- ([`cec8604`](https://github.com/russmatney/log.gd/commit/cec8604): Lily) Optionally prepend timestamps
+
+### 31 Aug 2025
+
+- ([`05ec206`](https://github.com/russmatney/log.gd/commit/05ec206): Lily) Use .callv() to showcase mixed arrays
+- ([`059f3dc`](https://github.com/russmatney/log.gd/commit/059f3dc): Lily) Add button to set custom color
+
+### 30 Aug 2025
+
+- ([`9330d04`](https://github.com/russmatney/log.gd/commit/9330d04): Lily) Cleaning up and documenting ExampleScene, plus a neat lil' GUI
+
+### 29 Aug 2025
+
+- ([`a5ab049`](https://github.com/russmatney/log.gd/commit/a5ab049): Lily) Update documentation for `Log.debug()`
+- ([`19f67b2`](https://github.com/russmatney/log.gd/commit/19f67b2)) docs: drop links from asset lib page, drop one-page install note
+
 ## v0.1.1
 
 
 ### 29 Aug 2025
 
+- ([`6973203`](https://github.com/russmatney/log.gd/commit/6973203)) release: new version: v0.1.1
 - ([`fe27f38`](https://github.com/russmatney/log.gd/commit/fe27f38)) fix: save ProjectSettings after setting new value
 
   > Need to save the new log-level so it gets written to project.godot
