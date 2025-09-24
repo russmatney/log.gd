@@ -192,7 +192,7 @@ layout_mode = 2
 [node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Full Color Theme"
+text = "Toggle Full / Term Safe Colors"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0

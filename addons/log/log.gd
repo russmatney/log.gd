@@ -49,6 +49,7 @@ const KEY_COLOR_THEME_DICT: String = "log_color_theme_dict"
 const KEY_COLOR_THEME: String = "log_color_theme"
 const KEY_COLOR_THEME_RESOURCE_PATH: String = "%s/color_resource_path" % KEY_PREFIX
 const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
+const KEY_FORCE_TERMSAFE_COLORS: String = "%s/force_termsafe_colors" % KEY_PREFIX
 const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
 const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
 const KEY_USE_NEWLINES: String = "%s/use_newlines" % KEY_PREFIX
@@ -78,6 +79,7 @@ enum TimestampTypes {
 const CONFIG_DEFAULTS := {
 		KEY_COLOR_THEME_RESOURCE_PATH: "res://addons/log/color_theme_dark.tres",
 		KEY_DISABLE_COLORS: false,
+		KEY_FORCE_TERMSAFE_COLORS: false,
 		KEY_MAX_ARRAY_SIZE: 20,
 		KEY_SKIP_KEYS: ["layer_0/tile_data"],
 		KEY_USE_NEWLINES: false,
@@ -95,6 +97,7 @@ const CONFIG_DEFAULTS := {
 static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_COLOR_THEME_RESOURCE_PATH, CONFIG_DEFAULTS[KEY_COLOR_THEME_RESOURCE_PATH], TYPE_STRING, PROPERTY_HINT_FILE)
 	initialize_setting(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS], TYPE_BOOL)
+	initialize_setting(KEY_FORCE_TERMSAFE_COLORS, CONFIG_DEFAULTS[KEY_FORCE_TERMSAFE_COLORS], TYPE_BOOL)
 	initialize_setting(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE], TYPE_INT)
 	initialize_setting(KEY_SKIP_KEYS, CONFIG_DEFAULTS[KEY_SKIP_KEYS], TYPE_PACKED_STRING_ARRAY)
 	initialize_setting(KEY_USE_NEWLINES, CONFIG_DEFAULTS[KEY_USE_NEWLINES], TYPE_BOOL)
@@ -122,6 +125,11 @@ static func rebuild_config(opts: Dictionary = {}) -> void:
 			Log.config[KEY_COLOR_THEME] = load(val)
 			Log.config[KEY_COLOR_THEME_DICT] = Log.config[KEY_COLOR_THEME].to_color_dict()
 
+	var force_termsafe = get_force_termsafe_colors()
+	if (force_termsafe):
+		print("NOTE: Forcing TERM_SAFE colors from config")
+		set_colors_termsafe()
+
 	Log.is_config_setup = true
 
 # config getters ###################################################################
@@ -135,7 +143,10 @@ static func get_dictionary_skip_keys() -> Array:
 static func get_disable_colors() -> bool:
 	return Log.config.get(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS])
 
-# TODO refactor away from the dict, create a termsafe LogColorTheme fallback
+static func get_force_termsafe_colors() -> bool:
+	return Log.config.get(KEY_FORCE_TERMSAFE_COLORS, CONFIG_DEFAULTS[KEY_FORCE_TERMSAFE_COLORS])
+
+# TODO consider termsafe LogColorThemes
 static var warned_about_termsafe_fallback := false
 static func get_config_color_theme_dict() -> Dictionary:
 	var color_theme = Log.config.get(KEY_COLOR_THEME)
