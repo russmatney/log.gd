@@ -51,6 +51,13 @@ func _ready() -> void:
 	option_button_timestamp_type.select(Log.get_timestamp_type())
 	line_edit_timestamp_format.text = Log.get_timestamp_format()
 
+	var l: Loggger = Loggger.new()
+
+	l._pr({"test": 123})
+	Log.pr({"test": 123})
+	l.info("This is an info l message")
+	Log.info("This is an info log message")
+
 
 ## Connected to CheckButtonColors.
 func set_enable_colors(enable: bool) -> void:
