@@ -27,6 +27,7 @@ var _inspector: InspectorTreeMainPanel
 func before_test() -> void:
 	@warning_ignore("unsafe_method_access")
 	_inspector = load("res://addons/gdUnit4/src/ui/parts/InspectorTreePanel.tscn").instantiate()
+	_inspector.disable_test_recovery()
 	add_child(_inspector)
 	_inspector.init_tree()
 	setup_example_tree()
@@ -69,9 +70,9 @@ func setup_test_env() -> void:
 		discovered_tests_suite_c[discover_test.test_name] = discover_test
 	)
 
-	suite_a_item = _inspector._find_tree_item_by_path(suite_a.resource_path, "ExampleTestSuiteA")
-	suite_b_item = _inspector._find_tree_item_by_path(suite_b.resource_path, "ExampleTestSuiteB")
-	suite_c_item = _inspector._find_tree_item_by_path(suite_c.resource_path, "ExampleTestSuiteC")
+	suite_a_item = _inspector._find_tree_item_by_test_suite(_inspector._tree_root, suite_a.resource_path, "ExampleTestSuiteA")
+	suite_b_item = _inspector._find_tree_item_by_test_suite(_inspector._tree_root, suite_b.resource_path, "ExampleTestSuiteB")
+	suite_c_item = _inspector._find_tree_item_by_test_suite(_inspector._tree_root, suite_c.resource_path, "ExampleTestSuiteC")
 
 
 func set_test_state(test_cases: Array[GdUnitTestCase], state: InspectorTreeMainPanel.STATE) -> void:
@@ -111,6 +112,39 @@ func test_find_item_by_id() -> void:
 	var test_aa: GdUnitTestCase = discovered_tests["test_aa"]
 	var item := _inspector._find_tree_item_by_id(_inspector._tree_root, test_aa.guid)
 	assert_object(item).is_not_null()
+
+
+# Tests a special case, the test is named equal to the test suite
+func test_find_item_by_id_GD809() -> void:
+	var suite_script := GdUnitTestResourceLoader.load_gd_script("res://addons/gdUnit4/test/ui/parts/resources/gd_809/test_example.resource")
+	var discovered_tests := {}
+	GdUnitTestDiscoverer.discover_tests(suite_script, func(discover_test: GdUnitTestCase) -> void:
+		discover_sink(discover_test)
+		discovered_tests[discover_test.test_name] = discover_test
+	)
+	assert_dict(discovered_tests).contains_keys(["test_example", "test_example_b"])
+	var test_aa: GdUnitTestCase = discovered_tests["test_example"]
+	var item := _inspector._find_tree_item_by_id(_inspector._tree_root, test_aa.guid)
+	assert_object(item).is_not_null()
+
+
+# Tests a special case, the test is named equal to the test suite
+func test_find_item_by_path_GD809() -> void:
+	var suite_script := GdUnitTestResourceLoader.load_gd_script("res://addons/gdUnit4/test/ui/parts/resources/gd_809/test_example.resource")
+	var discovered_tests := {}
+	GdUnitTestDiscoverer.discover_tests(suite_script, func(discover_test: GdUnitTestCase) -> void:
+		discover_sink(discover_test)
+		discovered_tests[discover_test.test_name] = discover_test
+	)
+	assert_dict(discovered_tests).contains_keys(["test_example", "test_example_b"])
+	var test_example: GdUnitTestCase = discovered_tests["test_example"]
+	var test_example_b: GdUnitTestCase = discovered_tests["test_example"]
+	# find test_suite by path
+	var item := _inspector._find_tree_item_by_test_suite(_inspector._tree_root, test_example.suite_resource_path, "test_example")
+	assert_object(item).is_not_null()
+	# find tests by id
+	assert_object(_inspector._find_tree_item_by_id(_inspector._tree_root, test_example.guid)).is_not_null()
+	assert_object(_inspector._find_tree_item_by_id(_inspector._tree_root, test_example_b.guid)).is_not_null()
 
 
 func test_select_first_failure() -> void:
@@ -310,11 +344,11 @@ func test_suite_text_responds_to_test_case_events() -> void:
 
 	var skipped_ac := GdUnitEvent.new().test_after(test_ac.guid, {GdUnitEvent.SKIPPED: true})
 	_inspector._on_gdunit_event(skipped_ac)
-	assert_str(suite_a_item.get_text(0)).is_equal("(1/5) ExampleTestSuiteA")
+	assert_str(suite_a_item.get_text(0)).is_equal("(2/5) ExampleTestSuiteA")
 
 	var success_ae := GdUnitEvent.new().test_after(test_ae.guid)
 	_inspector._on_gdunit_event(success_ae)
-	assert_str(suite_a_item.get_text(0)).is_equal("(2/5) ExampleTestSuiteA")
+	assert_str(suite_a_item.get_text(0)).is_equal("(3/5) ExampleTestSuiteA")
 
 
 # test coverage for issue GD-117
@@ -326,7 +360,7 @@ func test_update_test_case_on_multiple_test_suite_with_same_name() -> void:
 		discover_sink(discover_test)
 		discovered_tests[discover_test.test_name] = discover_test
 	)
-	var suite_item := _inspector._find_tree_item_by_path(suite_script.resource_path, "ExampleTestSuiteA")
+	var suite_item := _inspector._find_tree_item_by_test_suite(_inspector._tree_root, suite_script.resource_path, "ExampleTestSuiteA")
 	assert_object(suite_item).is_not_same(suite_a_item)
 
 	# verify inital state
@@ -371,7 +405,7 @@ func test_update_icon_state() -> void:
 	)
 	var suite_script_path := suite_script.resource_path
 	var suite_name := "TestSuiteFailAndOrpahnsDetected"
-	var suite_item := _inspector._find_tree_item_by_path(suite_script_path, suite_name)
+	var suite_item := _inspector._find_tree_item_by_test_suite(_inspector._tree_root, suite_script_path, suite_name)
 
 	# Verify the inital state
 	assert_str(suite_item.get_text(0)).is_equal("(0/2) " + suite_name)
@@ -411,27 +445,119 @@ func test_tree_view_mode_tree() -> void:
 	assert_array(childs).extract("get_text", [0]).contains_exactly(["(0/13) ui"])
 
 
-@warning_ignore("unused_parameter")
-func test_sort_tree_mode(sort_mode: GdUnitInspectorTreeConstants.SORT_MODE, expected_result: String, test_parameters := [
-	[GdUnitInspectorTreeConstants.SORT_MODE.UNSORTED, "tree_sorted_by_UNSORTED"],
-	[GdUnitInspectorTreeConstants.SORT_MODE.NAME_ASCENDING, "tree_sorted_by_NAME_ASCENDING"],
-	[GdUnitInspectorTreeConstants.SORT_MODE.NAME_DESCENDING, "tree_sorted_by_NAME_DESCENDING"],
-	[GdUnitInspectorTreeConstants.SORT_MODE.EXECUTION_TIME, "tree_sorted_by_EXECUTION_TIME"],
-	]) -> void:
+func test_custom_sort_by_original_index() -> void:
+	var tree :Tree = auto_free(Tree.new())
+	var tree_root := tree.create_item()
 
-	# setup tree sort mode
-	ProjectSettings.set_setting(GdUnitSettings.INSPECTOR_TREE_SORT_MODE, sort_mode)
+	create_folder_item(tree_root, "folder_a")
+	create_test_item(tree_root, "test_a")
+	create_test_item(tree_root, "test_b")
+	create_folder_item(tree_root, "folder_b")
+	create_test_item(tree_root, "test_c")
 
-	# load example tree
-	var tree_sorted :TreeItem = rebuild_tree_from_resource("res://addons/gdUnit4/test/ui/parts/resources/tree/tree_example.json")
+	for n in 10:
+		# suffle to have a random order
+		tree_root.get_children().shuffle()
+		# sort it by original index
+		InspectorTreeMainPanel._sort_tree_items(tree_root, GdUnitInspectorTreeConstants.SORT_MODE.UNSORTED)
+		# verify
+		assert_array(tree_root.get_children()).extractv(ItemNameExtractor.new()).contains_exactly([
+			# folders should be always on top
+			"folder_a", "folder_b",
+			"test_a", "test_b", "test_c"])
+		if is_failure():
+			break
 
-	# do sort
-	_inspector.sort_tree_items(tree_sorted)
 
-	# verify
-	var expected_tree :TreeItem = rebuild_tree_from_resource("res://addons/gdUnit4/test/ui/parts/resources/tree/%s.json" % expected_result)
-	assert_tree_equals(tree_sorted, expected_tree)
+func test_custom_sort_by_name_ascending() -> void:
+	var tree :Tree = auto_free(Tree.new())
+	var tree_root := tree.create_item()
 
+	create_folder_item(tree_root, "folder_a")
+	create_test_item(tree_root, "test_a")
+	create_test_item(tree_root, "test_b")
+	create_folder_item(tree_root, "folder_b")
+	create_test_item(tree_root, "test_c")
+
+	for n in 10:
+		# suffle to have a random order
+		tree_root.get_children().shuffle()
+		# sort it by name ascending
+		InspectorTreeMainPanel._sort_tree_items(tree_root, GdUnitInspectorTreeConstants.SORT_MODE.NAME_ASCENDING)
+		# verify
+		assert_array(tree_root.get_children()).extractv(ItemNameExtractor.new()).contains_exactly([
+			# folders should be always on top
+			"folder_a", "folder_b",
+			"test_a", "test_b", "test_c"])
+		if is_failure():
+			break
+
+
+func test_custom_sort_by_name_descending() -> void:
+	var tree :Tree = auto_free(Tree.new())
+	var tree_root := tree.create_item()
+
+	create_folder_item(tree_root, "folder_a")
+	create_test_item(tree_root, "test_a")
+	create_test_item(tree_root, "test_b")
+	create_folder_item(tree_root, "folder_b")
+	create_test_item(tree_root, "test_c")
+
+	for n in 10:
+		# suffle to have a random order
+		tree_root.get_children().shuffle()
+		# sort it by name descending
+		InspectorTreeMainPanel._sort_tree_items(tree_root, GdUnitInspectorTreeConstants.SORT_MODE.NAME_DESCENDING)
+		# verify
+		assert_array(tree_root.get_children()).extractv(ItemNameExtractor.new()).contains_exactly([
+			# folders should be always on top
+			"folder_b", "folder_a",
+			"test_c", "test_b", "test_a"])
+		if is_failure():
+			break
+
+func test_custom_sort_by_execution_time() -> void:
+	var tree :Tree = auto_free(Tree.new())
+	var tree_root := tree.create_item()
+
+	create_folder_item(tree_root, "folder_a", 1000)
+	create_test_item(tree_root, "test_a", 500)
+	create_test_item(tree_root, "test_b", 600)
+	create_folder_item(tree_root, "folder_b", 1500)
+	create_test_item(tree_root, "test_c", 300)
+
+	for n in 10:
+		# suffle to have a random order
+		tree_root.get_children().shuffle()
+		# sort it by execution time
+		InspectorTreeMainPanel._sort_tree_items(tree_root, GdUnitInspectorTreeConstants.SORT_MODE.EXECUTION_TIME)
+		# verify
+		assert_array(tree_root.get_children()).extractv(ItemNameExtractor.new()).contains_exactly([
+			# folders should be always on top
+			"folder_b", "folder_a",
+			"test_b", "test_a", "test_c"])
+		if is_failure():
+			break
+
+
+func create_test_item(parent: TreeItem, test_name: String, execution_time := 0 ) -> TreeItem:
+	var item := parent.create_child()
+	var index := parent.get_child_count()
+	item.set_meta(InspectorTreeMainPanel.META_GDUNIT_TYPE, InspectorTreeMainPanel.GdUnitType.TEST_CASE)
+	item.set_meta(InspectorTreeMainPanel.META_GDUNIT_NAME, test_name)
+	item.set_meta(InspectorTreeMainPanel.META_GDUNIT_ORIGINAL_INDEX, index)
+	item.set_meta(InspectorTreeMainPanel.META_GDUNIT_EXECUTION_TIME, execution_time)
+	return item
+
+
+func create_folder_item(parent: TreeItem, folder_name: String, execution_time := 0) -> TreeItem:
+	var item := parent.create_child()
+	var index := parent.get_child_count()
+	item.set_meta(InspectorTreeMainPanel.META_GDUNIT_TYPE, InspectorTreeMainPanel.GdUnitType.FOLDER)
+	item.set_meta(InspectorTreeMainPanel.META_GDUNIT_NAME, folder_name)
+	item.set_meta(InspectorTreeMainPanel.META_GDUNIT_ORIGINAL_INDEX, index)
+	item.set_meta(InspectorTreeMainPanel.META_GDUNIT_EXECUTION_TIME, execution_time)
+	return item
 
 func test_discover_tests() -> void:
 	# verify the InspectorProgressBar is connected to gdunit_test_discovered signal
@@ -442,15 +568,16 @@ func test_discover_tests() -> void:
 
 func test_on_test_case_discover_added() -> void:
 	_inspector.init_tree()
-	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", 0, "test_foo"))
-	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", 0, "test_bar"))
-	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_x/my_test_suite2.gd", 0, "test_foo"))
-	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://my_test_suite3.gd", 0, "test_foo"))
+	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", "res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", 0, "test_foo"))
+	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", "res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", 0, "test_bar"))
+	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_x/my_test_suite2.gd", "res://addons/gdUnit4/test/dir_a/dir_x/my_test_suite2.gd", 0, "test_foo"))
+	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://my_test_suite3.gd", "res://my_test_suite3.gd", 0, "test_foo"))
 
 	# create expected tree
 	var tree: Tree = auto_free(Tree.new())
 	var expected_root := tree.create_item()
 	expected_root.set_text(0, "tree_root")
+	expected_root.set_meta("gdUnit_name", "tree_root")
 	var dir_a := create_child(expected_root, "(0/3) dir_a")
 	var dir_b := create_child(dir_a, "(0/2) dir_b")
 	var my_test_suite := create_child(dir_b, "(0/2) my_test_suite")
@@ -467,13 +594,14 @@ func test_on_test_case_discover_added() -> void:
 
 func test_add_parameterized_test_case() -> void:
 	_inspector.init_tree()
-	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", 0, "test_parameterized", 0, "1.2"))
-	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", 0, "test_parameterized", 1, "2.2"))
+	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", "res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", 0, "test_parameterized", 0, "1.2"))
+	_inspector.on_test_case_discover_added(GdUnitTestCase.from("res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", "res://addons/gdUnit4/test/dir_a/dir_b/my_test_suite.gd", 0, "test_parameterized", 1, "2.2"))
 
 	# create expected tree
 	var tree: Tree = auto_free(Tree.new())
 	var expected_root := tree.create_item()
 	expected_root.set_text(0, "tree_root")
+	expected_root.set_meta("gdUnit_name", "tree_root")
 	var dir_a := create_child(expected_root, "(0/2) dir_a")
 	var dir_b := create_child(dir_a, "(0/2) dir_b")
 	var my_test_suite := create_child(dir_b, "(0/2) my_test_suite")
@@ -522,8 +650,57 @@ func test_collect_test_cases() -> void:
 		.contains_exactly_in_any_order(expected_tests)
 
 
+@warning_ignore("unused_parameter")
+func test_collect_test_cases_GD_872(do_skip := not GdUnit4CSharpApiLoader.is_api_loaded(), skip_reason := "Do run only for Godot .Net version") -> void:
+	var tests_by_id := {}
+	var resource_path := "res://addons/gdUnit4/test/ui/parts/resources/gd_872/"
+	for suite_path: String in ["ATests.cs", "AZTests.cs"]:
+		var script := cs_load_non_cached(resource_path + suite_path)
+		GdUnitTestDiscoverer.discover_tests(script, func(test_to_discover: GdUnitTestCase) -> void:
+			discover_sink(test_to_discover)
+			tests_by_id[test_to_discover.fully_qualified_name] = test_to_discover
+		)
+	# Validate if all tests discovered first
+	assert_dict(tests_by_id)\
+		.contains_keys([
+			"Minimal.Tests.ATests.TestExample",
+			"Minimal.Tests.ATests.TestExample2",
+			"Minimal.Tests.AZTests.TestExample",
+			"Minimal.Tests.AZTests.TestExample2"])\
+		.has_size(4)
+	# Validate suite `Minimal.Tests.ATests`
+	var test_case1: GdUnitTestCase = tests_by_id["Minimal.Tests.ATests.TestExample"]
+	var test_case2: GdUnitTestCase = tests_by_id["Minimal.Tests.ATests.TestExample2"]
+	# Validate tree paths
+	assert_str(buld_test_case_tree_path(test_case1)).is_equal("tree_root/Minimal/Tests/ATests/TestExample")
+	assert_str(buld_test_case_tree_path(test_case2)).is_equal("tree_root/Minimal/Tests/ATests/TestExample2")
+	# Valide suite find by resource name
+	assert_object(_inspector._find_tree_item_by_test_suite(_inspector._tree_root, test_case1.suite_resource_path, "ATests")).is_not_null()
+
+	# Validate suite `Minimal.Tests.AZTests`
+	test_case1 = tests_by_id["Minimal.Tests.AZTests.TestExample"]
+	test_case2 = tests_by_id["Minimal.Tests.AZTests.TestExample2"]
+	# Validate tree paths
+	assert_str(buld_test_case_tree_path(test_case1)).is_equal("tree_root/Minimal/Tests/AZTests/TestExample")
+	assert_str(buld_test_case_tree_path(test_case2)).is_equal("tree_root/Minimal/Tests/AZTests/TestExample2")
+	# Valide suite find by resource name
+	assert_object(_inspector._find_tree_item_by_test_suite(_inspector._tree_root, test_case1.suite_resource_path, "AZTests")).is_not_null()
+
 ## test helpers to validate two trees
 # ------------------------------------------------------------------------------------------------------------------------------------------
+
+func buld_test_case_tree_path(test_case: GdUnitTestCase) -> String:
+	var test := _inspector._find_tree_item_by_id(_inspector._tree_root, test_case.guid)
+	return _build_tree_path(test)
+
+
+func _build_tree_path(item: TreeItem, tree_path: String = "") -> String:
+	if item == null:
+		return tree_path
+	var part: String = item.get_meta("gdUnit_name")
+	if not tree_path.is_empty():
+		part += "/" + tree_path
+	return _build_tree_path(item.get_parent(), part)
 
 
 func assert_tree_equals(tree_left :TreeItem, tree_right: TreeItem) -> bool:
@@ -531,7 +708,7 @@ func assert_tree_equals(tree_left :TreeItem, tree_right: TreeItem) -> bool:
 	var right_childs := tree_right.get_children()
 
 	assert_that(left_childs.size())\
-		.override_failure_message("Expecting same child count %d vs %d on item %s" % [left_childs.size(), right_childs.size(), tree_left.get_text(0)])\
+		.override_failure_message("Expecting same child count %d vs %d on item %s" % [left_childs.size(), right_childs.size(), tree_left.get_meta("gdUnit_name")])\
 		.is_equal(right_childs.size())
 
 	if is_failure():
@@ -541,7 +718,9 @@ func assert_tree_equals(tree_left :TreeItem, tree_right: TreeItem) -> bool:
 		var l := left_childs[index]
 		var r := right_childs[index]
 
-		assert_that(get_item_name(l)).is_equal(get_item_name(r))
+		assert_that(get_item_name(l))\
+		.override_failure_message("Expecting '%s' == '%s'" % [get_item_name(l), get_item_name(r)])\
+		.is_equal(get_item_name(r))
 		if is_failure():
 			_print_tree_up(l)
 			_print_tree_up(r)
@@ -565,19 +744,19 @@ func _print_tree(tree_left :TreeItem, indent: String = "\t") -> void:
 		var l: TreeItem = left[index]
 		var state_value: int = l.get_meta(_inspector.META_GDUNIT_STATE)
 		var state :Variant = _inspector.STATE.keys()[state_value]
-		prints(indent, get_item_name(l), state)
+		prints(indent, l.get_meta("gdunit_original_index"), ":", get_item_name(l), state)
 		_print_tree(l, indent+"\t")
 
 
 func _print_tree_up(item :TreeItem, indent: String = "\t") -> void:
-	prints(indent, get_item_name(item))
+	prints(indent, get_item_name(item), "index:", item.get_meta("gdunit_original_index"))
 	var parent := item.get_parent()
 	if parent != null:
 		_print_tree_up(parent, indent+"\t")
 
 
 func get_item_name(item: TreeItem) -> String:
-	return item.get_text(0)
+	return item.get_meta("gdUnit_name")
 
 
 func get_item_execution_time(item: TreeItem) -> String:
@@ -608,7 +787,7 @@ func create_tree_item_form_dict(item: TreeItem, data: Dictionary) -> TreeItem:
 				@warning_ignore("unsafe_cast")
 				return create_tree_item_form_dict(next, data[key] as Dictionary)
 
-			"childs":
+			"childrens":
 				var childs_data :Array = data[key]
 				for child_data:Dictionary in childs_data:
 					create_tree_item_form_dict(item, child_data)
@@ -619,9 +798,13 @@ func create_tree_item_form_dict(item: TreeItem, data: Dictionary) -> TreeItem:
 	return item
 
 
-func create_child( parent: TreeItem, _name: String) -> TreeItem:
+func create_child( parent: TreeItem, item_name: String) -> TreeItem:
 	var item := parent.create_child()
-	item.set_text(0, _name)
+	item.set_text(0, item_name)
+	var regex := RegEx.new()
+	regex.compile("^\\(\\d+/\\d+\\)\\s*")
+	var test_name := regex.sub(item_name, "", false)
+	item.set_meta("gdUnit_name", test_name)
 	item.collapsed = true
 	return item
 
@@ -629,3 +812,14 @@ func create_child( parent: TreeItem, _name: String) -> TreeItem:
 # we need to load the scripts freshly uncached because of script changes during test execution
 func load_non_cached(resource_path: String) -> GDScript:
 	return ResourceLoader.load(resource_path, "GDScript", ResourceLoader.CACHE_MODE_IGNORE)
+
+
+func cs_load_non_cached(resource_path: String) -> GDScript:
+	return ResourceLoader.load(resource_path, "CSharpScript", ResourceLoader.CACHE_MODE_IGNORE)
+
+
+class ItemNameExtractor extends GdUnitValueExtractor:
+
+	func extract_value(value :Variant) -> Variant:
+		var item: TreeItem = value
+		return item.get_meta(InspectorTreeMainPanel.META_GDUNIT_NAME)

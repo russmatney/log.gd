@@ -97,6 +97,11 @@ func test_simulate_action_press() -> void:
 
 		assert_that(Input.is_action_pressed(action))\
 			.override_failure_message("Expect the action '%s' is pressed" % action).is_true()
+		assert_float(Input.get_action_strength(action))\
+			.is_equal_approx(1.0, 0.1)
+		assert_float(_runner.get_property("_last_pressed_strength"))\
+			.is_equal_approx(1.0, 0.1)
+
 	# other actions are not pressed
 	for action :String in ["ui_accept", "ui_select", "ui_cancel"]:
 		assert_that(Input.is_action_pressed(action))\
@@ -130,6 +135,7 @@ func test_simulate_key_press() -> void:
 		var event := InputEventKey.new()
 		event.keycode = key as Key
 		event.physical_keycode = key as Key
+		event.unicode = key
 		event.pressed = true
 		verify(_scene_spy, 1)._input(event)
 		assert_that(Input.is_key_pressed(key)).is_true()
@@ -155,6 +161,7 @@ func test_simulate_key_press_with_modifiers() -> void:
 	var event := InputEventKey.new()
 	event.keycode = KEY_SHIFT
 	event.physical_keycode = KEY_SHIFT
+	event.unicode = KEY_SHIFT as int
 	event.pressed = true
 	event.shift_pressed = true
 	verify(_scene_spy, 1)._input(event)
@@ -163,6 +170,7 @@ func test_simulate_key_press_with_modifiers() -> void:
 	event = InputEventKey.new()
 	event.keycode = KEY_A
 	event.physical_keycode = KEY_A
+	event.unicode = KEY_A as int
 	event.pressed = true
 	event.shift_pressed = true
 	verify(_scene_spy, 1)._input(event)
@@ -793,3 +801,22 @@ func test_simulate_screen_touch_gesture_zoom_out() -> void:
 	# verify final position are correct
 	assert_that(_runner.get_screen_touch_drag_position(0)).is_equal(Vector2(300, 100))
 	assert_that(_runner.get_screen_touch_drag_position(1)).is_equal(Vector2(300, 350))
+
+
+func test_text_input_processing() -> void:
+	_runner.maximize_view()
+	var lineEdit := _runner.find_child("TextInput") as LineEdit
+
+	# Focus the text input and clear any existing content
+	lineEdit.grab_focus()
+	assert_that(lineEdit.has_focus()).is_true()
+	lineEdit.text = ""
+
+	# Type individual characters
+	_runner.simulate_key_pressed(KEY_H)
+	_runner.simulate_key_pressed(KEY_I)
+	await _runner.await_input_processed()
+	await _runner.simulate_frames(100)
+
+	# Verify text accumulation
+	assert_that(lineEdit.text).is_equal("HI");

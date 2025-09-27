@@ -14,8 +14,8 @@ func test_inital() -> void:
 
 func test_sync_cache() -> void:
 	# setup example tests
-	var test1 := GdUnitTestCase.from("res://test/my_test_suite.gd", 23, "test_a")
-	var test2 := GdUnitTestCase.from("res://test/my_test_suite.gd", 42, "test_b")
+	var test1 := GdUnitTestCase.from("res://test/my_test_suite.gd", "res://test/my_test_suite.gd", 23, "test_a")
+	var test2 := GdUnitTestCase.from("res://test/my_test_suite.gd", "res://test/my_test_suite.gd", 42, "test_b")
 
 	# simulate running test dicovery
 	var discoverer: GdUnitTestDiscoverGuard = auto_free(GdUnitTestDiscoverGuard.new())
@@ -317,27 +317,29 @@ func test_discover_moved_test_GDScript() -> void:
 		])
 
 
+#if GDUNIT4NET_API_V5
 @warning_ignore("unused_parameter")
-func _test_discover_on_CSharpScript(do_skip := !GdUnit4CSharpApiLoader.is_dotnet_supported()) -> void:
-	var discoverer :GdUnitTestDiscoverGuard = spy(GdUnitTestDiscoverGuard.new())
-
-	# connect to catch the events emitted by the test discoverer
-	var emitted_events :Array[GdUnitEvent] = []
-	GdUnitSignals.instance().gdunit_event.connect(func on_gdunit_event(event :GdUnitEvent) -> void:
-		emitted_events.append(event)
+func test_discover_on_csharp_script(do_skip := !GdUnit4CSharpApiLoader.is_api_loaded()) -> void:
+	var discoverer :GdUnitTestDiscoverGuard = auto_free(GdUnitTestDiscoverGuard.new())
+	var discovered_tests: Array[GdUnitTestCase] = []
+	var script := load_non_cached("res://addons/gdUnit4/test/core/discovery/resources/DiscoverExampleTestSuite.cs")
+	# simulate initial discovery of a new test suite
+	# we overwrite the default discover sync to catch the tests and not emit `gdunit_test_discovered`
+	await discoverer.discover(script, func(test_case: GdUnitTestCase) -> void:
+		# we need to manual update the cache here, this is normal made by gdunit_test_discovered signal
+		discoverer.sync_test_added(test_case)
+		discovered_tests.append(test_case)
 	)
 
-	var script :Script = load("res://addons/gdUnit4/test/core/discovery/resources/DiscoverExampleTestSuite.cs")
-
-	await discoverer.discover(script)
-	# verify the rebuild is called for cs scripts
-	verify(discoverer, 1).rebuild_project(script)
-	assert_array(emitted_events).has_size(1)
-	#assert_object(emitted_events[0]).is_instanceof(GdUnitEventTestDiscoverTestSuiteAdded)
-	assert_dict(discoverer._discover_cache).contains_key_value("res://addons/gdUnit4/test/core/discovery/resources/DiscoverExampleTestSuite.cs",
-		["TestCase1", "TestCase2"])
+	assert_array(discovered_tests)\
+		.extractv(extr("test_name"), extr("display_name"), extr("fully_qualified_name"))\
+		.contains_exactly([
+			tuple("TestCase1", "TestCase1", "gdUnit4.addons.gdUnit4.test.core.discovery.resources.DiscoverExampleTestSuite.TestCase1"),
+			tuple("TestCase2", "TestCase2", "gdUnit4.addons.gdUnit4.test.core.discovery.resources.DiscoverExampleTestSuite.TestCase2")
+		])
+#endif
 
 
 # we need to load the scripts freshly uncached because of script changes during test execution
-func load_non_cached(resource_path: String) -> GDScript:
-	return ResourceLoader.load(resource_path, "GDScript", ResourceLoader.CACHE_MODE_IGNORE)
+func load_non_cached(resource_path: String) -> Script:
+	return ResourceLoader.load(resource_path, "Script", ResourceLoader.CACHE_MODE_IGNORE)
