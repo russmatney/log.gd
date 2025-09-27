@@ -9,7 +9,7 @@ const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 
 
 @warning_ignore("unused_parameter")
-func before(do_skip := not GdUnit4CSharpApiLoader.is_dotnet_supported(), skip_reason := "Do run only for Godot .Net version") -> void:
+func before(do_skip := not GdUnit4CSharpApiLoader.is_api_loaded(), skip_reason := "Do run only for Godot .Net version") -> void:
 	pass
 
 
@@ -25,7 +25,7 @@ func test_is_engine_version_supported(version :int, expected :bool, test_paramet
 
 
 func test_api_version() -> void:
-	assert_str(GdUnit4CSharpApiLoader.version()).starts_with("4.4")
+	assert_str(GdUnit4CSharpApiLoader.version()).starts_with("5.1.0")
 
 
 func test_create_test_suite() -> void:

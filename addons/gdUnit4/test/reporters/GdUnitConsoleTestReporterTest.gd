@@ -7,6 +7,7 @@ var reporter :=  GdUnitConsoleTestReporter.new(GdUnitMessageWritter.new())
 
 
 func before_test() -> void:
+	reporter.test_session =  GdUnitTestSession.new([], "res://reports")
 	reporter.on_gdunit_event(GdUnitInit.new())
 
 

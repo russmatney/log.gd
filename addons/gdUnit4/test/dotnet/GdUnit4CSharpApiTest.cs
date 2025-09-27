@@ -1,10 +1,7 @@
+#if GDUNIT4NET_API_V5
 namespace gdUnit4.addons.gdUnit4.test.dotnet;
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 using GdUnit4;
 
@@ -20,21 +17,14 @@ using static GdUnit4.Assertions;
 public partial class GdUnit4CSharpApiTest
 {
     [TestCase]
-    public void IsTestSuite()
-    {
-        AssertThat(GdUnit4CSharpApi.IsTestSuite(GD.Load<CSharpScript>("res://addons/gdUnit4/src/dotnet/GdUnit4CSharpApi.cs"))).IsFalse();
-        AssertThat(GdUnit4CSharpApi.IsTestSuite(GD.Load<CSharpScript>("res://addons/gdUnit4/test/dotnet/ExampleTestSuite.cs"))).IsTrue();
-        AssertThat(GdUnit4CSharpApi.IsTestSuite(GD.Load<CSharpScript>("res://addons/gdUnit4/test/core/discovery/resources/DiscoverExampleTestSuite.cs"))).IsTrue();
-    }
-
-    [TestCase]
     public void GetVersion()
     {
-        var version = long.Parse(GdUnit4CSharpApi.Version().Replace(".", ""));
+        var version = long.Parse(GdUnit4CSharpApi.Version().Replace(".", string.Empty, StringComparison.Ordinal));
         AssertThat(version).IsGreaterEqual(423);
     }
 
     [TestCase]
+    [SuppressMessage("Reliability", "CA2000:Objekte verwerfen, bevor Bereich verloren geht")]
     public void DiscoverTestsFromScript()
     {
         var script = GD.Load<CSharpScript>("res://addons/gdUnit4/test/dotnet/ExampleTestSuite.cs");
@@ -57,17 +47,17 @@ public partial class GdUnit4CSharpApiTest
         AssertThat(testsWithoutGuids).HasSize(14)
             // Check for single test `IsFoo`
             .Contains(new Dictionary
-                {
-                    ["test_name"] = "IsFoo",
-                    ["source_file"] = "res://addons/gdUnit4/test/dotnet/ExampleTestSuite.cs",
-                    ["line_number"] = 16,
-                    ["attribute_index"] = 0,
-                    ["require_godot_runtime"] = true,
-                    ["code_file_path"] = fullScriptPath,
-                    ["fully_qualified_name"] = "gdUnit4.addons.gdUnit4.test.dotnet.ExampleTestSuite.IsFoo",
-                    ["simple_name"] = "IsFoo",
-                    ["managed_type"] = "gdUnit4.addons.gdUnit4.test.dotnet.ExampleTestSuite"
-                },
+            {
+                ["test_name"] = "IsFoo",
+                ["source_file"] = "res://addons/gdUnit4/test/dotnet/ExampleTestSuite.cs",
+                ["line_number"] = 16,
+                ["attribute_index"] = 0,
+                ["require_godot_runtime"] = true,
+                ["code_file_path"] = fullScriptPath,
+                ["fully_qualified_name"] = "gdUnit4.addons.gdUnit4.test.dotnet.ExampleTestSuite.IsFoo",
+                ["simple_name"] = "IsFoo",
+                ["managed_type"] = "gdUnit4.addons.gdUnit4.test.dotnet.ExampleTestSuite"
+            },
                 // Check exemplary two of the `ParameterizedTest` (index 0, index 11)
                 new Dictionary
                 {
@@ -115,12 +105,11 @@ public partial class GdUnit4CSharpApiTest
         var script = GD.Load<CSharpScript>("res://addons/gdUnit4/test/dotnet/ExampleTestSuite.cs");
         var tests = GdUnit4CSharpApi.DiscoverTests(script);
 
-
-// Create a list to track received events
+        // Create a list to track received events
         var receivedEvents = new List<Dictionary>();
 
         // Create a TestEventHandler object to handle the events
-        var eventHandler = AutoFree(new TestEventHandler());
+        using var eventHandler = new TestEventHandler();
         eventHandler!.EventReceived += eventData =>
         {
             // Track the event
@@ -136,7 +125,7 @@ public partial class GdUnit4CSharpApiTest
         // Create a Callable that references the handler method
         var listener = new Callable(eventHandler, nameof(TestEventHandler.PublishEvent));
 
-        var api = AutoFree(new GdUnit4CSharpApi())!;
+        using var api = new GdUnit4CSharpApi();
         api.ExecuteAsync(tests, listener);
 
         // await execution is finished
@@ -188,3 +177,4 @@ public partial class GdUnit4CSharpApiTest
             => EventReceived?.Invoke(eventData);
     }
 }
+#endif

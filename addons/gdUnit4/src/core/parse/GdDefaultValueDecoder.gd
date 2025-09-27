@@ -21,7 +21,7 @@ var _decoders := {
 	TYPE_PACKED_COLOR_ARRAY: _on_type_Array.bind(TYPE_PACKED_COLOR_ARRAY),
 	TYPE_PACKED_VECTOR2_ARRAY: _on_type_Array.bind(TYPE_PACKED_VECTOR2_ARRAY),
 	TYPE_PACKED_VECTOR3_ARRAY: _on_type_Array.bind(TYPE_PACKED_VECTOR3_ARRAY),
-	GdObjects.TYPE_PACKED_VECTOR4_ARRAY: _on_type_Array.bind(GdObjects.TYPE_PACKED_VECTOR4_ARRAY),
+	TYPE_PACKED_VECTOR4_ARRAY: _on_type_Array.bind(TYPE_PACKED_VECTOR4_ARRAY),
 	TYPE_DICTIONARY: _on_type_Dictionary,
 	TYPE_RID: _on_type_RID,
 	TYPE_NODE_PATH: _on_type_NodePath,
@@ -126,7 +126,7 @@ func _on_type_Array(value: Variant, type: int) -> String:
 				return "PackedVector3Array()"
 			return "PackedVector3Array([%s])" % ", ".join(vectors)
 
-		GdObjects.TYPE_PACKED_VECTOR4_ARRAY:
+		TYPE_PACKED_VECTOR4_ARRAY:
 			var vectors := PackedStringArray()
 			for vector: Vector4 in value:
 				@warning_ignore("return_value_discarded")
@@ -255,6 +255,9 @@ static func decode(value: Variant) -> String:
 	@warning_ignore("unsafe_cast")
 	if GdArrayTools.is_type_array(type) and (value as Array).is_empty():
 		return "<empty>"
+	# For Variant types we need to determine the original type
+	if type == GdObjects.TYPE_VARIANT:
+		type = typeof(value)
 	var decoder := _get_value_decoder(type)
 	if decoder == null:
 		push_error("No value decoder registered for type '%d'! Please open a Bug issue at 'https://github.com/MikeSchulze/gdUnit4/issues/new/choose'." % type)
@@ -267,6 +270,9 @@ static func decode(value: Variant) -> String:
 static func decode_typed(type: int, value: Variant) -> String:
 	if value == null:
 		return "null"
+	# For Variant types we need to determine the original type
+	if type == GdObjects.TYPE_VARIANT:
+		type = typeof(value)
 	var decoder := _get_value_decoder(type)
 	if decoder == null:
 		push_error("No value decoder registered for type '%d'! Please open a Bug issue at 'https://github.com/MikeSchulze/gdUnit4/issues/new/choose'." % type)
