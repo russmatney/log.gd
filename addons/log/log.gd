@@ -315,7 +315,7 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 		if opts.get("typeof", "") in ["dict_key"]:
 			# subtract 1 for dict_keys
 			# we the keys are 'down' a nesting level, but we want the curly + dict keys to match
-			color = color[opts.get("newline_depth", 0) - 1 % len(color)]
+			color = color[(opts.get("newline_depth", 0) - 1) % len(color)]
 		else:
 			color = color[opts.get("newline_depth", 0) % len(color)]
 
