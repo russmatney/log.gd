@@ -1,12 +1,47 @@
 # CHANGELOG
 
 
+## Unreleased
+
+
+## v0.2.1
+
+
+### 15 Nov 2025
+
+- ([`c669ab9`](https://github.com/russmatney/log.gd/commit/c669ab9)) release: new version: v0.2.1
+- ([`10c8ef7`](https://github.com/russmatney/log.gd/commit/10c8ef7): IAmThePoisonIvy) fixed bug
+
+### 27 Sep 2025
+
+- ([`388fbfc`](https://github.com/russmatney/log.gd/commit/388fbfc)) ci: use installed gdunit instead of pulling the latest stable
+- ([`255a3e7`](https://github.com/russmatney/log.gd/commit/255a3e7)) deps: update gdunit
+
+### 24 Sep 2025
+
+- ([`fa0d576`](https://github.com/russmatney/log.gd/commit/fa0d576)) feat: Force Termsafe Colors config option
+
+  > Adds a boolean config option that will opt-in to termsafe colors in
+  > rebuild_config.
+  > 
+  > This lets users use term-safe colors without needing a script/autoload
+  > to call `Log.use_termsafe_colors()`.
+  > 
+  > This used to be possible prior to the color-resource theme feature - in
+  > the future we might consider a set of term-safe LogColorThemes to allow
+  > folks to customize the termsafe colors as well.
+
+
+### 20 Sep 2025
+
+- ([`3ec44df`](https://github.com/russmatney/log.gd/commit/3ec44df)) ci: test on 4.5
+
 ## v0.2.0
 
 
 ### 20 Sep 2025
 
-- ([`ad681af`](https://github.com/russmatney/log.gd/commit/ad681af)) release: v0.2.0
+- ([`a059b7c`](https://github.com/russmatney/log.gd/commit/a059b7c)) release: v0.2.0
 
   > Optionally prepend timestamps
 

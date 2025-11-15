@@ -1,19 +1,16 @@
 # CHANGELOG
 
 
+## Unreleased
+
+
 ## v0.2.1
 
 
 ### 15 Nov 2025
 
+- ([`c669ab9`](https://github.com/russmatney/log.gd/commit/c669ab9)) release: new version: v0.2.1
 - ([`10c8ef7`](https://github.com/russmatney/log.gd/commit/10c8ef7): IAmThePoisonIvy) fixed bug
-
-## v0.2.1
-
-
-### 15 Nov 2025
-
-- ([`d930e2e`](https://github.com/russmatney/log.gd/commit/d930e2e)) release: new version: v0.2.1
 
 ### 27 Sep 2025
 
