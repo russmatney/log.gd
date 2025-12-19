@@ -170,6 +170,8 @@ static func get_newline_max_depth() -> int:
 	return Log.config.get(KEY_NEWLINE_MAX_DEPTH, CONFIG_DEFAULTS[KEY_NEWLINE_MAX_DEPTH])
 
 static func get_log_level() -> int:
+	if not Log.is_config_setup:
+		rebuild_config()
 	return Log.config.get(KEY_LOG_LEVEL, CONFIG_DEFAULTS[KEY_LOG_LEVEL])
 
 static func get_warn_todo() -> int:
