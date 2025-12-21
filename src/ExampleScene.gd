@@ -52,7 +52,6 @@ func _ready() -> void:
 	line_edit_timestamp_format.text = Log.get_timestamp_format()
 
 	var cf: PrettyLogger = LoggerFactory.load_logger("res://src/ColdFireLogger.tres")
-
 	cf.pr("I am the coldfire logger", {hear="me", roar="!!!!"})
 	Log.pr("I am the default logger", {hear="me", roar="!!!!"})
 	cf.info("some fancy info")
@@ -60,6 +59,16 @@ func _ready() -> void:
 	cf.warn("ZOMG a warning")
 	Log.warn("ZOMG a warning")
 	cf.warn("eep! an error")
+
+	var ui_logger: PrettyLogger = LoggerFactory.get_logger("UI", {
+		"log_level": Log.Levels.DEBUG,
+		"show_timestamps": true
+	})
+	ui_logger.debug("The UI is in the sky!")
+	ui_logger.disable_logger()
+	ui_logger.warn("I'm a noisy warning!")
+	ui_logger.enable_logger()
+	ui_logger.info("ui info!")
 
 
 ## Connected to CheckButtonColors.
