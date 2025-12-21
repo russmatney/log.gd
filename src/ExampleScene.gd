@@ -51,10 +51,14 @@ func _ready() -> void:
 	option_button_timestamp_type.select(Log.get_timestamp_type())
 	line_edit_timestamp_format.text = Log.get_timestamp_format()
 
-	var cf: PrettyLogger = LoggerFactory.get_logger("coldfire")
+	var cf: PrettyLogger = LoggerFactory.load_logger("res://src/ColdFireLogger.tres")
+
 	cf.pr("I am the coldfire logger", {hear="me", roar="!!!!"})
+	Log.pr("I am the default logger", {hear="me", roar="!!!!"})
 	cf.info("some fancy info")
+	Log.info("some fancy info")
 	cf.warn("ZOMG a warning")
+	Log.warn("ZOMG a warning")
 	cf.warn("eep! an error")
 
 
