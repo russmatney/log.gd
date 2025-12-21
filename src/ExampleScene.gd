@@ -51,6 +51,12 @@ func _ready() -> void:
 	option_button_timestamp_type.select(Log.get_timestamp_type())
 	line_edit_timestamp_format.text = Log.get_timestamp_format()
 
+	var cf: PrettyLogger = LoggerFactory.get_logger("coldfire")
+	cf.pr("I am the coldfire logger", {hear="me", roar="!!!!"})
+	cf.info("some fancy info")
+	cf.warn("ZOMG a warning")
+	cf.warn("eep! an error")
+
 
 ## Connected to CheckButtonColors.
 func set_enable_colors(enable: bool) -> void:
