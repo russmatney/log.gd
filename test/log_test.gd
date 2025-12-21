@@ -4,6 +4,13 @@ func before_test() -> void:
 	Log.config = {}
 	Log.is_config_setup = false
 
+# func test_debug_log() -> void:
+# 	# Log.rebuild_config()
+# 	# Log.set_log_level(Log.Levels.DEBUG)
+# 	Log.debug("test!")
+# 	Log.pr("test!")
+# 	assert_str("blah").is_equal("not blah")
+
 ## null ##########################################
 
 func test_null() -> void:

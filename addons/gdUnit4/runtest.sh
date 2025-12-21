@@ -22,6 +22,10 @@ if [ -z "$godot_binary" ]; then
     godot_binary="$GODOT_BIN"
 fi
 
+if [ -z "$godot_binary" ]; then
+    godot_binary=$(which godot)
+fi
+
 # Check if we have a godot_binary value from any source
 if [ -z "$godot_binary" ]; then
     echo "Godot binary path is not specified."
