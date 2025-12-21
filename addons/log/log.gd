@@ -134,10 +134,16 @@ static func rebuild_config(opts: Dictionary = {}) -> void:
 
 # config getters ###################################################################
 
-static func get_max_array_size() -> int:
+static func get_max_array_size(opts: Dictionary = {}) -> int:
+	var custom_config = opts.get("config", {})
+	if not custom_config.is_empty() and custom_config.has(KEY_MAX_ARRAY_SIZE):
+		return custom_config.get(KEY_MAX_ARRAY_SIZE)
 	return Log.config.get(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE])
 
-static func get_dictionary_skip_keys() -> Array:
+static func get_dictionary_skip_keys(opts: Dictionary = {}) -> Array:
+	var custom_config = opts.get("config", {})
+	if not custom_config.is_empty() and custom_config.has(KEY_SKIP_KEYS):
+		return custom_config.get(KEY_SKIP_KEYS)
 	return Log.config.get(KEY_SKIP_KEYS, CONFIG_DEFAULTS[KEY_SKIP_KEYS])
 
 static func get_disable_colors() -> bool:
@@ -148,7 +154,11 @@ static func get_force_termsafe_colors() -> bool:
 
 # TODO consider termsafe LogColorThemes
 static var warned_about_termsafe_fallback := false
-static func get_config_color_theme_dict() -> Dictionary:
+static func get_config_color_theme_dict(opts: Dictionary = {}) -> Dictionary:
+	var custom_config = opts.get("config", {})
+	if not custom_config.is_empty() and custom_config.has(KEY_COLOR_THEME_DICT):
+		return custom_config.get(KEY_COLOR_THEME_DICT)
+
 	var color_theme = Log.config.get(KEY_COLOR_THEME)
 	var color_dict = Log.config.get(KEY_COLOR_THEME_DICT)
 	if color_dict != null:
@@ -163,10 +173,16 @@ static func get_config_color_theme() -> LogColorTheme:
 	# TODO better warnings, fallbacks
 	return color_theme
 
-static func get_use_newlines() -> bool:
+static func get_use_newlines(opts: Dictionary = {}) -> bool:
+	var custom_config = opts.get("config", {})
+	if not custom_config.is_empty() and custom_config.has(KEY_USE_NEWLINES):
+		return custom_config.get(KEY_USE_NEWLINES)
 	return Log.config.get(KEY_USE_NEWLINES, CONFIG_DEFAULTS[KEY_USE_NEWLINES])
 
-static func get_newline_max_depth() -> int:
+static func get_newline_max_depth(opts: Dictionary = {}) -> int:
+	var custom_config = opts.get("config", {})
+	if not custom_config.is_empty() and custom_config.has(KEY_NEWLINE_MAX_DEPTH):
+		return custom_config.get(KEY_NEWLINE_MAX_DEPTH)
 	return Log.config.get(KEY_NEWLINE_MAX_DEPTH, CONFIG_DEFAULTS[KEY_NEWLINE_MAX_DEPTH])
 
 static func get_log_level() -> int:
@@ -285,7 +301,7 @@ static func should_use_color(opts: Dictionary = {}) -> bool:
 
 static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	# TODO refactor to use the color theme directly
-	var colors: Dictionary = get_config_color_theme_dict()
+	var colors: Dictionary = get_config_color_theme_dict(opts)
 	var color_theme: LogColorTheme = get_config_color_theme()
 
 	if not should_use_color(opts):
@@ -372,9 +388,9 @@ static func clear_type_overwrites() -> void:
 ## Can be useful to feed directly into a RichTextLabel.
 ##
 static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
-	var newlines: bool = opts.get("newlines", Log.get_use_newlines())
+	var newlines: bool = opts.get("newlines", Log.get_use_newlines(opts))
 	var newline_depth: int = opts.get("newline_depth", 0)
-	var newline_max_depth: int = opts.get("newline_max_depth", Log.get_newline_max_depth())
+	var newline_max_depth: int = opts.get("newline_max_depth", Log.get_newline_max_depth(opts))
 	var indent_level: int = opts.get("indent_level", 0)
 
 	if not newlines:
@@ -418,9 +434,9 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 	# arrays
 	if msg is Array or msg is PackedStringArray:
 		var msg_array: Array = msg
-		if len(msg) > Log.get_max_array_size():
+		if len(msg) > Log.get_max_array_size(opts):
 			pr("[DEBUG]: truncating large array. total:", len(msg))
-			msg_array = msg_array.slice(0, Log.get_max_array_size() - 1)
+			msg_array = msg_array.slice(0, Log.get_max_array_size(opts) - 1)
 			if newlines:
 				msg_array.append("...")
 
@@ -452,7 +468,7 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		var indent_updated = false
 		for k: Variant in (msg as Dictionary).keys():
 			var val: Variant
-			if k in Log.get_dictionary_skip_keys():
+			if k in Log.get_dictionary_skip_keys(opts):
 				val = "..."
 			else:
 				if not indent_updated:
@@ -585,9 +601,29 @@ static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 		msgs = [msgs]
 	var stack: Array = opts.get("stack", [])
 	var pretty: bool = opts.get("pretty", true)
+	var logger_name: String = opts.get("logger_name", "")
+
 	var m: String = ""
-	if get_show_timestamps():
+
+	# Check for custom timestamp config
+	var show_timestamps_val: bool
+	var custom_config = opts.get("config", {})
+	if not custom_config.is_empty() and custom_config.has(KEY_SHOW_TIMESTAMPS):
+		show_timestamps_val = custom_config.get(KEY_SHOW_TIMESTAMPS)
+	else:
+		show_timestamps_val = get_show_timestamps()
+
+	if show_timestamps_val:
 		m = "[%s]" % Log.timestamp()
+
+	# Add logger name if provided
+	if logger_name != "":
+		var logger_prefix = "(%s)" % logger_name
+		if pretty:
+			m += Log.color_wrap(logger_prefix, Log.assoc(opts, "typeof", "logger_name"))
+		else:
+			m += logger_prefix
+
 	if len(stack) > 0:
 		var prefix: String = Log.log_prefix(stack)
 		var prefix_type: String
