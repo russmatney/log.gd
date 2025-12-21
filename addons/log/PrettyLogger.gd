@@ -139,6 +139,7 @@ func _log_with_level(level: Log.Levels, level_prefix: String, msgs: Array, use_p
 		return
 
 	var stack = get_stack()
+	stack.pop_front()
 	var opts = {
 		stack = stack,
 		logger_name = logger_name,

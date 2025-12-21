@@ -90,6 +90,14 @@ CLOSED: [2025-08-01 Fri 17:34]
 
 done via BYO-LogColorTheme
 
+* v0.3.0
+
+** Named Loggers
+*** [X] initial implementation
+*** [X] fix stack trace (all point to PrettyLogger:220)
+*** [ ] use specified color theme
+*** [ ] remove or use: disable colors/force termsafe
+*** [ ] remove or use: custom timestamp format
 * v1.0.0
 ** [X] list prior art (other godot asset lib loggers)
 CLOSED: [2025-08-01 Fri 17:34]

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PrettyLogger" load_steps=3 format=3 uid="uid://bxnt2k3skc5ip"]
+
+[ext_resource type="Resource" uid="uid://biihit5thq2qq" path="res://src/ColdFireColorTheme.tres" id="1_hhk7d"]
+[ext_resource type="Script" uid="uid://b2gj75y2i3u01" path="res://addons/log/PrettyLogger.gd" id="2_07at1"]
+
+[resource]
+script = ExtResource("2_07at1")
+logger_name = "coldfire"
+log_level = 2
+warn_todo = false
+color_theme_resource = ExtResource("1_hhk7d")
+use_newlines = true
+dictionary_skip_keys = PackedStringArray("layer_0/tile_data")
+show_timestamps = true
+metadata/_custom_type_script = "uid://b2gj75y2i3u01"
