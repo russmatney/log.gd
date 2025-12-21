@@ -171,10 +171,11 @@ static func get_config_color_theme_dict(opts: Dictionary = {}) -> Dictionary:
 		warned_about_termsafe_fallback = true
 	return LogColorTheme.COLORS_TERM_SAFE
 
-static func get_config_color_theme() -> LogColorTheme:
-	var color_theme = Log.config.get(KEY_COLOR_THEME)
-	# TODO better warnings, fallbacks
-	return color_theme
+static func get_config_color_theme(opts: Dictionary = {}) -> LogColorTheme:
+	var custom_config = opts.get("config", {})
+	if not custom_config.is_empty() and custom_config.has(KEY_COLOR_THEME):
+		return custom_config.get(KEY_COLOR_THEME)
+	return Log.config.get(KEY_COLOR_THEME)
 
 static func get_use_newlines(opts: Dictionary = {}) -> bool:
 	var custom_config = opts.get("config", {})
@@ -337,7 +338,7 @@ static func get_color_using_typeof(s: Variant, opts: Dictionary) -> Variant:
 static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	# TODO refactor to use the color theme directly
 	# var colors: Dictionary = get_config_color_theme_dict(opts)
-	var color_theme: LogColorTheme = get_config_color_theme()
+	var color_theme: LogColorTheme = get_config_color_theme(opts)
 
 	if not should_use_color(opts):
 		return str(s)
