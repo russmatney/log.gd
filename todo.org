@@ -64,15 +64,20 @@ func to_printable():
 *** _not_ a production log-to-file helper
 but maybe that's a future direction?
 *** prior art
-** [ ] Docs: 'Example' page
-walk through the ExampleScene.gd
-with individual line-by-line output screenshots
-** [ ] Example scene should have buttons for printing more things
+** [X] Example scene should have buttons for printing more things
+CLOSED: [2025-12-21 Sun 17:12]
 the example outputs could also colorize and print the source code - that output might
 be a fun sharable version of the tutorial (i.e. the tutorial is all printed via Log.gd)
-** [ ] docs full api page
-** [ ] call-site prefix test coverage
-** [ ] comb docs for todos
+** SKIP Docs: 'Example' page
+CLOSED: [2025-12-21 Sun 17:12]
+walk through the ExampleScene.gd
+with individual line-by-line output screenshots
+** SKIP docs full api page
+CLOSED: [2025-12-21 Sun 17:12]
+** SKIP call-site prefix test coverage
+CLOSED: [2025-12-21 Sun 17:12]
+** SKIP comb docs for todos
+CLOSED: [2025-12-21 Sun 17:12]
 * v0.0.8
 ** [X] rainbow delimiters
 CLOSED: [2025-08-01 Fri 17:33]
@@ -91,13 +96,23 @@ CLOSED: [2025-08-01 Fri 17:34]
 done via BYO-LogColorTheme
 
 * v0.3.0
-
 ** Named Loggers
 *** [X] initial implementation
 *** [X] fix stack trace (all point to PrettyLogger:220)
-*** [ ] use specified color theme
-*** [ ] remove or use: disable colors/force termsafe
-*** [ ] remove or use: custom timestamp format
+*** [X] use specified color theme
+CLOSED: [2025-12-21 Sun 17:13]
+*** [ ] remove or support extra @export vars:
+- disable colors/force termsafe
+- custom timestamp format
+*** [ ] move `LoggerFactory` public funcs to Log
+i.e. Log.get_logger/load_logger
+** BG colors
+*** [ ] decision time
+settling on filling the line, space before the line
+*** [ ] better color examples
+** future
+*** [ ] react to .tres logger changes while running
+color changes, disable/enable, etc
 * v1.0.0
 ** [X] list prior art (other godot asset lib loggers)
 CLOSED: [2025-08-01 Fri 17:34]
