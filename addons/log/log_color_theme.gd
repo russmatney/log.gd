@@ -63,6 +63,7 @@ func to_color_dict() -> Dictionary:
 	color_dict["SRC"] = color_src_prefix
 	color_dict["ADDONS"] = color_addons_prefix
 	color_dict["TEST"] = color_test_prefix
+	color_dict["logger_name"] = color_class_name
 
 	color_dict["|"] = color_pipe
 	color_dict["&"] = color_ampersand
@@ -168,6 +169,7 @@ static var COLORS_TERM_SAFE: Dictionary = {
 	"SRC": "cyan",
 	"ADDONS": "red",
 	"TEST": "green",
+	"logger_name": "magenta",
 	",": "red",
 	"(": TERMSAFE_RAINBOW,
 	")": TERMSAFE_RAINBOW,
