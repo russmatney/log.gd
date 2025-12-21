@@ -1,8 +1,20 @@
 # CHANGELOG
 
 
-## Unreleased
+## v0.2.2
 
+
+### 21 Dec 2025
+
+- ([`1eaf898`](https://github.com/russmatney/log.gd/commit/1eaf898)) misc: test fixups
+
+### 20 Dec 2025
+
+- ([`7ffdacd`](https://github.com/russmatney/log.gd/commit/7ffdacd): Fox-Alpha) Fix: Workaround fix for issue #[#18] First message ignores log level
+
+### 15 Nov 2025
+
+- ([`d80705b`](https://github.com/russmatney/log.gd/commit/d80705b)) docs: update changelog
 
 ## v0.2.1
 
