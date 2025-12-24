@@ -90,6 +90,7 @@ const CONFIG_DEFAULTS := {
 		KEY_SHOW_TIMESTAMPS: false,
 		KEY_TIMESTAMP_TYPE: TimestampTypes.HUMAN_12HR,
 		KEY_HUMAN_READABLE_TIMESTAMP_FORMAT: "{hour}:{minute}:{second}",
+		KEY_SHOW_PROCESS_UNIQUE_ID: false,
 	}
 
 # settings setup ####################################
@@ -108,6 +109,7 @@ static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_SHOW_TIMESTAMPS, CONFIG_DEFAULTS[KEY_SHOW_TIMESTAMPS], TYPE_BOOL)
 	initialize_setting(KEY_TIMESTAMP_TYPE, CONFIG_DEFAULTS[KEY_TIMESTAMP_TYPE], TYPE_INT, PROPERTY_HINT_ENUM, "UNIX,TICKS_MSEC,TICKS_USEC,HUMAN_12HR,HUMAN_24HR")
 	initialize_setting(KEY_HUMAN_READABLE_TIMESTAMP_FORMAT, CONFIG_DEFAULTS[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT], TYPE_STRING)
+	initialize_setting(KEY_SHOW_PROCESS_UNIQUE_ID, CONFIG_DEFAULTS[KEY_SHOW_PROCESS_UNIQUE_ID], TYPE_BOOL)
 
 # config setup ####################################
 
@@ -186,6 +188,10 @@ static func get_timestamp_type() -> TimestampTypes:
 static func get_timestamp_format() -> String:
 	return Log.config.get(KEY_HUMAN_READABLE_TIMESTAMP_FORMAT, CONFIG_DEFAULTS[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT])
 
+## Show process ID
+static func get_show_process_unique_id() -> bool:
+	return Log.config.get(KEY_SHOW_PROCESS_UNIQUE_ID, CONFIG_DEFAULTS[KEY_SHOW_PROCESS_UNIQUE_ID])
+
 
 ## config setters ###################################################################
 
@@ -242,9 +248,17 @@ static func set_log_level(new_log_level: int) -> void:
 static func show_timestamps() -> void:
 	Log.config[KEY_SHOW_TIMESTAMPS] = true
 
+## Show SHOW_PROCESS_UNIQUE_ID in log lines
+static func show_process_unique_id() -> void:
+	Log.config[KEY_SHOW_PROCESS_UNIQUE_ID] = true
+
 ## Don't timestamps in log lines
 static func hide_timestamps() -> void:
 	Log.config[KEY_SHOW_TIMESTAMPS] = false
+
+## Don't SHOW_PROCESS_UNIQUE_ID in log line
+static func hide_process_unique_id() -> void:
+	Log.config[KEY_SHOW_PROCESS_UNIQUE_ID] = false
 
 ## Use the given timestamp type
 static func use_timestamp_type(timestamp_type: Log.TimestampTypes) -> void:
@@ -586,8 +600,14 @@ static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	var stack: Array = opts.get("stack", [])
 	var pretty: bool = opts.get("pretty", true)
 	var m: String = ""
+
+	# Set ProcessID
+	if get_show_process_unique_id():
+		m += "[%s]" % processid()
+
 	if get_show_timestamps():
 		m = "[%s]" % Log.timestamp()
+
 	if len(stack) > 0:
 		var prefix: String = Log.log_prefix(stack)
 		var prefix_type: String
@@ -645,6 +665,10 @@ static func timestamp() -> String:
 					"dst": time.dst
 				})
 	return "%d" % Time.get_unix_time_from_system()
+
+static func processid() -> int:
+	var pid = OS.get_process_id()
+	return pid
 
 ## public print fns ###########################################################################
 
