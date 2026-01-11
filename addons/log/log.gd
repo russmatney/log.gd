@@ -298,9 +298,28 @@ static func should_use_color(opts: Dictionary = {}) -> bool:
 		return false
 	return true
 
+static func get_color_using_typeof(s: Variant, opts: Dictionary) -> Variant:
+	var colors: Dictionary = get_config_color_theme_dict()
+	var color: Variant
+	var s_type: Variant = opts.get("typeof", typeof(s))
+	if s_type is String:
+		# type overwrites
+		color = colors.get(s_type)
+	elif s_type is int and s_type == TYPE_STRING:
+		# specific strings/punctuation
+		var s_trimmed: String = str(s).strip_edges()
+		if s_trimmed in colors:
+			color = colors.get(s_trimmed)
+		else:
+			# fallback string color
+			color = colors.get(s_type)
+	else:
+		# all other types
+		color = colors.get(s_type)
+	return color
+
 static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	# TODO refactor to use the color theme directly
-	var colors: Dictionary = get_config_color_theme_dict()
 	var color_theme: LogColorTheme = get_config_color_theme()
 
 	if not should_use_color(opts):
@@ -308,21 +327,7 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 
 	var color: Variant = opts.get("color", "")
 	if color == null or (color is String and color == ""):
-		var s_type: Variant = opts.get("typeof", typeof(s))
-		if s_type is String:
-			# type overwrites
-			color = colors.get(s_type)
-		elif s_type is int and s_type == TYPE_STRING:
-			# specific strings/punctuation
-			var s_trimmed: String = str(s).strip_edges()
-			if s_trimmed in colors:
-				color = colors.get(s_trimmed)
-			else:
-				# fallback string color
-				color = colors.get(s_type)
-		else:
-			# all other types
-			color = colors.get(s_type)
+		color = get_color_using_typeof(s, opts)
 
 	if color is String and color == "" or color == null:
 		print("Log.gd could not determine color for object: %s type: (%s)" % [str(s), typeof(s)])
@@ -604,7 +609,8 @@ static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 
 	# Set ProcessID
 	if get_show_process_unique_id():
-		m += "[%s]" % processid()
+		# TODO colorize
+		m += "[%s]" % get_process_id()
 
 	if get_show_timestamps():
 		m += "[%s]" % Log.timestamp()
@@ -667,8 +673,9 @@ static func timestamp() -> String:
 				})
 	return "%d" % Time.get_unix_time_from_system()
 
-static func processid() -> int:
+static func get_process_id() -> int:
 	var pid = OS.get_process_id()
+	# TODO consider building/using a process detail format? e.g. id/client data?
 	return pid
 
 ## public print fns ###########################################################################
