@@ -92,3 +92,6 @@ Huge thanks to the Log.gd contributors!
 - [cridenour](https://github.com/cridenour)
 - [Gramps](https://github.com/Gramps)
 - [gofastlily](https://github.com/gofastlily)
+- [gofastlily](https://github.com/gofastlily)
+- [IAmTraffic](https://github.com/IAmTraffic)
+- [Fox-Alpha](https://github.com/Fox-Alpha)
