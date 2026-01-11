@@ -60,6 +60,7 @@ const KEY_SHOW_LOG_LEVEL_SELECTOR: String = "%s/show_log_level_selector" % KEY_P
 const KEY_SHOW_TIMESTAMPS: String = "%s/show_timestamps" % KEY_PREFIX
 const KEY_TIMESTAMP_TYPE: String = "%s/timestamp_type" % KEY_PREFIX
 const KEY_HUMAN_READABLE_TIMESTAMP_FORMAT: String = "%s/human_readable_timestamp_format" % KEY_PREFIX
+const KEY_SHOW_PROCESS_UNIQUE_ID: String = "%s/show_process_unique_id" % KEY_PREFIX
 
 enum Levels {
 		DEBUG,
