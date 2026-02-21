@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dv5fj7cdea0sh"]
+[gd_scene format=3 uid="uid://dv5fj7cdea0sh"]
 
 [ext_resource type="Script" uid="uid://cq36gpa2xrlav" path="res://src/ExampleScene.gd" id="1_rghsl"]
 [ext_resource type="Script" uid="uid://bb583pa256cbc" path="res://src/SomeResource.gd" id="2_unowp"]
@@ -21,116 +21,116 @@ element = 3
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_87w40"]
 
-[node name="ExampleScene" type="CanvasLayer"]
+[node name="ExampleScene" type="CanvasLayer" unique_id=1578310130]
 follow_viewport_enabled = true
 script = ExtResource("1_rghsl")
 some_custom_types = Array[ExtResource("2_unowp")]([SubResource("Resource_d4rid"), SubResource("Resource_hbyy1"), SubResource("Resource_6lcg3")])
 
-[node name="SomeNode" type="Node" parent="."]
+[node name="SomeNode" type="Node" parent="." unique_id=1570648573]
 unique_name_in_owner = true
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1388936473]
 offset_right = 1280.0
 offset_bottom = 720.0
 theme = ExtResource("3_fuo7i")
 theme_override_styles/panel = SubResource("StyleBoxFlat_87w40")
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=1383032060]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer" unique_id=109368319]
 layout_mode = 2
 alignment = 1
 
-[node name="MarginContainerShowcases" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
+[node name="MarginContainerShowcases" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer" unique_id=1575522675]
 layout_mode = 2
 
-[node name="VBoxContainerShowcases" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases"]
+[node name="VBoxContainerShowcases" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases" unique_id=353979672]
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="ButtonRunShowcases" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunShowcases" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1028300950]
 clip_contents = true
 layout_mode = 2
 text = "Run All Showcases"
 
-[node name="ButtonRunEasyNewlinesShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunEasyNewlinesShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1997101383]
 clip_contents = true
 layout_mode = 2
 text = "Run Easy Newlines Showcase"
 
-[node name="ButtonRunLogLevelsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunLogLevelsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1862641944]
 clip_contents = true
 layout_mode = 2
 text = "Run Log Levels Showcase"
 
-[node name="ButtonRunColorsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunColorsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1753214753]
 clip_contents = true
 layout_mode = 2
 text = "Run Colors Showcase"
 
-[node name="ButtonRunIntsAndFloatsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunIntsAndFloatsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=73101432]
 clip_contents = true
 layout_mode = 2
 text = "Run Ints and Floats Showcase"
 
-[node name="ButtonRunVectorsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunVectorsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=2078795496]
 clip_contents = true
 layout_mode = 2
 text = "Run Vectors Showcase"
 
-[node name="ButtonRunStringsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunStringsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1325851325]
 clip_contents = true
 layout_mode = 2
 text = "Run Strings Showcase"
 
-[node name="ButtonRunArraysShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunArraysShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1827859176]
 clip_contents = true
 layout_mode = 2
 text = "Run Arrays Showcase"
 
-[node name="ButtonRunDictionariesShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunDictionariesShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=239204917]
 clip_contents = true
 layout_mode = 2
 text = "Run Dictionaries Showcase"
 
-[node name="ButtonRunObjectsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunObjectsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1938033939]
 clip_contents = true
 layout_mode = 2
 text = "Run Objects Showcase"
 
-[node name="ButtonRunKnownBugsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases"]
+[node name="ButtonRunKnownBugsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1937733931]
 clip_contents = true
 layout_mode = 2
 text = "Run Known Bugs Showcase"
 
-[node name="MarginContainerOptions" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
+[node name="MarginContainerOptions" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer" unique_id=1888439378]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VBoxContainerOptions" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions"]
+[node name="VBoxContainerOptions" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions" unique_id=1473281011]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="PanelContainerColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=443050889]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors" unique_id=684173498]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer" unique_id=2731291]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer/HBoxContainer" unique_id=1892851444]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Use Colors"
@@ -139,27 +139,27 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="CheckButtonColors" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer/HBoxContainer"]
+[node name="CheckButtonColors" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer/HBoxContainer" unique_id=2064401211]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
 button_pressed = true
 
-[node name="PanelContainerPrettyColorsChoice" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerPrettyColorsChoice" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=1156840853]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice" unique_id=1408074508]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer" unique_id=864316848]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer/HBoxContainer" unique_id=389189227]
 layout_mode = 2
 size_flags_horizontal = 3
 bbcode_enabled = true
@@ -169,27 +169,27 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="ColorPickerButton" type="ColorPickerButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer/HBoxContainer"]
+[node name="ColorPickerButton" type="ColorPickerButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer/HBoxContainer" unique_id=618722623]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(0.627451, 0.1254902, 0.9411765, 1)
 
-[node name="PanelContainerPrettyColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerPrettyColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=946945462]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors" unique_id=2056171674]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer" unique_id=822392553]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer/HBoxContainer" unique_id=1893457867]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Toggle Full / Term Safe Colors"
@@ -198,27 +198,27 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="CheckButtonPrettyColors" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer/HBoxContainer"]
+[node name="CheckButtonPrettyColors" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColors/MarginContainer/HBoxContainer" unique_id=904505181]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
 button_pressed = true
 
-[node name="PanelContainerNewlines" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerNewlines" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=1559505579]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines" unique_id=1183107501]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer" unique_id=1583645032]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer/HBoxContainer" unique_id=2136464988]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Use Newlines"
@@ -227,26 +227,26 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="CheckButtonNewlines" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer/HBoxContainer"]
+[node name="CheckButtonNewlines" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlines/MarginContainer/HBoxContainer" unique_id=691152282]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
 
-[node name="PanelContainerNewlineMaxDepth" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerNewlineMaxDepth" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=469574091]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth" unique_id=197930682]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer" unique_id=945099214]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer/HBoxContainer" unique_id=2040588071]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Newline Max Depth"
@@ -255,7 +255,7 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="SpinBoxNewlineMaxDepth" type="SpinBox" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer/HBoxContainer"]
+[node name="SpinBoxNewlineMaxDepth" type="SpinBox" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerNewlineMaxDepth/MarginContainer/HBoxContainer" unique_id=982335629]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(88, 31)
 layout_mode = 2
@@ -268,21 +268,21 @@ allow_greater = true
 allow_lesser = true
 alignment = 2
 
-[node name="PanelContainerLogLevel" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerLogLevel" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=1119947740]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel" unique_id=150892039]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer" unique_id=1374493380]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer/HBoxContainer" unique_id=843108587]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Log Level"
@@ -291,7 +291,7 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="OptionButtonLogLevel" type="OptionButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer/HBoxContainer"]
+[node name="OptionButtonLogLevel" type="OptionButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerLogLevel/MarginContainer/HBoxContainer" unique_id=136012617]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 1
@@ -305,21 +305,21 @@ popup/item_2/id = 2
 popup/item_3/text = "ERROR"
 popup/item_3/id = 3
 
-[node name="PanelContainerWarnTodo" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerWarnTodo" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=818114295]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo" unique_id=1356756276]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer" unique_id=1766424026]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer/HBoxContainer" unique_id=1972986738]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Warn on Todo"
@@ -328,27 +328,27 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="CheckButtonWarnTodo" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer/HBoxContainer"]
+[node name="CheckButtonWarnTodo" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerWarnTodo/MarginContainer/HBoxContainer" unique_id=116054807]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
 button_pressed = true
 
-[node name="PanelContainerShowTimestamps" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerShowTimestamps" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=642394406]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps" unique_id=1356545945]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer" unique_id=1462104561]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer/HBoxContainer" unique_id=1420389389]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Show Timestamps"
@@ -357,26 +357,26 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="CheckButtonShowTimestamps" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer/HBoxContainer"]
+[node name="CheckButtonShowTimestamps" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer/HBoxContainer" unique_id=382832915]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
 
-[node name="PanelContainerTimestampType" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerTimestampType" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=1275092716]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType" unique_id=618183130]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer" unique_id=824637394]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer/HBoxContainer" unique_id=1212538091]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Timestamp Type"
@@ -385,7 +385,7 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="OptionButtonTimestampType" type="OptionButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer/HBoxContainer"]
+[node name="OptionButtonTimestampType" type="OptionButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer/HBoxContainer" unique_id=1922052032]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 3
@@ -401,21 +401,21 @@ popup/item_3/id = 3
 popup/item_4/text = "HUMAN_24HR"
 popup/item_4/id = 4
 
-[node name="PanelContainerTimestampFormat" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions"]
+[node name="PanelContainerTimestampFormat" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=804730828]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat" unique_id=715212234]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer" unique_id=1480471031]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer/HBoxContainer" unique_id=1912947952]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Timestamp Format"
@@ -424,7 +424,7 @@ scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="LineEditTimestampFormat" type="LineEdit" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer/HBoxContainer"]
+[node name="LineEditTimestampFormat" type="LineEdit" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer/HBoxContainer" unique_id=403739666]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

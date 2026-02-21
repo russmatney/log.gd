@@ -4,6 +4,8 @@
              [changelog])
   :init
   (do
+    (def godot-bin "/run/current-system/sw/bin/godot")
+
     (defn shell-and-log
       ([x] (shell-and-log {} x))
       ([opts x]
@@ -11,9 +13,14 @@
        (when (seq opts) (println opts))
        (shell opts x))))
 
-  test       (shell-and-log (str "sh ./addons/gdUnit4/runtest.sh -c -a test --headless --ignoreHeadlessMode"))
+  test (shell-and-log
+         {:extra-env {"GODOT_BIN" godot-bin}}
+         (str "sh ./addons/gdUnit4/runtest.sh -c -a test --headless --ignoreHeadlessMode"))
+
   test-match (let [arg (some-> *command-line-args* first)]
-               (shell-and-log (str "sh ./addons/gdUnit4/runtest.sh -c --headless --ignoreHeadlessMode -a " arg)))
+               (shell-and-log
+                 {:extra-env {"GODOT_BIN" godot-bin}}
+                 (str "sh ./addons/gdUnit4/runtest.sh -c --headless --ignoreHeadlessMode -a " arg)))
 
   release
   (let [tag (some-> *command-line-args* first)]

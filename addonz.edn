@@ -1,0 +1,9 @@
+{:addons
+ [{:repo    "MikeSchulze/gdUnit4",
+   :include ["addons/gdUnit4"],
+   :exclude ["addons/gdUnit4/test"],
+   :tag     "v6.1.1"}],
+ :config
+ {:cache-dir  "~/.config/gg/.cache/addonz",
+  :addons-dir "addons",
+  :index-file "~/.config/gg/.cache/addonz/index.edn"}}
