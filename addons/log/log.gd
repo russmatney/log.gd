@@ -395,6 +395,143 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 	_core.error(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
+## Bespoke log method designed to print data in a tabular fashion.
+static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
+	if typeof(msg) in [TYPE_INT, TYPE_STRING]:
+		print_rich(Log.to_printable([msg], {stack=get_stack()}))
+		return
+
+	if keys == [] \
+	and typeof(msg) == TYPE_ARRAY \
+	and typeof(msg[0]) not in [TYPE_DICTIONARY, TYPE_OBJECT]:
+		print_rich(Log.to_printable(msg, {stack=get_stack()}))
+		return
+
+	if typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_DICTIONARY:
+		keys = msg[0].keys()
+	elif keys == [] and typeof(msg) == TYPE_DICTIONARY:
+		keys = msg.keys()
+
+	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_OBJECT:
+		keys = msg[0].get_property_list() \
+			.filter(func(x): return x["usage"] == PROPERTY_USAGE_SCRIPT_VARIABLE) \
+			.map(func(x): return x["name"])
+	elif keys == [] and typeof(msg) == TYPE_OBJECT:
+		keys = msg.get_property_list() \
+			.filter(func(x): return x["usage"] == PROPERTY_USAGE_SCRIPT_VARIABLE) \
+			.map(func(x): return x["name"])
+		msg = [msg]
+
+	var longest_values: Array[int] = []
+	for i in range(len(keys)):
+		longest_values.append(len(str(keys[i])))
+
+	if typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_ARRAY:
+		for item: Array in msg:
+			for i in range(len(item)):
+				longest_values[i] = max(longest_values[i], len(str(item[i])))
+
+	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_DICTIONARY:
+		for item: Dictionary in msg:
+			var item_values: Array = item.values()
+			for i in range(len(item_values)):
+				longest_values[i] = max(longest_values[i], len(str(item_values[i])))
+
+	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_OBJECT:
+		for item: Object in msg:
+			for i in range(len(keys)):
+				var str_value: String = str(item.get(keys[i]))
+				longest_values[i] = max(longest_values[i], len(str_value))
+
+	elif typeof(msg) == TYPE_ARRAY:
+		for i in range(len(msg)):
+			longest_values[i] = max(longest_values[i], len(str(msg[i])))
+
+	elif typeof(msg) == TYPE_DICTIONARY:
+		var msg_values: Array = msg.values()
+		for i in range(len(msg_values)):
+			longest_values.append(max(longest_values[i], len(str(msg_values[i]))))
+
+	for i in range(len(longest_values)):
+		longest_values[i] = min(longest_values[i], max_length)
+
+	var header: String = "|"
+	for i in range(len(keys)):
+		header += " " + truncate_string(keys[i], max_length)
+		for j in range(max(0, longest_values[i] - len(keys[i]))):
+			header += " "
+		header += " |"
+	header += "\n|"
+	for i in range(len(keys)):
+		header += "-"
+		for j in range(max(0, min(longest_values[i], max_length))):
+			header += "-"
+		header += "-|"
+	print(header)
+
+	var body: String = ""
+	if typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_ARRAY:
+		for item: Array in msg:
+			for i in range(len(item)):
+				var str_value: String = str(item[i])
+				body += "| " + truncate_string(str_value, max_length)
+				for j in range(max(0, longest_values[i] - len(str_value))):
+					body += " "
+				body += " "
+			body += "|\n"
+
+	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_DICTIONARY:
+		for item: Dictionary in msg:
+			var item_values: Array = item.values()
+			for i in range(len(item_values)):
+				var str_value: String = str(item_values[i])
+				body += "| " + truncate_string(str_value, max_length)
+				for j in range(max(0, longest_values[i] - len(str_value))):
+					body += " "
+				body += " "
+			body += "|\n"
+
+	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_OBJECT:
+		for item: Object in msg:
+			for i in range(len(keys)):
+				var str_value: String = str(item.get(keys[i]))
+				body += "| " + truncate_string(str_value, max_length)
+				for j in range(max(0, longest_values[i] - len(str_value))):
+					body += " "
+				body += " "
+			body += "|\n"
+
+	elif typeof(msg) == TYPE_ARRAY:
+		for i in range(len(msg)):
+			var str_value: String = str(msg[i])
+			body += "| " + truncate_string(str_value, max_length)
+			for j in range(max(0, longest_values[i] - len(str_value))):
+				body += " "
+			body += " "
+		body += "|\n"
+
+	elif typeof(msg) == TYPE_DICTIONARY:
+		var msg_values: Array = msg.values()
+		for i in range(len(msg_values)):
+			var str_value: String = str(msg_values[i])
+			body += "| " + truncate_string(str_value, max_length)
+			for j in range(max(0, longest_values[i] - len(str_value))):
+				body += " "
+			body += " "
+		body += "|\n"
+	print(body)
+
+
+static func truncate_string(input_string: String, target_length: int, suffix: String = "...") -> String:
+	var do_suffix: bool = len(input_string) > target_length
+	if not len(input_string) > target_length:
+		return input_string
+
+	input_string = input_string.substr(0, target_length - suffix.length())
+	input_string += suffix
+	return input_string
+
+
 static func blank() -> void:
 	_core.blank()
 
