@@ -51,7 +51,8 @@ layout_mode = 2
 
 [node name="VBoxContainerShowcases" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases" unique_id=353979672]
 layout_mode = 2
-theme_override_constants/separation = 6
+size_flags_horizontal = 4
+theme_override_constants/separation = 5
 
 [node name="ButtonRunShowcases" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1028300950]
 clip_contents = true
@@ -108,6 +109,11 @@ clip_contents = true
 layout_mode = 2
 text = "Run Objects Showcase"
 
+[node name="ButtonRunTablesShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=366077179]
+clip_contents = true
+layout_mode = 2
+text = "Run Tables Showcase"
+
 [node name="ButtonRunKnownBugsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1937733931]
 clip_contents = true
 layout_mode = 2
@@ -120,6 +126,7 @@ size_flags_horizontal = 3
 [node name="VBoxContainerOptions" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions" unique_id=1473281011]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = 12
 
 [node name="PanelContainerColors" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=443050889]
 layout_mode = 2
@@ -506,6 +513,7 @@ alignment = 2
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunArraysShowcase" to="." method="showcase_arrays"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunDictionariesShowcase" to="." method="showcase_dictionaries"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunObjectsShowcase" to="." method="showcase_objects"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunTablesShowcase" to="." method="showcase_tables"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunKnownBugsShowcase" to="." method="showcase_known_bugs"]
 [connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerColors/MarginContainer/HBoxContainer/CheckButtonColors" to="." method="set_enable_colors"]
 [connection signal="color_changed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerPrettyColorsChoice/MarginContainer/HBoxContainer/ColorPickerButton" to="." method="set_custom_color"]

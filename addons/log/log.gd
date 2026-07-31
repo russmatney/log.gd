@@ -407,50 +407,39 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 		print_rich(Log.to_printable(msg, {stack=get_stack()}))
 		return
 
-	if typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_DICTIONARY:
-		keys = msg[0].keys()
-	elif keys == [] and typeof(msg) == TYPE_DICTIONARY:
-		keys = msg.keys()
+	print_rich(Log.to_printable([], {stack=get_stack()}))
 
-	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_OBJECT:
+	if typeof(msg) != TYPE_ARRAY:
+		msg = [msg]
+
+	if keys == [] and typeof(msg[0]) == TYPE_DICTIONARY:
+		keys = msg[0].keys()
+	elif keys == [] and typeof(msg[0]) == TYPE_OBJECT:
 		keys = msg[0].get_property_list() \
 			.filter(func(x): return x["usage"] == PROPERTY_USAGE_SCRIPT_VARIABLE) \
 			.map(func(x): return x["name"])
-	elif keys == [] and typeof(msg) == TYPE_OBJECT:
-		keys = msg.get_property_list() \
-			.filter(func(x): return x["usage"] == PROPERTY_USAGE_SCRIPT_VARIABLE) \
-			.map(func(x): return x["name"])
-		msg = [msg]
 
 	var longest_values: Array[int] = []
 	for i in range(len(keys)):
 		longest_values.append(len(str(keys[i])))
 
-	if typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_ARRAY:
+	if typeof(msg[0]) == TYPE_ARRAY:
 		for item: Array in msg:
 			for i in range(len(item)):
 				longest_values[i] = max(longest_values[i], len(str(item[i])))
-
-	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_DICTIONARY:
+	elif typeof(msg[0]) == TYPE_DICTIONARY:
 		for item: Dictionary in msg:
 			var item_values: Array = item.values()
 			for i in range(len(item_values)):
 				longest_values[i] = max(longest_values[i], len(str(item_values[i])))
-
-	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_OBJECT:
+	elif typeof(msg[0]) == TYPE_OBJECT:
 		for item: Object in msg:
 			for i in range(len(keys)):
 				var str_value: String = str(item.get(keys[i]))
 				longest_values[i] = max(longest_values[i], len(str_value))
-
-	elif typeof(msg) == TYPE_ARRAY:
+	else:
 		for i in range(len(msg)):
 			longest_values[i] = max(longest_values[i], len(str(msg[i])))
-
-	elif typeof(msg) == TYPE_DICTIONARY:
-		var msg_values: Array = msg.values()
-		for i in range(len(msg_values)):
-			longest_values.append(max(longest_values[i], len(str(msg_values[i]))))
 
 	for i in range(len(longest_values)):
 		longest_values[i] = min(longest_values[i], max_length)
@@ -470,7 +459,7 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 	print(header)
 
 	var body: String = ""
-	if typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_ARRAY:
+	if typeof(msg[0]) == TYPE_ARRAY:
 		for item: Array in msg:
 			for i in range(len(item)):
 				var str_value: String = str(item[i])
@@ -480,7 +469,7 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 				body += " "
 			body += "|\n"
 
-	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_DICTIONARY:
+	elif typeof(msg[0]) == TYPE_DICTIONARY:
 		for item: Dictionary in msg:
 			var item_values: Array = item.values()
 			for i in range(len(item_values)):
@@ -491,7 +480,7 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 				body += " "
 			body += "|\n"
 
-	elif typeof(msg) == TYPE_ARRAY and typeof(msg[0]) == TYPE_OBJECT:
+	elif typeof(msg[0]) == TYPE_OBJECT:
 		for item: Object in msg:
 			for i in range(len(keys)):
 				var str_value: String = str(item.get(keys[i]))
@@ -501,7 +490,7 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 				body += " "
 			body += "|\n"
 
-	elif typeof(msg) == TYPE_ARRAY:
+	else:
 		for i in range(len(msg)):
 			var str_value: String = str(msg[i])
 			body += "| " + truncate_string(str_value, max_length)
@@ -510,15 +499,6 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 			body += " "
 		body += "|\n"
 
-	elif typeof(msg) == TYPE_DICTIONARY:
-		var msg_values: Array = msg.values()
-		for i in range(len(msg_values)):
-			var str_value: String = str(msg_values[i])
-			body += "| " + truncate_string(str_value, max_length)
-			for j in range(max(0, longest_values[i] - len(str_value))):
-				body += " "
-			body += " "
-		body += "|\n"
 	print(body)
 
 
