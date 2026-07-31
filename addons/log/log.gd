@@ -395,7 +395,11 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 	_core.error(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
-## Bespoke log method designed to print data in a tabular fashion.
+## Bespoke method designed to print data in a tabular fashion.[br]
+## [br]
+## Creates multi-line output where the first line is the standard Log.gd
+## preface, the second line is the table header, the third line is the header
+## separator, then each subsequent line is a row of table data.
 static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> void:
 	if typeof(msg) in [TYPE_INT, TYPE_STRING]:
 		print_rich(Log.to_printable([msg], {stack=get_stack()}))
@@ -446,7 +450,7 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 
 	var header: String = "|"
 	for i in range(len(columns)):
-		header += " " + truncate_string(columns[i], max_length)
+		header += " " + _truncate_string(columns[i], max_length)
 		for j in range(max(0, longest_values[i] - len(columns[i]))):
 			header += " "
 		header += " |"
@@ -463,7 +467,7 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 		for item: Array in msg:
 			for i in range(len(item)):
 				var str_value: String = str(item[i])
-				body += "| " + truncate_string(str_value, max_length)
+				body += "| " + _truncate_string(str_value, max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "
 				body += " "
@@ -474,7 +478,7 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 			var item_values: Array = item.values()
 			for i in range(len(item_values)):
 				var str_value: String = str(item_values[i])
-				body += "| " + truncate_string(str_value, max_length)
+				body += "| " + _truncate_string(str_value, max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "
 				body += " "
@@ -484,7 +488,7 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 		for item: Object in msg:
 			for i in range(len(columns)):
 				var str_value: String = str(item.get(columns[i]))
-				body += "| " + truncate_string(str_value, max_length)
+				body += "| " + _truncate_string(str_value, max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "
 				body += " "
@@ -493,23 +497,13 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 	else:
 		for i in range(len(msg)):
 			var str_value: String = str(msg[i])
-			body += "| " + truncate_string(str_value, max_length)
+			body += "| " + _truncate_string(str_value, max_length)
 			for j in range(max(0, longest_values[i] - len(str_value))):
 				body += " "
 			body += " "
 		body += "|\n"
 
 	print(body)
-
-
-static func truncate_string(input_string: String, target_length: int, suffix: String = "...") -> String:
-	var do_suffix: bool = len(input_string) > target_length
-	if not len(input_string) > target_length:
-		return input_string
-
-	input_string = input_string.substr(0, target_length - suffix.length())
-	input_string += suffix
-	return input_string
 
 
 static func blank() -> void:
@@ -519,6 +513,20 @@ static func blank() -> void:
 ## Helper that will both print() and print_rich() the enriched string
 static func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	_core._internal_debug(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+
+
+## Truncate a string to a maximum length of [param target_length] and a default
+## [param suffix] of [code]...[/code] indicating there's more to the string than what was
+## printed.  The resulting string will be no longer than [param target_length]
+## even when the [param suffix] is appended.
+static func _truncate_string(input_string: String, target_length: int, suffix: String = "...") -> String:
+	var do_suffix: bool = len(input_string) > target_length
+	if not len(input_string) > target_length:
+		return input_string
+
+	input_string = input_string.substr(0, target_length - suffix.length())
+	input_string += suffix
+	return input_string
 
 
 ##############

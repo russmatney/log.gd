@@ -174,6 +174,10 @@ The timestamp options available are a Unix timestamp, the ticks in microseconds 
 - `Log.todo(...)`
   - pretty-print without newlines
   - optionally push a warning via `push_warning`
+- `Log.table(...)`
+  - print tabular data
+  - optionally provide a list of columns
+  - limit column width
 
 ?> These functions all take up to 7 args.
 We could support more, but you can also pass an Array or a Dictionary if you
