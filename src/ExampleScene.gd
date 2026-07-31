@@ -412,7 +412,10 @@ func showcase_tables() -> void:
 	Log.table("Test")
 	Log.table(1)
 	Log.table(["Test", 1, "Cheddar"])
-	Log.table(["Test", 1, "Cheddar"], ["Column A", "Col. 2", "Cheese"])
+	Log.table(
+		["Test", 1, "Cheddar"],
+		Log.TableConfig.new(["Column A", "Col. 2", "Cheese"]),
+	)
 	Log.table({
 		"Column A": "Test",
 		"Col. 2": 1,
@@ -423,7 +426,7 @@ func showcase_tables() -> void:
 		["Example", 2, "Mozzarella"],
 		["Data", 3, "Brie"],
 		["Sample", 4, "Muenster"],
-	], ["Column A", "Col. 2", "Cheese"])
+	], Log.TableConfig.new(["Column A", "Col. 2", "Cheese"]))
 	Log.table([
 		{ "Column A": "Test", "Col. 2": 1, "Cheese": "Cheddar" },
 		{ "Column A": "Example", "Col. 2": 2, "Cheese": "Mozzarella" },
@@ -448,17 +451,22 @@ func showcase_tables() -> void:
 		some_class,
 		some_other_class,
 		yet_another_class,
-	], [
+	], Log.TableConfig.new([
 		"some_string",
 		"some_int",
 		"some_float",
 		"some_long_string",
-	])
+	]))
+
+	var log_table_config: Log.TableConfig = Log.TableConfig.new()
+	log_table_config.max_length = 16
 	Log.table([
 		some_class,
 		some_other_class,
 		yet_another_class,
-	], [], 24)
+	], log_table_config)
+
+	Log.table(Log)
 
 
 ## Showcase any known bugs for the running version of Godot.
