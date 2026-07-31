@@ -3,6 +3,9 @@ class_name ExampleScene
 extends CanvasLayer
 
 
+
+
+
 ## Color used in the custom color showcase
 @export var custom_color: Color = Color.PURPLE
 
@@ -52,6 +55,50 @@ func _ready() -> void:
 	option_button_timestamp_type.select(Log.get_timestamp_type())
 	line_edit_timestamp_format.text = Log.get_timestamp_format()
 	spin_box_float_precision.set_value_no_signal(Log.get_float_precision())
+
+	Log.table("Test")
+	Log.table(1)
+	Log.table(["Test", 1], ["Column A", "Col. 2"])
+	Log.table({
+		"Column A": "Test",
+		"Col. 2": 1,
+	})
+	Log.table([
+		["Test", 1],
+		["Example", 2],
+		["Data", 3],
+		["Sample", 4],
+	], ["Column A", "Col. 2"])
+	Log.table([
+		{ "Column A": "Test", "Col. 2": 1 },
+		{ "Column A": "Example", "Col. 2": 2 },
+		{ "Column A": "Data", "Col. 2": 3 },
+		{ "Column A": "Sample", "Col. 2": 4 },
+	])
+
+	var some_class: SomeClass = SomeClass.new()
+	var some_other_class: SomeClass = SomeClass.new()
+	some_other_class.some_string = "A. L. Onger, Str."
+	some_other_class.some_int = 1337
+	some_other_class.some_float = 53180.08
+	some_other_class.some_long_string = "0987654321zyxwvutsrqponmlkjihgfedcba"
+
+	Log.table([
+		some_class,
+		some_other_class,
+	], [
+		"some_string",
+		"some_int",
+		"some_float",
+		"some_long_string",
+	])
+
+	Log.table(some_class)
+
+	Log.table([
+		some_class,
+		some_other_class,
+	])
 
 
 ## Connected to CheckButtonColors.
