@@ -400,12 +400,19 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 ## Creates multi-line output where the first line is the standard Log.gd
 ## preface, the second line is the table header, the third line is the header
 ## separator, then each subsequent line is a row of table data.
-static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> void:
+static func table(
+	msg: Variant,
+	config: TableConfig = TableConfig.new()
+) -> void:
+	# TODO: Make padding optional
+	# TODO: Column alignment (left/center/right)
+	# TODO: Editable delimiters
+	# TODO: Escape `|` character (or delimiter if dynamic)
 	if typeof(msg) in [TYPE_INT, TYPE_STRING]:
 		print_rich(Log.to_printable([msg], {stack=get_stack()}))
 		return
 
-	if columns == [] \
+	if config.columns == [] \
 	and typeof(msg) == TYPE_ARRAY \
 	and typeof(msg[0]) not in [TYPE_DICTIONARY, TYPE_OBJECT]:
 		print_rich(Log.to_printable(msg, {stack=get_stack()}))
@@ -416,16 +423,20 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 	if typeof(msg) != TYPE_ARRAY:
 		msg = [msg]
 
-	if columns == [] and typeof(msg[0]) == TYPE_DICTIONARY:
-		columns = msg[0].keys()
-	elif columns == [] and typeof(msg[0]) == TYPE_OBJECT:
-		columns = msg[0].get_property_list() \
-			.filter(func(x): return x["usage"] == PROPERTY_USAGE_SCRIPT_VARIABLE) \
+	if config.columns == [] and typeof(msg[0]) == TYPE_DICTIONARY:
+		config.columns = msg[0].keys()
+	elif config.columns == [] and typeof(msg[0]) == TYPE_OBJECT:
+		config.columns = msg[0].get_property_list() \
+			.filter(func(x): return x["usage"] in [
+				# TODO: Clean up bitmask usage
+				PROPERTY_USAGE_SCRIPT_VARIABLE,
+				PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_CLASS_IS_ENUM
+			]) \
 			.map(func(x): return x["name"])
 
 	var longest_values: Array[int] = []
-	for i in range(len(columns)):
-		longest_values.append(len(str(columns[i])))
+	for i in range(len(config.columns)):
+		longest_values.append(len(str(config.columns[i])))
 
 	if typeof(msg[0]) == TYPE_ARRAY:
 		for item: Array in msg:
@@ -438,26 +449,26 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 				longest_values[i] = max(longest_values[i], len(str(item_values[i])))
 	elif typeof(msg[0]) == TYPE_OBJECT:
 		for item: Object in msg:
-			for i in range(len(columns)):
-				var str_value: String = str(item.get(columns[i]))
+			for i in range(len(config.columns)):
+				var str_value: String = str(item.get(config.columns[i]))
 				longest_values[i] = max(longest_values[i], len(str_value))
 	else:
 		for i in range(len(msg)):
 			longest_values[i] = max(longest_values[i], len(str(msg[i])))
 
 	for i in range(len(longest_values)):
-		longest_values[i] = min(longest_values[i], max_length)
+		longest_values[i] = min(longest_values[i], config.max_length)
 
 	var header: String = "|"
-	for i in range(len(columns)):
-		header += " " + _truncate_string(columns[i], max_length)
-		for j in range(max(0, longest_values[i] - len(columns[i]))):
+	for i in range(len(config.columns)):
+		header += " " + _truncate_string(config.columns[i], config.max_length)
+		for j in range(max(0, longest_values[i] - len(config.columns[i]))):
 			header += " "
 		header += " |"
 	header += "\n|"
-	for i in range(len(columns)):
+	for i in range(len(config.columns)):
 		header += "-"
-		for j in range(max(0, min(longest_values[i], max_length))):
+		for j in range(max(0, min(longest_values[i], config.max_length))):
 			header += "-"
 		header += "-|"
 	print(header)
@@ -467,7 +478,7 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 		for item: Array in msg:
 			for i in range(len(item)):
 				var str_value: String = str(item[i])
-				body += "| " + _truncate_string(str_value, max_length)
+				body += "| " + _truncate_string(str_value, config.max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "
 				body += " "
@@ -478,7 +489,7 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 			var item_values: Array = item.values()
 			for i in range(len(item_values)):
 				var str_value: String = str(item_values[i])
-				body += "| " + _truncate_string(str_value, max_length)
+				body += "| " + _truncate_string(str_value, config.max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "
 				body += " "
@@ -486,9 +497,9 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 
 	elif typeof(msg[0]) == TYPE_OBJECT:
 		for item: Object in msg:
-			for i in range(len(columns)):
-				var str_value: String = str(item.get(columns[i]))
-				body += "| " + _truncate_string(str_value, max_length)
+			for i in range(len(config.columns)):
+				var str_value: String = str(item.get(config.columns[i]))
+				body += "| " + _truncate_string(str_value, config.max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "
 				body += " "
@@ -497,7 +508,7 @@ static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> vo
 	else:
 		for i in range(len(msg)):
 			var str_value: String = str(msg[i])
-			body += "| " + _truncate_string(str_value, max_length)
+			body += "| " + _truncate_string(str_value, config.max_length)
 			for j in range(max(0, longest_values[i] - len(str_value))):
 				body += " "
 			body += " "
@@ -540,3 +551,32 @@ static func merge_theme_overwrites(_opts = {}) -> void:
 ## DEPRECATED
 static func clear_theme_overwrites() -> void:
 	pass
+
+
+## Config object for tabular data.
+class TableConfig:
+	# TODO: Make padding optional
+	# TODO: Column alignment (left/center/right)
+	# TODO: Editable delimiter
+	# TODO: Escape delimiter
+	var column_alignment: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT
+	var columns: Array = []
+	var delimiter: String = "|"
+	var max_length: int = 32
+	var pad_cells: bool = true
+
+	static func default() -> TableConfig:
+		return TableConfig.new()
+
+	func _init(
+		p_columns: Array = columns,
+		p_column_alignment: HorizontalAlignment = column_alignment,
+		p_delimiter: String = delimiter,
+		p_max_length: int = max_length,
+		p_pad_cells: bool = pad_cells,
+	) -> void:
+		columns = p_columns
+		column_alignment = p_column_alignment
+		delimiter = p_delimiter
+		max_length = p_max_length
+		pad_cells = p_pad_cells
