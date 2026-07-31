@@ -396,12 +396,12 @@ static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 
 
 ## Bespoke log method designed to print data in a tabular fashion.
-static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
+static func table(msg: Variant, columns: Array = [], max_length: int = 32) -> void:
 	if typeof(msg) in [TYPE_INT, TYPE_STRING]:
 		print_rich(Log.to_printable([msg], {stack=get_stack()}))
 		return
 
-	if keys == [] \
+	if columns == [] \
 	and typeof(msg) == TYPE_ARRAY \
 	and typeof(msg[0]) not in [TYPE_DICTIONARY, TYPE_OBJECT]:
 		print_rich(Log.to_printable(msg, {stack=get_stack()}))
@@ -412,16 +412,16 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 	if typeof(msg) != TYPE_ARRAY:
 		msg = [msg]
 
-	if keys == [] and typeof(msg[0]) == TYPE_DICTIONARY:
-		keys = msg[0].keys()
-	elif keys == [] and typeof(msg[0]) == TYPE_OBJECT:
-		keys = msg[0].get_property_list() \
+	if columns == [] and typeof(msg[0]) == TYPE_DICTIONARY:
+		columns = msg[0].keys()
+	elif columns == [] and typeof(msg[0]) == TYPE_OBJECT:
+		columns = msg[0].get_property_list() \
 			.filter(func(x): return x["usage"] == PROPERTY_USAGE_SCRIPT_VARIABLE) \
 			.map(func(x): return x["name"])
 
 	var longest_values: Array[int] = []
-	for i in range(len(keys)):
-		longest_values.append(len(str(keys[i])))
+	for i in range(len(columns)):
+		longest_values.append(len(str(columns[i])))
 
 	if typeof(msg[0]) == TYPE_ARRAY:
 		for item: Array in msg:
@@ -434,8 +434,8 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 				longest_values[i] = max(longest_values[i], len(str(item_values[i])))
 	elif typeof(msg[0]) == TYPE_OBJECT:
 		for item: Object in msg:
-			for i in range(len(keys)):
-				var str_value: String = str(item.get(keys[i]))
+			for i in range(len(columns)):
+				var str_value: String = str(item.get(columns[i]))
 				longest_values[i] = max(longest_values[i], len(str_value))
 	else:
 		for i in range(len(msg)):
@@ -445,13 +445,13 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 		longest_values[i] = min(longest_values[i], max_length)
 
 	var header: String = "|"
-	for i in range(len(keys)):
-		header += " " + truncate_string(keys[i], max_length)
-		for j in range(max(0, longest_values[i] - len(keys[i]))):
+	for i in range(len(columns)):
+		header += " " + truncate_string(columns[i], max_length)
+		for j in range(max(0, longest_values[i] - len(columns[i]))):
 			header += " "
 		header += " |"
 	header += "\n|"
-	for i in range(len(keys)):
+	for i in range(len(columns)):
 		header += "-"
 		for j in range(max(0, min(longest_values[i], max_length))):
 			header += "-"
@@ -482,8 +482,8 @@ static func table(msg: Variant, keys: Array = [], max_length: int = 32) -> void:
 
 	elif typeof(msg[0]) == TYPE_OBJECT:
 		for item: Object in msg:
-			for i in range(len(keys)):
-				var str_value: String = str(item.get(keys[i]))
+			for i in range(len(columns)):
+				var str_value: String = str(item.get(columns[i]))
 				body += "| " + truncate_string(str_value, max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "

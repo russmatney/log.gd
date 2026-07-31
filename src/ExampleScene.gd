@@ -411,22 +411,24 @@ func showcase_named_loggers() -> void:
 func showcase_tables() -> void:
 	Log.table("Test")
 	Log.table(1)
-	Log.table(["Test", 1], ["Column A", "Col. 2"])
+	Log.table(["Test", 1, "Cheddar"])
+	Log.table(["Test", 1, "Cheddar"], ["Column A", "Col. 2", "Cheese"])
 	Log.table({
 		"Column A": "Test",
 		"Col. 2": 1,
+		"Cheese": "Cheddar",
 	})
 	Log.table([
-		["Test", 1],
-		["Example", 2],
-		["Data", 3],
-		["Sample", 4],
-	], ["Column A", "Col. 2"])
+		["Test", 1, "Cheddar"],
+		["Example", 2, "Mozzarella"],
+		["Data", 3, "Brie"],
+		["Sample", 4, "Muenster"],
+	], ["Column A", "Col. 2", "Cheese"])
 	Log.table([
-		{ "Column A": "Test", "Col. 2": 1 },
-		{ "Column A": "Example", "Col. 2": 2 },
-		{ "Column A": "Data", "Col. 2": 3 },
-		{ "Column A": "Sample", "Col. 2": 4 },
+		{ "Column A": "Test", "Col. 2": 1, "Cheese": "Cheddar" },
+		{ "Column A": "Example", "Col. 2": 2, "Cheese": "Mozzarella" },
+		{ "Column A": "Data", "Col. 2": 3, "Cheese": "Brie" },
+		{ "Column A": "Sample", "Col. 2": 4, "Cheese": "Meunster" },
 	])
 
 	var some_class: ExampleObj = ExampleObj.new("Testing")
@@ -435,23 +437,28 @@ func showcase_tables() -> void:
 	some_other_class.some_int = 1337
 	some_other_class.some_float = 53180.08
 	some_other_class.some_long_string = "0987654321zyxwvutsrqponmlkjihgfedcba"
+	var yet_another_class: ExampleObj = ExampleObj.new(Vector3.ONE)
+	yet_another_class.some_string = "F. Ake Name"
+	yet_another_class.some_int = 13
+	yet_another_class.some_float = 100.0
+	yet_another_class.some_long_string = "correct horse battery staple"
 
+	Log.table(some_class)
 	Log.table([
 		some_class,
 		some_other_class,
+		yet_another_class,
 	], [
 		"some_string",
 		"some_int",
 		"some_float",
 		"some_long_string",
 	])
-
-	Log.table(some_class)
-
 	Log.table([
 		some_class,
 		some_other_class,
-	])
+		yet_another_class,
+	], [], 24)
 
 
 ## Showcase any known bugs for the running version of Godot.
