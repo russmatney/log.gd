@@ -459,18 +459,18 @@ static func table(
 	for i in range(len(longest_values)):
 		longest_values[i] = min(longest_values[i], config.max_length)
 
-	var header: String = "|"
+	var header: String = config.delimiter
 	for i in range(len(config.columns)):
 		header += " " + _truncate_string(config.columns[i], config.max_length)
 		for j in range(max(0, longest_values[i] - len(config.columns[i]))):
 			header += " "
-		header += " |"
-	header += "\n|"
+		header += " " + config.delimiter
+	header += "\n" + config.delimiter
 	for i in range(len(config.columns)):
 		header += "-"
 		for j in range(max(0, min(longest_values[i], config.max_length))):
 			header += "-"
-		header += "-|"
+		header += "-" + config.delimiter
 	print(header)
 
 	var body: String = ""
@@ -478,41 +478,41 @@ static func table(
 		for item: Array in msg:
 			for i in range(len(item)):
 				var str_value: String = str(item[i])
-				body += "| " + _truncate_string(str_value, config.max_length)
+				body += config.delimiter + " " + _truncate_string(str_value, config.max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "
 				body += " "
-			body += "|\n"
+			body += config.delimiter + "\n"
 
 	elif typeof(msg[0]) == TYPE_DICTIONARY:
 		for item: Dictionary in msg:
 			var item_values: Array = item.values()
 			for i in range(len(item_values)):
 				var str_value: String = str(item_values[i])
-				body += "| " + _truncate_string(str_value, config.max_length)
+				body += config.delimiter + " " + _truncate_string(str_value, config.max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "
 				body += " "
-			body += "|\n"
+			body += config.delimiter + "\n"
 
 	elif typeof(msg[0]) == TYPE_OBJECT:
 		for item: Object in msg:
 			for i in range(len(config.columns)):
 				var str_value: String = str(item.get(config.columns[i]))
-				body += "| " + _truncate_string(str_value, config.max_length)
+				body += config.delimiter + " " + _truncate_string(str_value, config.max_length)
 				for j in range(max(0, longest_values[i] - len(str_value))):
 					body += " "
 				body += " "
-			body += "|\n"
+			body += config.delimiter + "\n"
 
 	else:
 		for i in range(len(msg)):
 			var str_value: String = str(msg[i])
-			body += "| " + _truncate_string(str_value, config.max_length)
+			body += config.delimiter + " " + _truncate_string(str_value, config.max_length)
 			for j in range(max(0, longest_values[i] - len(str_value))):
 				body += " "
 			body += " "
-		body += "|\n"
+		body += config.delimiter + "\n"
 
 	print(body)
 
@@ -557,9 +557,8 @@ static func clear_theme_overwrites() -> void:
 class TableConfig:
 	# TODO: Make padding optional
 	# TODO: Column alignment (left/center/right)
-	# TODO: Editable delimiter
 	# TODO: Escape delimiter
-	var column_alignment: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT
+	var column_alignment: Array[HorizontalAlignment] = []
 	var columns: Array = []
 	var delimiter: String = "|"
 	var max_length: int = 32
@@ -570,7 +569,7 @@ class TableConfig:
 
 	func _init(
 		p_columns: Array = columns,
-		p_column_alignment: HorizontalAlignment = column_alignment,
+		p_column_alignment: Array[HorizontalAlignment] = column_alignment,
 		p_delimiter: String = delimiter,
 		p_max_length: int = max_length,
 		p_pad_cells: bool = pad_cells,
@@ -580,3 +579,7 @@ class TableConfig:
 		delimiter = p_delimiter
 		max_length = p_max_length
 		pad_cells = p_pad_cells
+
+	func set_max_length(p_max_length: int) -> TableConfig:
+		max_length = p_max_length
+		return self
