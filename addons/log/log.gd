@@ -406,7 +406,6 @@ static func table(
 ) -> void:
 	# TODO: Make padding optional
 	# TODO: Column alignment (left/center/right)
-	# TODO: Editable delimiters
 	# TODO: Escape `|` character (or delimiter if dynamic)
 	if typeof(msg) in [TYPE_INT, TYPE_STRING]:
 		print_rich(Log.to_printable([msg], {stack=get_stack()}))

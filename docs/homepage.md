@@ -174,10 +174,6 @@ The timestamp options available are a Unix timestamp, the ticks in microseconds 
 - `Log.todo(...)`
   - pretty-print without newlines
   - optionally push a warning via `push_warning`
-- `Log.table(...)`
-  - print tabular data
-  - optionally provide a list of columns
-  - limit column width
 
 ?> These functions all take up to 7 args.
 We could support more, but you can also pass an Array or a Dictionary if you
@@ -186,6 +182,17 @@ need more args right away.
 ?> `Log.warn()` and `Log.err()` are nice because `push_warning` and `push_error` on
 their own do not let you see warnings/errors in the same context as your usual
 `print()` statements.
+
+- `Log.table(msg: Variant, config: TableConfig = TableConfig.new())`
+  - tabulate data
+  - optional provide a list of columns
+  - limitable column width
+  - configurable delimiter
+
+?> `Log.table()` takes a `Variant` or an `Array` of `Variants` to tabulate and,
+optionally, a `Log.TableConfig` object to modify the printed table.
+
+?> The default output of `Log.table()` is Markdown-compatible.
 
 ### Returning a string
 
