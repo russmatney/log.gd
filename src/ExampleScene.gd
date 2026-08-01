@@ -453,13 +453,11 @@ func showcase_tables() -> void:
 		yet_another_class,
 	], Log.TableConfig.new([
 		"some_string",
-		"some_int",
 		"some_float",
 		"some_long_string",
 	]))
 
-	var log_table_config: Log.TableConfig = Log.TableConfig.new()
-	log_table_config.max_length = 16
+	var log_table_config: Log.TableConfig = Log.TableConfig.new().set_max_length(16)
 	Log.table([
 		some_class,
 		some_other_class,
