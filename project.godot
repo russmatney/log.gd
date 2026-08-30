@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Log"
 run/main_scene="res://src/ExampleScene.tscn"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [debug]
@@ -41,10 +41,6 @@ enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/log/p
 
 report/godot/push_error=true
 settings/common/update_notification_enabled=false
-
-[log_gd]
-
-config/show_process_unique_id=true
 
 [rendering]
 
