@@ -458,61 +458,10 @@ static func table(
 	for i in range(len(longest_values)):
 		longest_values[i] = min(longest_values[i], config.max_length)
 
-	var header: String = config.delimiter
-	for i in range(len(config.columns)):
-		header += " " + _truncate_string(config.columns[i], config.max_length)
-		for j in range(max(0, longest_values[i] - len(config.columns[i]))):
-			header += " "
-		header += " " + config.delimiter
-	header += "\n" + config.delimiter
-	for i in range(len(config.columns)):
-		header += "-"
-		for j in range(max(0, min(longest_values[i], config.max_length))):
-			header += "-"
-		header += "-" + config.delimiter
+	var header: String = Table.header(config, longest_values)
 	print(header)
 
-	var body: String = ""
-	if typeof(msg[0]) == TYPE_ARRAY:
-		for item: Array in msg:
-			for i in range(len(item)):
-				var str_value: String = str(item[i])
-				body += config.delimiter + " " + _truncate_string(str_value, config.max_length)
-				for j in range(max(0, longest_values[i] - len(str_value))):
-					body += " "
-				body += " "
-			body += config.delimiter + "\n"
-
-	elif typeof(msg[0]) == TYPE_DICTIONARY:
-		for item: Dictionary in msg:
-			var item_values: Array = item.values()
-			for i in range(len(item_values)):
-				var str_value: String = str(item_values[i])
-				body += config.delimiter + " " + _truncate_string(str_value, config.max_length)
-				for j in range(max(0, longest_values[i] - len(str_value))):
-					body += " "
-				body += " "
-			body += config.delimiter + "\n"
-
-	elif typeof(msg[0]) == TYPE_OBJECT:
-		for item: Object in msg:
-			for i in range(len(config.columns)):
-				var str_value: String = str(item.get(config.columns[i]))
-				body += config.delimiter + " " + _truncate_string(str_value, config.max_length)
-				for j in range(max(0, longest_values[i] - len(str_value))):
-					body += " "
-				body += " "
-			body += config.delimiter + "\n"
-
-	else:
-		for i in range(len(msg)):
-			var str_value: String = str(msg[i])
-			body += config.delimiter + " " + _truncate_string(str_value, config.max_length)
-			for j in range(max(0, longest_values[i] - len(str_value))):
-				body += " "
-			body += " "
-		body += config.delimiter + "\n"
-
+	var body: String = Table.body(config, longest_values, msg)
 	print(body)
 
 
@@ -525,6 +474,7 @@ static func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Varian
 	_core._internal_debug(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
+<<<<<<< HEAD
 ## Truncate a string to a maximum length of [param target_length] and a default
 ## [param suffix] of [code]...[/code] indicating there's more to the string than what was
 ## printed.  The resulting string will be no longer than [param target_length]
@@ -543,6 +493,8 @@ static func _truncate_string(input_string: String, target_length: int, suffix: S
 # Deprecated #
 ##############
 
+=======
+>>>>>>> e791cc2 (Table class)
 ## DEPRECATED
 static func merge_theme_overwrites(_opts = {}) -> void:
 	pass
@@ -550,6 +502,79 @@ static func merge_theme_overwrites(_opts = {}) -> void:
 ## DEPRECATED
 static func clear_theme_overwrites() -> void:
 	pass
+
+
+class Table:
+	static func header(config: TableConfig, longest_values: Array[int]) -> String:
+		var header: String = config.delimiter
+		for i in range(len(config.columns)):
+			header += " " + Table.truncate_string(config.columns[i], config.max_length)
+			for j in range(max(0, longest_values[i] - len(config.columns[i]))):
+				header += " "
+			header += " " + config.delimiter
+		header += "\n" + config.delimiter
+		for i in range(len(config.columns)):
+			header += "-"
+			for j in range(max(0, min(longest_values[i], config.max_length))):
+				header += "-"
+			header += "-" + config.delimiter
+		return header
+
+	static func body(config: TableConfig, longest_values: Array[int], data: Variant) -> String:
+		var body: String = ""
+		if typeof(data[0]) == TYPE_ARRAY:
+			for item: Array in data:
+				for i in range(len(item)):
+					var str_value: String = str(item[i])
+					body += config.delimiter + " " + Table.truncate_string(str_value, config.max_length)
+					for j in range(max(0, longest_values[i] - len(str_value))):
+						body += " "
+					body += " "
+				body += config.delimiter + "\n"
+
+		elif typeof(data[0]) == TYPE_DICTIONARY:
+			for item: Dictionary in data:
+				var item_values: Array = item.values()
+				for i in range(len(item_values)):
+					var str_value: String = str(item_values[i])
+					body += config.delimiter + " " + Table.truncate_string(str_value, config.max_length)
+					for j in range(max(0, longest_values[i] - len(str_value))):
+						body += " "
+					body += " "
+				body += config.delimiter + "\n"
+
+		elif typeof(data[0]) == TYPE_OBJECT:
+			for item: Object in data:
+				for i in range(len(config.columns)):
+					var str_value: String = str(item.get(config.columns[i]))
+					body += config.delimiter + " " + Table.truncate_string(str_value, config.max_length)
+					for j in range(max(0, longest_values[i] - len(str_value))):
+						body += " "
+					body += " "
+				body += config.delimiter + "\n"
+
+		else:
+			for i in range(len(data)):
+				var str_value: String = str(data[i])
+				body += config.delimiter + " " + Table.truncate_string(str_value, config.max_length)
+				for j in range(max(0, longest_values[i] - len(str_value))):
+					body += " "
+				body += " "
+			body += config.delimiter + "\n"
+		return body
+
+	## Truncate a string to a maximum length of [param target_length] and a default
+	## [param suffix] of [code]...[/code] indicating there's more to the string than what was
+	## printed.  The resulting string will be no longer than [param target_length]
+	## even when the [param suffix] is appended.
+	static func truncate_string(input_string: String, target_length: int, suffix: String = "...") -> String:
+		var do_suffix: bool = len(input_string) > target_length
+		if not len(input_string) > target_length:
+			return input_string
+
+		input_string = input_string.substr(0, target_length - suffix.length())
+		input_string += suffix
+		return input_string
 
 
 ## Config object for tabular data.
@@ -562,6 +587,7 @@ class TableConfig:
 	var delimiter: String = "|"
 	var max_length: int = 32
 	var pad_cells: bool = true
+	var escape_delimiter: bool = true
 
 	static func default() -> TableConfig:
 		return TableConfig.new()
