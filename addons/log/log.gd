@@ -111,11 +111,28 @@ static func set_colors_termsafe() -> void:
 ##########
 
 static func rebuild_config(opts: Dictionary = {}) -> void:
-	_core.config.rebuild_config(_core.config, opts)
+	LogConfig.rebuild_config(_core.config, opts)
 
 
 static func setup_settings(opts: Dictionary = {}) -> void:
-	_core.config.setup_settings(opts)
+	LogConfig.setup_settings(opts)
+
+
+############################
+# Floating Point Precision #
+############################
+
+static func get_float_precision() -> int:
+	return _core.config.get_float_precision()
+
+
+static func get_float_precision_string() -> String:
+	return _core.config.get_float_precision_string()
+
+
+## Set the expected float precision
+static func set_float_precision(float_precision: int) -> void:
+	_core.config.set_float_precision(float_precision)
 
 
 #############
@@ -169,6 +186,25 @@ static func reset_newline_max_depth() -> void:
 ## in easily parsing the information near the root of the object.
 static func set_newline_max_depth(new_depth: int) -> void:
 	_core.config.set_newline_max_depth(new_depth)
+
+
+##############
+# Process ID #
+##############
+
+## Show process ID
+static func get_show_process_unique_id() -> bool:
+	return _core.config.get_show_process_unique_id()
+
+
+## Don't SHOW_PROCESS_UNIQUE_ID in log line
+static func hide_process_unique_id() -> void:
+	_core.config.hide_process_unique_id()
+
+
+## Show SHOW_PROCESS_UNIQUE_ID in log lines
+static func show_process_unique_id() -> void:
+	_core.config.show_process_unique_id()
 
 
 ##############

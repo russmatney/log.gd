@@ -58,8 +58,21 @@ func test_log_ints() -> void:
 	assert_str(val).is_equal("[color=green]1[/color]")
 
 func test_log_floats() -> void:
+	assert_int(Log.get_float_precision()).is_equal(3)
 	var val: String = Log.to_pretty(3.14)
-	assert_str(val).is_equal("[color=green]3.14[/color]")
+	assert_str(val).is_equal("[color=pink]3.140[/color]")
+
+	Log.set_float_precision(1)
+	assert_int(Log.get_float_precision()).is_equal(1)
+	val = Log.to_pretty(3.14)
+	assert_str(val).is_equal("[color=pink]3.1[/color]")
+
+	Log.set_float_precision(4)
+	assert_int(Log.get_float_precision()).is_equal(4)
+	val = Log.to_pretty(3.14)
+	assert_str(val).is_equal("[color=pink]3.1400[/color]")
+
+
 
 # TYPE_MAX
 
@@ -67,57 +80,65 @@ func test_log_floats() -> void:
 
 func test_log_vector2() -> void:
 	var val: String = Log.to_pretty(Vector2(1, 2))
-	assert_str(val).is_equal("[color=red]([/color][color=green]1.0[/color][color=red],[/color][color=green]2.0[/color][color=red])[/color]")
+	assert_str(val).is_equal("[color=red]([/color][color=green]1.000[/color][color=red], [/color][color=green]2.000[/color][color=red])[/color]")
 
 func test_log_vector2i() -> void:
 	var val: String = Log.to_pretty(Vector2i(1, 2))
 	assert_str(val).is_equal(
-		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red])[/color]"
+		"[color=red]([/color][color=green]1[/color][color=red], [/color][color=green]2[/color][color=red])[/color]"
 		)
 
 func test_log_vector3() -> void:
 	var val: String = Log.to_pretty(Vector3(1, 2, 3))
 	assert_str(val).is_equal(
-		"[color=red]([/color][color=green]1.0[/color][color=red],[/color][color=green]2.0[/color][color=red],[/color][color=green]3.0[/color][color=red])[/color]"
+		"[color=red]([/color][color=green]1.000[/color][color=red], [/color][color=green]2.000[/color][color=red], [/color][color=green]3.000[/color][color=red])[/color]"
 		)
 
 func test_log_vector3i() -> void:
 	var val: String = Log.to_pretty(Vector3i(1, 2, 3))
 	assert_str(val).is_equal(
-		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red],[/color][color=green]3[/color][color=red])[/color]"
+		"[color=red]([/color][color=green]1[/color][color=red], [/color][color=green]2[/color][color=red], [/color][color=green]3[/color][color=red])[/color]"
 		)
 
 func test_log_vector4() -> void:
 	var val: String = Log.to_pretty(Vector4(1, 2, 3, 4))
 	assert_str(val).is_equal(
-		"[color=red]([/color][color=green]1.0[/color][color=red],[/color][color=green]2.0[/color][color=red],[/color][color=green]3.0[/color][color=red],[/color][color=green]4.0[/color][color=red])[/color]"
+		"[color=red]([/color][color=green]1.000[/color][color=red], [/color][color=green]2.000[/color][color=red], [/color][color=green]3.000[/color][color=red], [/color][color=green]4.000[/color][color=red])[/color]"
 		)
 
 func test_log_vector4i() -> void:
 	var val: String = Log.to_pretty(Vector4i(1, 2, 3, 4))
 	assert_str(val).is_equal(
-		"[color=red]([/color][color=green]1[/color][color=red],[/color][color=green]2[/color][color=red],[/color][color=green]3[/color][color=red],[/color][color=green]4[/color][color=red])[/color]"
+		"[color=red]([/color][color=green]1[/color][color=red], [/color][color=green]2[/color][color=red], [/color][color=green]3[/color][color=red], [/color][color=green]4[/color][color=red])[/color]"
 		)
 
 ## rect ###############################################
 
 func test_rect() -> void:
-	# TODO
-	pass
+	var val: String = Log.to_pretty(Rect2())
+	assert_str(val).is_equal(
+		"[color=red]([/color][color=pink]P: [color=red]([/color][color=green]0.000[/color][color=red], [/color][color=green]0.000[/color][color=red])[/color], [/color][color=pink]X: [color=red]([/color][color=green]0.000[/color][color=red], [/color][color=green]0.000[/color][color=red])[/color][/color][color=red])[/color]"
+		)
 
 func test_rect2i() -> void:
-	# TODO
-	pass
+	var val: String = Log.to_pretty(Rect2i())
+	assert_str(val).is_equal(
+		"[color=red]([/color][color=pink]P: [color=red]([/color][color=green]0[/color][color=red], [/color][color=green]0[/color][color=red])[/color], [/color][color=pink]X: [color=red]([/color][color=green]0[/color][color=red], [/color][color=green]0[/color][color=red])[/color][/color][color=red])[/color]"
+		)
 
 ## transform ###############################################
 
 func test_transform2d() -> void:
-	# TODO
-	pass
+	var val: String = Log.to_pretty(Transform2D())
+	assert_str(val).is_equal(
+		"[color=red][[/color][color=pink]X: [color=red]([/color][color=green]1.000[/color][color=red], [/color][color=green]0.000[/color][color=red])[/color], [/color][color=pink]Y: [color=red]([/color][color=green]0.000[/color][color=red], [/color][color=green]1.000[/color][color=red])[/color], [/color][color=pink]O: [color=red]([/color][color=green]0.000[/color][color=red], [/color][color=green]0.000[/color][color=red])[/color][/color][color=red]][/color]"
+		)
 
 func test_transform3d() -> void:
-	# TODO
-	pass
+	var val: String = Log.to_pretty(Transform3D())
+	assert_str(val).is_equal(
+		"[color=red][[/color][color=pink]X: [color=red]([/color][color=green]1.000[/color][color=red], [/color][color=green]0.000[/color][color=red], [/color][color=green]0.000[/color][color=red])[/color], [/color][color=pink]Y: [color=red]([/color][color=green]0.000[/color][color=red], [/color][color=green]1.000[/color][color=red], [/color][color=green]0.000[/color][color=red])[/color], [/color][color=pink]Z: [color=red]([/color][color=green]0.000[/color][color=red], [/color][color=green]0.000[/color][color=red], [/color][color=green]1.000[/color][color=red])[/color], [/color][color=pink]O: [color=red]([/color][color=green]0.000[/color][color=red], [/color][color=green]0.000[/color][color=red], [/color][color=green]0.000[/color][color=red])[/color][/color][color=red]][/color]"
+		)
 
 ## plane ##########################################
 ## quaternion ##########################################
@@ -474,3 +495,10 @@ func test_named_loggers() -> void:
 		.is_equal("[TestLogger]Test 2")
 	assert_str(other_logger.to_printable(["Other", 2])) \
 		.is_equal("[OtherLogger][color=pink]Other[/color] [color=green]2[/color]")
+
+	assert_str(example_logger.to_printable(["Example", 2])) \
+		.is_equal("[ExampleLogger][color=pink]Example[/color] [color=green]2[/color]")
+	assert_str(test_logger.to_printable([{"Test": 2}], {"pretty": false})) \
+		.is_equal('[TestLogger]{ "Test": 2 }')
+	assert_str(other_logger.to_printable([{"Other": 2}])) \
+		.is_equal('[OtherLogger][color=dc143c]{ [/color][color=dc143c]"Other"[/color][color=a9a9a9]: [/color][color=green]2[/color][color=dc143c] }[/color]')

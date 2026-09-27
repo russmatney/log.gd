@@ -22,6 +22,7 @@ const KEY_SHOW_TIMESTAMPS: String = "%s/show_timestamps" % KEY_PREFIX
 const KEY_TIMESTAMP_TYPE: String = "%s/timestamp_type" % KEY_PREFIX
 const KEY_HUMAN_READABLE_TIMESTAMP_FORMAT: String = "%s/human_readable_timestamp_format" % KEY_PREFIX
 const KEY_SHOW_PROCESS_UNIQUE_ID: String = "%s/show_process_unique_id" % KEY_PREFIX
+const KEY_FLOAT_PRECISION: String = "%s/float_precision" % KEY_PREFIX
 
 const CONFIG_DEFAULTS: Dictionary[String, Variant] = {
 	KEY_COLOR_THEME_RESOURCE_PATH: "res://addons/log/color_theme_dark.tres",
@@ -38,6 +39,7 @@ const CONFIG_DEFAULTS: Dictionary[String, Variant] = {
 	KEY_TIMESTAMP_TYPE: Log.TimestampTypes.HUMAN_12HR,
 	KEY_HUMAN_READABLE_TIMESTAMP_FORMAT: "{hour}:{minute}:{second}",
 	KEY_SHOW_PROCESS_UNIQUE_ID: false,
+	KEY_FLOAT_PRECISION: 3,
 }
 
 
@@ -104,6 +106,7 @@ static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_TIMESTAMP_TYPE, CONFIG_DEFAULTS[KEY_TIMESTAMP_TYPE], TYPE_INT, PROPERTY_HINT_ENUM, "UNIX,TICKS_MSEC,TICKS_USEC,HUMAN_12HR,HUMAN_24HR")
 	initialize_setting(KEY_HUMAN_READABLE_TIMESTAMP_FORMAT, CONFIG_DEFAULTS[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT], TYPE_STRING)
 	initialize_setting(KEY_SHOW_PROCESS_UNIQUE_ID, CONFIG_DEFAULTS[KEY_SHOW_PROCESS_UNIQUE_ID], TYPE_BOOL)
+	initialize_setting(KEY_FLOAT_PRECISION, CONFIG_DEFAULTS[KEY_FLOAT_PRECISION], TYPE_INT)
 
 
 ##########
@@ -181,6 +184,23 @@ func set_colors_termsafe() -> void:
 
 func get_dictionary_skip_keys() -> Array:
 	return values.get(LogConfig.KEY_SKIP_KEYS, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_SKIP_KEYS])
+
+
+############################
+# Floating Point Precision #
+############################
+
+func get_float_precision() -> int:
+	return values.get(KEY_FLOAT_PRECISION, CONFIG_DEFAULTS[KEY_FLOAT_PRECISION])
+
+
+func get_float_precision_string() -> String:
+	return "%.0" + str(values.get(KEY_FLOAT_PRECISION, CONFIG_DEFAULTS[KEY_FLOAT_PRECISION])) + "f"
+
+
+## Set the expected float precision
+func set_float_precision(float_precision: int) -> void:
+	values[KEY_FLOAT_PRECISION] = float_precision
 
 
 #############
