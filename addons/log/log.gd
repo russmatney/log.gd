@@ -456,10 +456,10 @@ static func table(
 		longest_values[i] = min(longest_values[i], config.max_length)
 
 	var header: String = Table.header(config, longest_values)
-	print(header)
+	print_rich(header)
 
 	var body: String = Table.body(config, longest_values, msg)
-	print(body)
+	print_rich(body)
 
 
 static func blank() -> void:
@@ -471,7 +471,6 @@ static func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Varian
 	_core._internal_debug(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
-<<<<<<< HEAD
 ## Truncate a string to a maximum length of [param target_length] and a default
 ## [param suffix] of [code]...[/code] indicating there's more to the string than what was
 ## printed.  The resulting string will be no longer than [param target_length]
@@ -490,8 +489,6 @@ static func _truncate_string(input_string: String, target_length: int, suffix: S
 # Deprecated #
 ##############
 
-=======
->>>>>>> e791cc2 (Table class)
 ## DEPRECATED
 static func merge_theme_overwrites(_opts = {}) -> void:
 	pass
@@ -503,18 +500,22 @@ static func clear_theme_overwrites() -> void:
 
 class Table:
 	static func header(config: TableConfig, longest_values: Array[int]) -> String:
-		var header: String = config.delimiter
+		var header: String = ""
 		for i in range(len(config.columns)):
-			header += " " + Table.truncate_string(config.columns[i], config.max_length)
-			for j in range(max(0, longest_values[i] - len(config.columns[i]))):
-				header += " "
-			header += " " + config.delimiter
-		header += "\n" + config.delimiter
+			header += config.delimiter + _item_to_cell(
+				Table.truncate_string(config.columns[i], config.max_length),
+				longest_values[i],
+				i,
+				config,
+			)
+		header += config.delimiter + "\n" + config.delimiter
 		for i in range(len(config.columns)):
-			header += "-"
+			var alignment: HorizontalAlignment = _alignment_from_index(i, config)
+			header += ":" if alignment in [HORIZONTAL_ALIGNMENT_LEFT, HORIZONTAL_ALIGNMENT_CENTER] else "-"
 			for j in range(max(0, min(longest_values[i], config.max_length))):
 				header += "-"
-			header += "-" + config.delimiter
+			header += ":" if alignment in [HORIZONTAL_ALIGNMENT_RIGHT, HORIZONTAL_ALIGNMENT_CENTER] else "-"
+			header += config.delimiter
 		return header
 
 	static func body(config: TableConfig, longest_values: Array[int], data: Variant) -> String:
@@ -522,25 +523,25 @@ class Table:
 		if typeof(data[0]) == TYPE_ARRAY:
 			for item: Array in data:
 				for i in range(len(item)):
-					body += config.delimiter + _item_to_cell(item[i], longest_values[i], config)
+					body += config.delimiter + _item_to_cell(item[i], longest_values[i], i, config)
 				body += config.delimiter + "\n"
 
 		elif typeof(data[0]) == TYPE_DICTIONARY:
 			for item: Dictionary in data:
 				var item_values: Array = item.values()
 				for i in range(len(item_values)):
-					body += config.delimiter + _item_to_cell(item_values[i], longest_values[i], config)
+					body += config.delimiter + _item_to_cell(item_values[i], longest_values[i], i, config)
 				body += config.delimiter + "\n"
 
 		elif typeof(data[0]) == TYPE_OBJECT:
 			for item: Object in data:
 				for i in range(len(config.columns)):
-					body += config.delimiter + _item_to_cell(item.get(config.columns[i]), longest_values[i], config)
+					body += config.delimiter + _item_to_cell(item.get(config.columns[i]), longest_values[i], i, config)
 				body += config.delimiter + "\n"
 
 		else:
 			for i in range(len(data)):
-				body += config.delimiter + _item_to_cell(data[i], longest_values[i], config)
+				body += config.delimiter + _item_to_cell(data[i], longest_values[i], i, config)
 			body += config.delimiter + "\n"
 		return body
 
@@ -557,26 +558,59 @@ class Table:
 		input_string += suffix
 		return input_string
 
-	static func _item_to_cell(item: Variant, cell_length: int, config: TableConfig) -> String:
+	static func _align_string(in_string: String, padding: int, alignment: HorizontalAlignment) -> String:
+		var out_string: String = in_string
+		match alignment:
+			HorizontalAlignment.HORIZONTAL_ALIGNMENT_LEFT:
+				for i in range(padding):
+					out_string = out_string + " "
+			HorizontalAlignment.HORIZONTAL_ALIGNMENT_RIGHT:
+				for i in range(padding):
+					out_string = " " + out_string
+			HorizontalAlignment.HORIZONTAL_ALIGNMENT_CENTER:
+				var half_padding: int = padding / 2
+				for i in floori(half_padding):
+					out_string = out_string + " "
+				for i in ceili(half_padding):
+					out_string = " " + out_string
+				if padding % 2:
+					out_string += " "
+		return out_string
+
+	static func _alignment_from_index(index: int, config: TableConfig) -> HorizontalAlignment:
+		# TODO-table: make default
+		var alignment = HorizontalAlignment.HORIZONTAL_ALIGNMENT_LEFT
+		if index < len(config.column_alignment):
+			alignment = config.column_alignment[index]
+		return alignment
+
+	static func _item_to_cell(item: Variant, cell_length: int, column_index: int, config: TableConfig) -> String:
 		var str_value: String = str(item)
-		var cell: String = " %s " % Table.truncate_string(str_value, config.max_length)
+		var cell: String = ""
+
+		if len(str_value) <= config.max_length:
+			cell = Log.to_pretty(item, {"newlines": false})
+		else:
+			cell = Table.truncate_string(str_value, config.max_length)
+
 		if config.escape_delimiter:
 			cell = cell.replace(config.delimiter, "\\%s" % config.delimiter)
-		for j in range(max(0, cell_length - len(str_value))):
-			cell += " "
-		return cell
+
+		if config.pad_cells:
+			var alignment = _alignment_from_index(column_index, config)
+			cell = _align_string(cell, max(0, cell_length - len(str_value)), alignment)
+
+		return " %s " % cell
 
 
 ## Config object for tabular data.
 class TableConfig:
-	# TODO-table: Make padding optional
-	# TODO-table: Column alignment (left/center/right)
 	var column_alignment: Array[HorizontalAlignment] = []
 	var columns: Array = []
 	var delimiter: String = "|"
 	var max_length: int = 32
 	var pad_cells: bool = true
-	var escape_delimiter: bool = true
+	var escape_delimiter: bool = false
 
 	static func default() -> TableConfig:
 		return TableConfig.new()
