@@ -502,3 +502,11 @@ func test_named_loggers() -> void:
 		.is_equal('[TestLogger]{ "Test": 2 }')
 	assert_str(other_logger.to_printable([{"Other": 2}])) \
 		.is_equal('[OtherLogger][color=dc143c]{ [/color][color=dc143c]"Other"[/color][color=a9a9a9]: [/color][color=green]2[/color][color=dc143c] }[/color]')
+
+
+##########
+# Tables #
+##########
+
+func test_tables() -> void:
+	pass

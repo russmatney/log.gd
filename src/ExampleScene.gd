@@ -455,6 +455,10 @@ func showcase_tables() -> void:
 		"some_string",
 		"some_float",
 		"some_long_string",
+	], [
+		HorizontalAlignment.HORIZONTAL_ALIGNMENT_CENTER,
+		HorizontalAlignment.HORIZONTAL_ALIGNMENT_RIGHT,
+		HorizontalAlignment.HORIZONTAL_ALIGNMENT_LEFT,
 	]))
 
 	var log_table_config: Log.TableConfig = Log.TableConfig.new().set_max_length(16)
@@ -464,7 +468,7 @@ func showcase_tables() -> void:
 		yet_another_class,
 	], log_table_config)
 
-	Log.table(Log)
+	Log.table(Log)  #, log_table_config)
 
 
 ## Showcase any known bugs for the running version of Godot.
@@ -499,6 +503,7 @@ class ExampleObj:
 	var some_int: int = 42
 	var some_float: float = 42.0
 	var some_long_string: String = "abcdefghijklmnopqrstuvwxyz0123456789"
+	var some_vector3: Vector3 = Vector3.ONE
 
 
 	func _init(v: Variant) -> void:
