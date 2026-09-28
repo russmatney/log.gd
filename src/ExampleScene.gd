@@ -441,10 +441,10 @@ func showcase_tables() -> void:
 	some_other_class.some_float = 53180.08
 	some_other_class.some_long_string = "0987654321zyxwvutsrqponmlkjihgfedcba"
 	var yet_another_class: ExampleObj = ExampleObj.new(Vector3.ONE)
-	yet_another_class.some_string = "F. Ake Name"
+	yet_another_class.some_string = "F. | Name"
 	yet_another_class.some_int = 13
 	yet_another_class.some_float = 100.0
-	yet_another_class.some_long_string = "correct horse battery staple"
+	yet_another_class.some_long_string = "correct|horse|battery|staple"
 
 	Log.table(some_class)
 	Log.table([

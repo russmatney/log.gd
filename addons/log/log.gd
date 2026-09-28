@@ -404,9 +404,6 @@ static func table(
 	msg: Variant,
 	config: TableConfig = TableConfig.new()
 ) -> void:
-	# TODO: Make padding optional
-	# TODO: Column alignment (left/center/right)
-	# TODO: Escape `|` character (or delimiter if dynamic)
 	if typeof(msg) in [TYPE_INT, TYPE_STRING]:
 		print_rich(Log.to_printable([msg], {stack=get_stack()}))
 		return
@@ -427,7 +424,7 @@ static func table(
 	elif config.columns == [] and typeof(msg[0]) == TYPE_OBJECT:
 		config.columns = msg[0].get_property_list() \
 			.filter(func(x): return x["usage"] in [
-				# TODO: Clean up bitmask usage
+				# TODO-table: Clean up bitmask usage
 				PROPERTY_USAGE_SCRIPT_VARIABLE,
 				PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_CLASS_IS_ENUM
 			]) \
@@ -525,41 +522,25 @@ class Table:
 		if typeof(data[0]) == TYPE_ARRAY:
 			for item: Array in data:
 				for i in range(len(item)):
-					var str_value: String = str(item[i])
-					body += config.delimiter + " " + Table.truncate_string(str_value, config.max_length)
-					for j in range(max(0, longest_values[i] - len(str_value))):
-						body += " "
-					body += " "
+					body += config.delimiter + _item_to_cell(item[i], longest_values[i], config)
 				body += config.delimiter + "\n"
 
 		elif typeof(data[0]) == TYPE_DICTIONARY:
 			for item: Dictionary in data:
 				var item_values: Array = item.values()
 				for i in range(len(item_values)):
-					var str_value: String = str(item_values[i])
-					body += config.delimiter + " " + Table.truncate_string(str_value, config.max_length)
-					for j in range(max(0, longest_values[i] - len(str_value))):
-						body += " "
-					body += " "
+					body += config.delimiter + _item_to_cell(item_values[i], longest_values[i], config)
 				body += config.delimiter + "\n"
 
 		elif typeof(data[0]) == TYPE_OBJECT:
 			for item: Object in data:
 				for i in range(len(config.columns)):
-					var str_value: String = str(item.get(config.columns[i]))
-					body += config.delimiter + " " + Table.truncate_string(str_value, config.max_length)
-					for j in range(max(0, longest_values[i] - len(str_value))):
-						body += " "
-					body += " "
+					body += config.delimiter + _item_to_cell(item.get(config.columns[i]), longest_values[i], config)
 				body += config.delimiter + "\n"
 
 		else:
 			for i in range(len(data)):
-				var str_value: String = str(data[i])
-				body += config.delimiter + " " + Table.truncate_string(str_value, config.max_length)
-				for j in range(max(0, longest_values[i] - len(str_value))):
-					body += " "
-				body += " "
+				body += config.delimiter + _item_to_cell(data[i], longest_values[i], config)
 			body += config.delimiter + "\n"
 		return body
 
@@ -576,12 +557,20 @@ class Table:
 		input_string += suffix
 		return input_string
 
+	static func _item_to_cell(item: Variant, cell_length: int, config: TableConfig) -> String:
+		var str_value: String = str(item)
+		var cell: String = " %s " % Table.truncate_string(str_value, config.max_length)
+		if config.escape_delimiter:
+			cell = cell.replace(config.delimiter, "\\%s" % config.delimiter)
+		for j in range(max(0, cell_length - len(str_value))):
+			cell += " "
+		return cell
+
 
 ## Config object for tabular data.
 class TableConfig:
-	# TODO: Make padding optional
-	# TODO: Column alignment (left/center/right)
-	# TODO: Escape delimiter
+	# TODO-table: Make padding optional
+	# TODO-table: Column alignment (left/center/right)
 	var column_alignment: Array[HorizontalAlignment] = []
 	var columns: Array = []
 	var delimiter: String = "|"
@@ -598,12 +587,14 @@ class TableConfig:
 		p_delimiter: String = delimiter,
 		p_max_length: int = max_length,
 		p_pad_cells: bool = pad_cells,
+		p_escape_delimiter: bool = escape_delimiter,
 	) -> void:
 		columns = p_columns
 		column_alignment = p_column_alignment
 		delimiter = p_delimiter
 		max_length = p_max_length
 		pad_cells = p_pad_cells
+		escape_delimiter = p_escape_delimiter
 
 	func set_max_length(p_max_length: int) -> TableConfig:
 		max_length = p_max_length
