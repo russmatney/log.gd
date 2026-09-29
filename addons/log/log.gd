@@ -512,7 +512,10 @@ class Table:
 		for i in range(len(config.columns)):
 			var alignment: HorizontalAlignment = _alignment_from_index(i, config)
 			header += ":" if alignment in [HORIZONTAL_ALIGNMENT_LEFT, HORIZONTAL_ALIGNMENT_CENTER] else "-"
-			for j in range(max(0, min(longest_values[i], config.max_length))):
+			var length: int = 1
+			if config.pad_cells:
+				length = max(1, min(longest_values[i], config.max_length))
+			for j in range(length):
 				header += "-"
 			header += ":" if alignment in [HORIZONTAL_ALIGNMENT_RIGHT, HORIZONTAL_ALIGNMENT_CENTER] else "-"
 			header += config.delimiter
@@ -549,6 +552,7 @@ class Table:
 	## [param suffix] of [code]...[/code] indicating there's more to the string than what was
 	## printed.  The resulting string will be no longer than [param target_length]
 	## even when the [param suffix] is appended.
+	## TODO-table: Colorize truncated output.
 	static func truncate_string(input_string: String, target_length: int, suffix: String = "...") -> String:
 		var do_suffix: bool = len(input_string) > target_length
 		if not len(input_string) > target_length:
@@ -587,8 +591,14 @@ class Table:
 	static func _item_to_cell(item: Variant, cell_length: int, column_index: int, config: TableConfig) -> String:
 		var str_value: String = str(item)
 		var cell: String = ""
+		var len_str_value: int = len(str_value)
 
-		if len(str_value) <= config.max_length:
+		match typeof(item):
+			TYPE_ARRAY:
+				len_str_value += 2
+				print(cell_length - len_str_value)
+
+		if len_str_value <= config.max_length:
 			cell = Log.to_pretty(item, {"newlines": false})
 		else:
 			cell = Table.truncate_string(str_value, config.max_length)
@@ -598,7 +608,7 @@ class Table:
 
 		if config.pad_cells:
 			var alignment = _alignment_from_index(column_index, config)
-			cell = _align_string(cell, max(0, cell_length - len(str_value)), alignment)
+			cell = _align_string(cell, max(0, cell_length - len_str_value), alignment)
 
 		return " %s " % cell
 

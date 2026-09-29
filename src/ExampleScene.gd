@@ -431,7 +431,7 @@ func showcase_tables() -> void:
 		{ "Column A": "Test", "Col. 2": 1, "Cheese": "Cheddar" },
 		{ "Column A": "Example", "Col. 2": 2, "Cheese": "Mozzarella" },
 		{ "Column A": "Data", "Col. 2": 3, "Cheese": "Brie" },
-		{ "Column A": "Sample", "Col. 2": 4, "Cheese": "Meunster" },
+		{ "Column A": "Sample", "Col. 2": 4, "Cheese": "Muenster" },
 	])
 
 	var some_class: ExampleObj = ExampleObj.new("Testing")
@@ -456,9 +456,9 @@ func showcase_tables() -> void:
 		"some_float",
 		"some_long_string",
 	], [
-		HorizontalAlignment.HORIZONTAL_ALIGNMENT_CENTER,
-		HorizontalAlignment.HORIZONTAL_ALIGNMENT_RIGHT,
-		HorizontalAlignment.HORIZONTAL_ALIGNMENT_LEFT,
+		HORIZONTAL_ALIGNMENT_CENTER,
+		HORIZONTAL_ALIGNMENT_RIGHT,
+		HORIZONTAL_ALIGNMENT_LEFT,
 	]))
 
 	var log_table_config: Log.TableConfig = Log.TableConfig.new().set_max_length(16)
@@ -468,7 +468,28 @@ func showcase_tables() -> void:
 		yet_another_class,
 	], log_table_config)
 
-	Log.table(Log)  #, log_table_config)
+	log_table_config = Log.TableConfig.new()
+	log_table_config.max_length = 64
+	log_table_config.pad_cells = false
+	Log.table(log_table_config)
+	Log.table(log_table_config, log_table_config)
+	Log.table(Log.TableConfig.new([
+		"some_string",
+		"some_float",
+		"some_long_string",
+	], [
+		HORIZONTAL_ALIGNMENT_CENTER,
+		HORIZONTAL_ALIGNMENT_RIGHT,
+		HORIZONTAL_ALIGNMENT_LEFT,
+	]))
+
+	Log.table([
+		{
+			"key": "value",
+			"arr": ["a", "y"],
+			"dict": {"ion": "ary"},
+		},
+	])
 
 
 ## Showcase any known bugs for the running version of Godot.
