@@ -447,11 +447,8 @@ func showcase_tables() -> void:
 	yet_another_class.some_long_string = "correct|horse|battery|staple"
 
 	Log.table(some_class)
-	Log.table([
-		some_class,
-		some_other_class,
-		yet_another_class,
-	], Log.TableConfig.new([
+
+	var log_table_config: Log.TableConfig = Log.TableConfig.new([
 		"some_string",
 		"some_float",
 		"some_long_string",
@@ -459,9 +456,20 @@ func showcase_tables() -> void:
 		HORIZONTAL_ALIGNMENT_CENTER,
 		HORIZONTAL_ALIGNMENT_RIGHT,
 		HORIZONTAL_ALIGNMENT_LEFT,
-	]))
+	])
+	Log.table([
+		some_class,
+		some_other_class,
+		yet_another_class,
+	], log_table_config)
+	log_table_config.escape_delimiter = true
+	Log.table([
+		some_class,
+		some_other_class,
+		yet_another_class,
+	], log_table_config)
 
-	var log_table_config: Log.TableConfig = Log.TableConfig.new().set_max_length(16)
+	log_table_config = Log.TableConfig.new().set_max_length(16)
 	Log.table([
 		some_class,
 		some_other_class,
