@@ -596,7 +596,6 @@ class Table:
 		match typeof(item):
 			TYPE_ARRAY:
 				len_str_value += 2
-				print(cell_length - len_str_value)
 
 		if len_str_value <= config.max_length:
 			cell = Log.to_pretty(item, {"newlines": false})
