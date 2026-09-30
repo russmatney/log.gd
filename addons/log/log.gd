@@ -31,36 +31,6 @@ static func assoc(opts: Dictionary, key: String, val: Variant) -> Dictionary:
 	_opts[key] = val
 	return _opts
 
-# settings helpers ####################################
-
-static func initialize_setting(key: String, default_value: Variant, type: int, hint: int = PROPERTY_HINT_NONE, hint_string: String = "") -> void:
-	if not ProjectSettings.has_setting(key):
-		ProjectSettings.set(key, default_value)
-	ProjectSettings.set_initial_value(key, default_value)
-	ProjectSettings.add_property_info({name=key, type=type, hint=hint, hint_string=hint_string})
-
-# settings keys and default ####################################
-
-const KEY_PREFIX: String = "log_gd/config"
-static var is_config_setup: bool = false
-
-# TODO drop this key
-const KEY_COLOR_THEME_DICT: String = "log_color_theme_dict"
-const KEY_COLOR_THEME: String = "log_color_theme"
-const KEY_COLOR_THEME_RESOURCE_PATH: String = "%s/color_resource_path" % KEY_PREFIX
-const KEY_DISABLE_COLORS: String = "%s/disable_colors" % KEY_PREFIX
-const KEY_FORCE_TERMSAFE_COLORS: String = "%s/force_termsafe_colors" % KEY_PREFIX
-const KEY_MAX_ARRAY_SIZE: String = "%s/max_array_size" % KEY_PREFIX
-const KEY_SKIP_KEYS: String = "%s/dictionary_skip_keys" % KEY_PREFIX
-const KEY_USE_NEWLINES: String = "%s/use_newlines" % KEY_PREFIX
-const KEY_NEWLINE_MAX_DEPTH: String = "%s/newline_max_depth" % KEY_PREFIX
-const KEY_LOG_LEVEL: String = "%s/log_level" % KEY_PREFIX
-const KEY_WARN_TODO: String = "%s/warn_todo" % KEY_PREFIX
-const KEY_SHOW_LOG_LEVEL_SELECTOR: String = "%s/show_log_level_selector" % KEY_PREFIX
-const KEY_SHOW_TIMESTAMPS: String = "%s/show_timestamps" % KEY_PREFIX
-const KEY_TIMESTAMP_TYPE: String = "%s/timestamp_type" % KEY_PREFIX
-const KEY_HUMAN_READABLE_TIMESTAMP_FORMAT: String = "%s/human_readable_timestamp_format" % KEY_PREFIX
-const KEY_SHOW_PROCESS_UNIQUE_ID: String = "%s/show_process_unique_id" % KEY_PREFIX
 
 enum Levels {
 		DEBUG,
@@ -77,213 +47,10 @@ enum TimestampTypes {
 		HUMAN_24HR
 	}
 
-const CONFIG_DEFAULTS := {
-		KEY_COLOR_THEME_RESOURCE_PATH: "res://addons/log/color_theme_dark.tres",
-		KEY_DISABLE_COLORS: false,
-		KEY_FORCE_TERMSAFE_COLORS: false,
-		KEY_MAX_ARRAY_SIZE: 20,
-		KEY_SKIP_KEYS: ["layer_0/tile_data"],
-		KEY_USE_NEWLINES: false,
-		KEY_NEWLINE_MAX_DEPTH: -1,
-		KEY_LOG_LEVEL: Levels.INFO,
-		KEY_WARN_TODO: true,
-		KEY_SHOW_LOG_LEVEL_SELECTOR: false,
-		KEY_SHOW_TIMESTAMPS: false,
-		KEY_TIMESTAMP_TYPE: TimestampTypes.HUMAN_12HR,
-		KEY_HUMAN_READABLE_TIMESTAMP_FORMAT: "{hour}:{minute}:{second}",
-		KEY_SHOW_PROCESS_UNIQUE_ID: false,
-	}
-
-# settings setup ####################################
-
-static func setup_settings(opts: Dictionary = {}) -> void:
-	initialize_setting(KEY_COLOR_THEME_RESOURCE_PATH, CONFIG_DEFAULTS[KEY_COLOR_THEME_RESOURCE_PATH], TYPE_STRING, PROPERTY_HINT_FILE)
-	initialize_setting(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS], TYPE_BOOL)
-	initialize_setting(KEY_FORCE_TERMSAFE_COLORS, CONFIG_DEFAULTS[KEY_FORCE_TERMSAFE_COLORS], TYPE_BOOL)
-	initialize_setting(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE], TYPE_INT)
-	initialize_setting(KEY_SKIP_KEYS, CONFIG_DEFAULTS[KEY_SKIP_KEYS], TYPE_PACKED_STRING_ARRAY)
-	initialize_setting(KEY_USE_NEWLINES, CONFIG_DEFAULTS[KEY_USE_NEWLINES], TYPE_BOOL)
-	initialize_setting(KEY_NEWLINE_MAX_DEPTH, CONFIG_DEFAULTS[KEY_NEWLINE_MAX_DEPTH], TYPE_INT)
-	initialize_setting(KEY_LOG_LEVEL, CONFIG_DEFAULTS[KEY_LOG_LEVEL], TYPE_INT, PROPERTY_HINT_ENUM, "DEBUG,INFO,WARN,ERROR")
-	initialize_setting(KEY_WARN_TODO, CONFIG_DEFAULTS[KEY_WARN_TODO], TYPE_BOOL)
-	initialize_setting(KEY_SHOW_LOG_LEVEL_SELECTOR, CONFIG_DEFAULTS[KEY_SHOW_LOG_LEVEL_SELECTOR], TYPE_BOOL)
-	initialize_setting(KEY_SHOW_TIMESTAMPS, CONFIG_DEFAULTS[KEY_SHOW_TIMESTAMPS], TYPE_BOOL)
-	initialize_setting(KEY_TIMESTAMP_TYPE, CONFIG_DEFAULTS[KEY_TIMESTAMP_TYPE], TYPE_INT, PROPERTY_HINT_ENUM, "UNIX,TICKS_MSEC,TICKS_USEC,HUMAN_12HR,HUMAN_24HR")
-	initialize_setting(KEY_HUMAN_READABLE_TIMESTAMP_FORMAT, CONFIG_DEFAULTS[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT], TYPE_STRING)
-	initialize_setting(KEY_SHOW_PROCESS_UNIQUE_ID, CONFIG_DEFAULTS[KEY_SHOW_PROCESS_UNIQUE_ID], TYPE_BOOL)
 
 # config setup ####################################
 
-static var config: Dictionary = {}
-static func rebuild_config(opts: Dictionary = {}) -> void:
-	for key: String in CONFIG_DEFAULTS.keys():
-		# Keep config set in code before to_printable() is called for the first time
-		var val: Variant = Log.config.get(key, ProjectSettings.get_setting(key, CONFIG_DEFAULTS[key]))
-
-		Log.config[key] = val
-
-		# hardcoding a resource-load b/c it seems like custom-resources can't be loaded by the project settings
-		# https://github.com/godotengine/godot/issues/96219
-		if val != null and key == KEY_COLOR_THEME_RESOURCE_PATH:
-			Log.config[KEY_COLOR_THEME] = load(val)
-			Log.config[KEY_COLOR_THEME_DICT] = Log.config[KEY_COLOR_THEME].to_color_dict()
-
-	var force_termsafe = get_force_termsafe_colors()
-	if (force_termsafe):
-		print("NOTE: Forcing TERM_SAFE colors from config")
-		set_colors_termsafe()
-
-	Log.is_config_setup = true
-
-# config getters ###################################################################
-
-static func get_max_array_size() -> int:
-	return Log.config.get(KEY_MAX_ARRAY_SIZE, CONFIG_DEFAULTS[KEY_MAX_ARRAY_SIZE])
-
-static func get_dictionary_skip_keys() -> Array:
-	return Log.config.get(KEY_SKIP_KEYS, CONFIG_DEFAULTS[KEY_SKIP_KEYS])
-
-static func get_disable_colors() -> bool:
-	return Log.config.get(KEY_DISABLE_COLORS, CONFIG_DEFAULTS[KEY_DISABLE_COLORS])
-
-static func get_force_termsafe_colors() -> bool:
-	return Log.config.get(KEY_FORCE_TERMSAFE_COLORS, CONFIG_DEFAULTS[KEY_FORCE_TERMSAFE_COLORS])
-
-# TODO consider termsafe LogColorThemes
-static var warned_about_termsafe_fallback := false
-static func get_config_color_theme_dict() -> Dictionary:
-	var color_theme = Log.config.get(KEY_COLOR_THEME)
-	var color_dict = Log.config.get(KEY_COLOR_THEME_DICT)
-	if color_dict != null:
-		return color_dict
-	if not warned_about_termsafe_fallback:
-		print("Falling back to TERM_SAFE colors")
-		warned_about_termsafe_fallback = true
-	return LogColorTheme.COLORS_TERM_SAFE
-
-static func get_config_color_theme() -> LogColorTheme:
-	var color_theme = Log.config.get(KEY_COLOR_THEME)
-	# TODO better warnings, fallbacks
-	return color_theme
-
-static func get_use_newlines() -> bool:
-	return Log.config.get(KEY_USE_NEWLINES, CONFIG_DEFAULTS[KEY_USE_NEWLINES])
-
-static func get_newline_max_depth() -> int:
-	return Log.config.get(KEY_NEWLINE_MAX_DEPTH, CONFIG_DEFAULTS[KEY_NEWLINE_MAX_DEPTH])
-
-static func get_log_level() -> int:
-	if not Log.is_config_setup:
-		rebuild_config()
-	return Log.config.get(KEY_LOG_LEVEL, CONFIG_DEFAULTS[KEY_LOG_LEVEL])
-
-static func get_warn_todo() -> int:
-	return Log.config.get(KEY_WARN_TODO, CONFIG_DEFAULTS[KEY_WARN_TODO])
-
-static func get_show_timestamps() -> bool:
-	return Log.config.get(KEY_SHOW_TIMESTAMPS, CONFIG_DEFAULTS[KEY_SHOW_TIMESTAMPS])
-
-static func get_timestamp_type() -> TimestampTypes:
-	return Log.config.get(KEY_TIMESTAMP_TYPE, CONFIG_DEFAULTS[KEY_TIMESTAMP_TYPE])
-
-static func get_timestamp_format() -> String:
-	return Log.config.get(KEY_HUMAN_READABLE_TIMESTAMP_FORMAT, CONFIG_DEFAULTS[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT])
-
-## Show process ID
-static func get_show_process_unique_id() -> bool:
-	return Log.config.get(KEY_SHOW_PROCESS_UNIQUE_ID, CONFIG_DEFAULTS[KEY_SHOW_PROCESS_UNIQUE_ID])
-
-
-## config setters ###################################################################
-
-## Disable color-wrapping output.
-##
-## [br][br]
-## Useful to declutter the output if the environment does not support colors.
-## Note that some environments support only a subset of colors - you may prefer
-## [code]set_colors_termsafe()[/code].
-static func disable_colors() -> void:
-	Log.config[KEY_DISABLE_COLORS] = true
-
-## Re-enable color-wrapping output.
-static func enable_colors() -> void:
-	Log.config[KEY_DISABLE_COLORS] = false
-
-## Disable newlines in pretty-print output.
-##
-## [br][br]
-## Useful if you want your log output on a single line, typically for use with
-## log aggregation tools.
-static func disable_newlines() -> void:
-	Log.config[KEY_USE_NEWLINES] = false
-
-## Re-enable newlines in pretty-print output.
-static func enable_newlines() -> void:
-	Log.config[KEY_USE_NEWLINES] = true
-
-## Disable warning on Log.todo().
-static func disable_warn_todo() -> void:
-	Log.config[KEY_WARN_TODO] = false
-
-## Re-enable warning on Log.todo().
-static func enable_warn_todo() -> void:
-	Log.config[KEY_WARN_TODO] = true
-
-## Set the maximum depth of an object that will get its own newline.
-##
-## [br][br]
-## Useful if you have deeply nested objects where you're primarly interested
-## in easily parsing the information near the root of the object.
-static func set_newline_max_depth(new_depth: int) -> void:
-	Log.config[KEY_NEWLINE_MAX_DEPTH] = new_depth
-
-## Resets the maximum object depth for newlines to the default.
-static func reset_newline_max_depth() -> void:
-	Log.config[KEY_USE_NEWLINES] = CONFIG_DEFAULTS[KEY_NEWLINE_MAX_DEPTH]
-
-## Set the minimum level of logs that get printed
-static func set_log_level(new_log_level: int) -> void:
-	Log.config[KEY_LOG_LEVEL] = new_log_level
-
-## Show timestamps in log lines
-static func show_timestamps() -> void:
-	Log.config[KEY_SHOW_TIMESTAMPS] = true
-
-## Show SHOW_PROCESS_UNIQUE_ID in log lines
-static func show_process_unique_id() -> void:
-	Log.config[KEY_SHOW_PROCESS_UNIQUE_ID] = true
-
-## Don't timestamps in log lines
-static func hide_timestamps() -> void:
-	Log.config[KEY_SHOW_TIMESTAMPS] = false
-
-## Don't SHOW_PROCESS_UNIQUE_ID in log line
-static func hide_process_unique_id() -> void:
-	Log.config[KEY_SHOW_PROCESS_UNIQUE_ID] = false
-
-## Use the given timestamp type
-static func use_timestamp_type(timestamp_type: Log.TimestampTypes) -> void:
-	Log.config[KEY_TIMESTAMP_TYPE] = timestamp_type
-
-## Use the given timestamp format
-static func use_timestamp_format(timestamp_format: String) -> void:
-	Log.config[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT] = timestamp_format
-
-## set color theme ####################################
-
-## Use the terminal safe color scheme, which should support colors in most tty-like environments.
-static func set_colors_termsafe() -> void:
-	Log.config[KEY_COLOR_THEME_DICT] = LogColorTheme.COLORS_TERM_SAFE
-
-## Use prettier colors - i.e. whatever LogColorTheme is configured.
-static func set_colors_pretty() -> void:
-	var theme_path: Variant = Log.config.get(KEY_COLOR_THEME_RESOURCE_PATH)
-	# TODO proper string, file, resource load check here
-	if theme_path != null:
-		Log.config[KEY_COLOR_THEME] = load(theme_path)
-		Log.config[KEY_COLOR_THEME_DICT] = Log.config[KEY_COLOR_THEME].to_color_dict()
-	else:
-		print("WARNING no color theme resource path to load!")
+static var config: LogConfig = LogConfig.new()
 
 ## applying colors ####################################
 
@@ -291,7 +58,7 @@ static func should_use_color(opts: Dictionary = {}) -> bool:
 	if OS.has_feature("ios") or OS.has_feature("web"):
 		# ios and web (and likely others) don't handle colors well
 		return false
-	if Log.get_disable_colors():
+	if config.get_disable_colors():
 		return false
 	# supports per-print color skipping
 	if opts.get("disable_colors", false):
@@ -299,7 +66,7 @@ static func should_use_color(opts: Dictionary = {}) -> bool:
 	return true
 
 static func get_color_using_typeof(s: Variant, opts: Dictionary) -> Variant:
-	var colors: Dictionary = get_config_color_theme_dict()
+	var colors: Dictionary = config.get_config_color_theme_dict()
 	var color: Variant
 	var s_type: Variant = opts.get("typeof", typeof(s))
 	if s_type is String:
@@ -320,7 +87,7 @@ static func get_color_using_typeof(s: Variant, opts: Dictionary) -> Variant:
 
 static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	# TODO refactor to use the color theme directly
-	var color_theme: LogColorTheme = get_config_color_theme()
+	var color_theme: LogColorTheme = config.get_config_color_theme()
 
 	if not should_use_color(opts):
 		return str(s)
@@ -392,9 +159,9 @@ static func clear_type_overwrites() -> void:
 ## Can be useful to feed directly into a RichTextLabel.
 ##
 static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
-	var newlines: bool = opts.get("newlines", Log.get_use_newlines())
+	var newlines: bool = opts.get("newlines", config.get_use_newlines())
 	var newline_depth: int = opts.get("newline_depth", 0)
-	var newline_max_depth: int = opts.get("newline_max_depth", Log.get_newline_max_depth())
+	var newline_max_depth: int = opts.get("newline_max_depth", config.get_newline_max_depth())
 	var indent_level: int = opts.get("indent_level", 0)
 
 	if not newlines:
@@ -438,9 +205,9 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 	# arrays
 	if msg is Array or msg is PackedStringArray:
 		var msg_array: Array = msg
-		if len(msg) > Log.get_max_array_size():
+		if len(msg) > config.get_max_array_size():
 			pr("[DEBUG]: truncating large array. total:", len(msg))
-			msg_array = msg_array.slice(0, Log.get_max_array_size() - 1)
+			msg_array = msg_array.slice(0, config.get_max_array_size() - 1)
 			if newlines:
 				msg_array.append("...")
 
@@ -472,7 +239,7 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		var indent_updated = false
 		for k: Variant in (msg as Dictionary).keys():
 			var val: Variant
-			if k in Log.get_dictionary_skip_keys():
+			if k in config.get_dictionary_skip_keys():
 				val = "..."
 			else:
 				if not indent_updated:
@@ -598,8 +365,8 @@ static func log_prefix(stack: Array) -> String:
 	return ""
 
 static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
-	if not Log.is_config_setup:
-		rebuild_config()
+	if not config.is_config_setup:
+		LogConfig.rebuild_config(config)
 
 	if not msgs is Array:
 		msgs = [msgs]
@@ -608,11 +375,11 @@ static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	var m: String = ""
 
 	# Set ProcessID
-	if get_show_process_unique_id():
+	if config.get_show_process_unique_id():
 		# TODO colorize
 		m += "[%s]" % get_process_id()
 
-	if get_show_timestamps():
+	if config.get_show_timestamps():
 		m += "[%s]" % Log.timestamp()
 
 	if len(stack) > 0:
@@ -637,7 +404,7 @@ static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	return m.trim_suffix(" ")
 
 static func timestamp() -> String:
-	match Log.get_timestamp_type():
+	match config.get_timestamp_type():
 		Log.TimestampTypes.UNIX:
 			return "%d" % Time.get_unix_time_from_system()
 		Log.TimestampTypes.TICKS_MSEC:
@@ -650,7 +417,7 @@ static func timestamp() -> String:
 			if hour == 0:
 				hour = 12
 			var meridiem: String = "AM" if time.hour < 12 else "PM"
-			return Log.get_timestamp_format().format({
+			return config.get_timestamp_format().format({
 					"year": time.year,
 					"month": "%02d" % time.month,
 					"day": "%02d" % time.day,
@@ -662,7 +429,7 @@ static func timestamp() -> String:
 				})
 		Log.TimestampTypes.HUMAN_24HR:
 			var time: Dictionary = Time.get_datetime_dict_from_system()
-			return Log.get_timestamp_format().format({
+			return config.get_timestamp_format().format({
 					"year": time.year,
 					"month": "%02d" % time.month,
 					"day": "%02d" % time.day,
@@ -720,7 +487,7 @@ static func log(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF"
 
 ## Pretty-print the passed arguments in a single line.
 static func debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	if get_log_level() > Log.Levels.DEBUG:
+	if config.get_log_level() > Log.Levels.DEBUG:
 		return
 	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
@@ -730,7 +497,7 @@ static func debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDE
 
 ## Pretty-print the passed arguments in a single line.
 static func info(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	if get_log_level() > Log.Levels.INFO:
+	if config.get_log_level() > Log.Levels.INFO:
 		return
 	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
@@ -740,7 +507,7 @@ static func info(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 
 ## Like [code]Log.pr()[/code], but also calls push_warning() with the pretty string.
 static func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	if get_log_level() > Log.Levels.WARN:
+	if config.get_log_level() > Log.Levels.WARN:
 		return
 	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
@@ -753,18 +520,18 @@ static func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 
 ## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
 static func todo(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	if get_warn_todo() and get_log_level() > Log.Levels.WARN:
+	if config.get_warn_todo() and config.get_log_level() > Log.Levels.WARN:
 		return
-	elif not get_warn_todo() and get_log_level() > Log.Levels.INFO:
+	elif not config.get_warn_todo() and config.get_log_level() > Log.Levels.INFO:
 		return
 	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
 	msgs = msgs.filter(Log.is_not_default)
 	msgs.push_front("[TODO]")
 	var rich_msgs: Array = msgs.duplicate()
-	if get_warn_todo():
+	if config.get_warn_todo():
 		rich_msgs.push_front("[color=yellow][WARN][/color]")
 	print_rich(Log.to_printable(rich_msgs, {stack=get_stack()}))
-	if get_warn_todo():
+	if config.get_warn_todo():
 		var m: String = Log.to_printable(msgs, {stack=get_stack(), disable_colors=true})
 		push_warning(m)
 
