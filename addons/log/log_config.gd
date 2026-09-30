@@ -1,5 +1,6 @@
 class_name LogConfig
 extends Object
+## Config object for Log.gd
 
 
 const KEY_PREFIX: String = "log_gd/config"
@@ -22,7 +23,6 @@ const KEY_TIMESTAMP_TYPE: String = "%s/timestamp_type" % KEY_PREFIX
 const KEY_HUMAN_READABLE_TIMESTAMP_FORMAT: String = "%s/human_readable_timestamp_format" % KEY_PREFIX
 const KEY_SHOW_PROCESS_UNIQUE_ID: String = "%s/show_process_unique_id" % KEY_PREFIX
 
-
 const CONFIG_DEFAULTS: Dictionary[String, Variant] = {
 	KEY_COLOR_THEME_RESOURCE_PATH: "res://addons/log/color_theme_dark.tres",
 	KEY_DISABLE_COLORS: false,
@@ -40,33 +40,49 @@ const CONFIG_DEFAULTS: Dictionary[String, Variant] = {
 	KEY_SHOW_PROCESS_UNIQUE_ID: false,
 }
 
-var values: Dictionary[String, Variant] = {}
 
 var is_config_setup: bool = false
+var values: Dictionary[String, Variant] = {}
+var warned_about_termsafe_fallback: bool = false
 
 
-static func initialize_setting(key: String, default_value: Variant, type: int, hint: int = PROPERTY_HINT_NONE, hint_string: String = "") -> void:
+static func initialize_setting(
+	key: String,
+	default_value: Variant,
+	type: int,
+	hint: int = PROPERTY_HINT_NONE,
+	hint_string: String = "",
+) -> void:
 	if not ProjectSettings.has_setting(key):
 		ProjectSettings.set(key, default_value)
 	ProjectSettings.set_initial_value(key, default_value)
-	ProjectSettings.add_property_info({name=key, type=type, hint=hint, hint_string=hint_string})
+	ProjectSettings.add_property_info({
+		"name": key,
+		"type": type,
+		"hint": hint,
+		"hint_string": hint_string,
+	})
 
 
 static func rebuild_config(config: LogConfig, opts: Dictionary = {}) -> void:
 	for key: String in CONFIG_DEFAULTS.keys():
-		# Keep config set in code before to_printable() is called for the first time
-		var val: Variant = config.values.get(key, ProjectSettings.get_setting(key, CONFIG_DEFAULTS[key]))
-
+		# Keep config set in code before to_printable() is called for the first
+		# time
+		var val: Variant = config.values.get(
+			key, ProjectSettings.get_setting(key, CONFIG_DEFAULTS[key])
+		)
 		config.values[key] = val
 
-		# hardcoding a resource-load b/c it seems like custom-resources can't be loaded by the project settings
+		# hardcoding a resource-load b/c it seems like custom-resources can't be
+		# loaded by the project settings
 		# https://github.com/godotengine/godot/issues/96219
 		if val != null and key == KEY_COLOR_THEME_RESOURCE_PATH:
 			config.values[KEY_COLOR_THEME] = load(val)
-			config.values[KEY_COLOR_THEME_DICT] = config.values[KEY_COLOR_THEME].to_color_dict()
+			config.values[KEY_COLOR_THEME_DICT] = (
+				config.values[KEY_COLOR_THEME].to_color_dict()
+			)
 
-	var force_termsafe: bool = config.get_force_termsafe_colors()
-	if (force_termsafe):
+	if (config.get_force_termsafe_colors()):
 		print("NOTE: Forcing TERM_SAFE colors from config")
 		config.set_colors_termsafe()
 
@@ -90,68 +106,17 @@ static func setup_settings(opts: Dictionary = {}) -> void:
 	initialize_setting(KEY_SHOW_PROCESS_UNIQUE_ID, CONFIG_DEFAULTS[KEY_SHOW_PROCESS_UNIQUE_ID], TYPE_BOOL)
 
 
-
-
-# config getters ###################################################################
+##########
+# Arrays #
+##########
 
 func get_max_array_size() -> int:
 	return values.get(LogConfig.KEY_MAX_ARRAY_SIZE, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_MAX_ARRAY_SIZE])
 
-func get_dictionary_skip_keys() -> Array:
-	return values.get(LogConfig.KEY_SKIP_KEYS, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_SKIP_KEYS])
 
-func get_disable_colors() -> bool:
-	return values.get(LogConfig.KEY_DISABLE_COLORS, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_DISABLE_COLORS])
-
-func get_force_termsafe_colors() -> bool:
-	return values.get(LogConfig.KEY_FORCE_TERMSAFE_COLORS, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_FORCE_TERMSAFE_COLORS])
-
-# TODO consider termsafe LogColorThemes
-var warned_about_termsafe_fallback := false
-func get_config_color_theme_dict() -> Dictionary:
-	var color_theme = values.get(LogConfig.KEY_COLOR_THEME)
-	var color_dict = values.get(LogConfig.KEY_COLOR_THEME_DICT)
-	if color_dict != null:
-		return color_dict
-	if not warned_about_termsafe_fallback:
-		print("Falling back to TERM_SAFE colors")
-		warned_about_termsafe_fallback = true
-	return LogColorTheme.COLORS_TERM_SAFE
-
-func get_config_color_theme() -> LogColorTheme:
-	var color_theme = values.get(LogConfig.KEY_COLOR_THEME)
-	# TODO better warnings, fallbacks
-	return color_theme
-
-func get_use_newlines() -> bool:
-	return values.get(LogConfig.KEY_USE_NEWLINES, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_USE_NEWLINES])
-
-func get_newline_max_depth() -> int:
-	return values.get(LogConfig.KEY_NEWLINE_MAX_DEPTH, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_NEWLINE_MAX_DEPTH])
-
-func get_log_level() -> int:
-	if not is_config_setup:
-		rebuild_config(self)
-	return values.get(LogConfig.KEY_LOG_LEVEL, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_LOG_LEVEL])
-
-func get_warn_todo() -> int:
-	return values.get(LogConfig.KEY_WARN_TODO, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_WARN_TODO])
-
-func get_show_timestamps() -> bool:
-	return values.get(LogConfig.KEY_SHOW_TIMESTAMPS, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_SHOW_TIMESTAMPS])
-
-func get_timestamp_type() -> Log.TimestampTypes:
-	return values.get(LogConfig.KEY_TIMESTAMP_TYPE, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_TIMESTAMP_TYPE])
-
-func get_timestamp_format() -> String:
-	return values.get(LogConfig.KEY_HUMAN_READABLE_TIMESTAMP_FORMAT, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_HUMAN_READABLE_TIMESTAMP_FORMAT])
-
-## Show process ID
-func get_show_process_unique_id() -> bool:
-	return values.get(LogConfig.KEY_SHOW_PROCESS_UNIQUE_ID, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_SHOW_PROCESS_UNIQUE_ID])
-
-
-## config setters ###################################################################
+##########
+# Colors #
+##########
 
 ## Disable color-wrapping output.
 ##
@@ -162,75 +127,37 @@ func get_show_process_unique_id() -> bool:
 func disable_colors() -> void:
 	values[KEY_DISABLE_COLORS] = true
 
+
 ## Re-enable color-wrapping output.
 func enable_colors() -> void:
 	values[KEY_DISABLE_COLORS] = false
 
-## Disable newlines in pretty-print output.
-##
-## [br][br]
-## Useful if you want your log output on a single line, typically for use with
-## log aggregation tools.
-func disable_newlines() -> void:
-	values[KEY_USE_NEWLINES] = false
 
-## Re-enable newlines in pretty-print output.
-func enable_newlines() -> void:
-	values[KEY_USE_NEWLINES] = true
+func get_config_color_theme() -> LogColorTheme:
+	var color_theme = values.get(LogConfig.KEY_COLOR_THEME)
+	# TODO better warnings, fallbacks
+	return color_theme
 
-## Disable warning on Log.todo().
-func disable_warn_todo() -> void:
-	values[KEY_WARN_TODO] = false
 
-## Re-enable warning on Log.todo().
-func enable_warn_todo() -> void:
-	values[KEY_WARN_TODO] = true
+# TODO consider termsafe LogColorThemes
+func get_config_color_theme_dict() -> Dictionary:
+	var color_theme = values.get(LogConfig.KEY_COLOR_THEME)
+	var color_dict = values.get(LogConfig.KEY_COLOR_THEME_DICT)
+	if color_dict != null:
+		return color_dict
+	if not warned_about_termsafe_fallback:
+		print("Falling back to TERM_SAFE colors")
+		warned_about_termsafe_fallback = true
+	return LogColorTheme.COLORS_TERM_SAFE
 
-## Set the maximum depth of an object that will get its own newline.
-##
-## [br][br]
-## Useful if you have deeply nested objects where you're primarly interested
-## in easily parsing the information near the root of the object.
-func set_newline_max_depth(new_depth: int) -> void:
-	values[KEY_NEWLINE_MAX_DEPTH] = new_depth
 
-## Resets the maximum object depth for newlines to the default.
-func reset_newline_max_depth() -> void:
-	values[KEY_USE_NEWLINES] = CONFIG_DEFAULTS[KEY_NEWLINE_MAX_DEPTH]
+func get_disable_colors() -> bool:
+	return values.get(LogConfig.KEY_DISABLE_COLORS, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_DISABLE_COLORS])
 
-## Set the minimum level of logs that get printed
-func set_log_level(new_log_level: int) -> void:
-	values[KEY_LOG_LEVEL] = new_log_level
 
-## Show timestamps in log lines
-func show_timestamps() -> void:
-	values[KEY_SHOW_TIMESTAMPS] = true
+func get_force_termsafe_colors() -> bool:
+	return values.get(LogConfig.KEY_FORCE_TERMSAFE_COLORS, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_FORCE_TERMSAFE_COLORS])
 
-## Show SHOW_PROCESS_UNIQUE_ID in log lines
-func show_process_unique_id() -> void:
-	values[KEY_SHOW_PROCESS_UNIQUE_ID] = true
-
-## Don't timestamps in log lines
-func hide_timestamps() -> void:
-	values[KEY_SHOW_TIMESTAMPS] = false
-
-## Don't SHOW_PROCESS_UNIQUE_ID in log line
-func hide_process_unique_id() -> void:
-	values[KEY_SHOW_PROCESS_UNIQUE_ID] = false
-
-## Use the given timestamp type
-func use_timestamp_type(timestamp_type: Log.TimestampTypes) -> void:
-	values[KEY_TIMESTAMP_TYPE] = timestamp_type
-
-## Use the given timestamp format
-func use_timestamp_format(timestamp_format: String) -> void:
-	values[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT] = timestamp_format
-
-## set color theme ####################################
-
-## Use the terminal safe color scheme, which should support colors in most tty-like environments.
-func set_colors_termsafe() -> void:
-	values[KEY_COLOR_THEME_DICT] = LogColorTheme.COLORS_TERM_SAFE
 
 ## Use prettier colors - i.e. whatever LogColorTheme is configured.
 func set_colors_pretty() -> void:
@@ -241,3 +168,144 @@ func set_colors_pretty() -> void:
 		values[KEY_COLOR_THEME_DICT] = values[KEY_COLOR_THEME].to_color_dict()
 	else:
 		print("WARNING no color theme resource path to load!")
+
+
+## Use the terminal safe color scheme, which should support colors in most tty-like environments.
+func set_colors_termsafe() -> void:
+	values[KEY_COLOR_THEME_DICT] = LogColorTheme.COLORS_TERM_SAFE
+
+
+################
+# Dictionaries #
+################
+
+func get_dictionary_skip_keys() -> Array:
+	return values.get(LogConfig.KEY_SKIP_KEYS, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_SKIP_KEYS])
+
+
+#############
+# Log Level #
+#############
+
+func get_log_level() -> int:
+	if not is_config_setup:
+		rebuild_config(self)
+	return values.get(LogConfig.KEY_LOG_LEVEL, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_LOG_LEVEL])
+
+
+## Set the minimum level of logs that get printed
+func set_log_level(new_log_level: int) -> void:
+	values[KEY_LOG_LEVEL] = new_log_level
+
+
+############
+# Newlines #
+############
+
+## Disable newlines in pretty-print output.
+##
+## [br][br]
+## Useful if you want your log output on a single line, typically for use with
+## log aggregation tools.
+func disable_newlines() -> void:
+	values[KEY_USE_NEWLINES] = false
+
+
+## Re-enable newlines in pretty-print output.
+func enable_newlines() -> void:
+	values[KEY_USE_NEWLINES] = true
+
+
+func get_use_newlines() -> bool:
+	return values.get(LogConfig.KEY_USE_NEWLINES, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_USE_NEWLINES])
+
+
+func get_newline_max_depth() -> int:
+	return values.get(LogConfig.KEY_NEWLINE_MAX_DEPTH, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_NEWLINE_MAX_DEPTH])
+
+
+## Set the maximum depth of an object that will get its own newline.
+##
+## [br][br]
+## Useful if you have deeply nested objects where you're primarly interested
+## in easily parsing the information near the root of the object.
+func set_newline_max_depth(new_depth: int) -> void:
+	values[KEY_NEWLINE_MAX_DEPTH] = new_depth
+
+
+## Resets the maximum object depth for newlines to the default.
+func reset_newline_max_depth() -> void:
+	values[KEY_USE_NEWLINES] = CONFIG_DEFAULTS[KEY_NEWLINE_MAX_DEPTH]
+
+
+##############
+# Process ID #
+##############
+
+## Show process ID
+func get_show_process_unique_id() -> bool:
+	return values.get(LogConfig.KEY_SHOW_PROCESS_UNIQUE_ID, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_SHOW_PROCESS_UNIQUE_ID])
+
+
+## Don't SHOW_PROCESS_UNIQUE_ID in log line
+func hide_process_unique_id() -> void:
+	values[KEY_SHOW_PROCESS_UNIQUE_ID] = false
+
+
+## Show SHOW_PROCESS_UNIQUE_ID in log lines
+func show_process_unique_id() -> void:
+	values[KEY_SHOW_PROCESS_UNIQUE_ID] = true
+
+
+##############
+# Timestamps #
+##############
+
+func get_show_timestamps() -> bool:
+	return values.get(LogConfig.KEY_SHOW_TIMESTAMPS, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_SHOW_TIMESTAMPS])
+
+
+func get_timestamp_type() -> Log.TimestampTypes:
+	return values.get(LogConfig.KEY_TIMESTAMP_TYPE, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_TIMESTAMP_TYPE])
+
+
+func get_timestamp_format() -> String:
+	return values.get(LogConfig.KEY_HUMAN_READABLE_TIMESTAMP_FORMAT, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_HUMAN_READABLE_TIMESTAMP_FORMAT])
+
+
+## Don't timestamps in log lines
+func hide_timestamps() -> void:
+	values[KEY_SHOW_TIMESTAMPS] = false
+
+
+## Show timestamps in log lines
+func show_timestamps() -> void:
+	values[KEY_SHOW_TIMESTAMPS] = true
+
+
+## Use the given timestamp type
+func use_timestamp_type(timestamp_type: Log.TimestampTypes) -> void:
+	values[KEY_TIMESTAMP_TYPE] = timestamp_type
+
+
+## Use the given timestamp format
+func use_timestamp_format(timestamp_format: String) -> void:
+	values[KEY_HUMAN_READABLE_TIMESTAMP_FORMAT] = timestamp_format
+
+
+################
+# Warn on TODO #
+################
+
+func get_warn_todo() -> int:
+	return values.get(LogConfig.KEY_WARN_TODO, LogConfig.CONFIG_DEFAULTS[LogConfig.KEY_WARN_TODO])
+
+
+## Disable warning on Log.todo().
+func disable_warn_todo() -> void:
+	values[KEY_WARN_TODO] = false
+
+
+## Re-enable warning on Log.todo().
+func enable_warn_todo() -> void:
+	values[KEY_WARN_TODO] = true
