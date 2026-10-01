@@ -42,7 +42,7 @@ enum TimestampTypes {
 const LOGGER_NAME: String = "Log.gd"
 
 
-static var logger: LogGDLogger = LogGDLogger.new(LOGGER_NAME)
+static var logger: LogCore = LogCore.new(LOGGER_NAME)
 
 
 ###################
