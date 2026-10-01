@@ -150,6 +150,7 @@ func run_showcases() -> void:
 	showcase_arrays()
 	showcase_dictionaries()
 	showcase_objects()
+	showcase_named_loggers()
 	showcase_known_bugs()
 
 
@@ -332,6 +333,22 @@ func showcase_objects() -> void:
 
 	print("nested values", example_object)
 	Log.log("nested values", example_object)
+
+
+## Showcase how named loggers function
+func showcase_named_loggers() -> void:
+	var example_logger: LogGDLogger = LogGDLogger.new("ExampleLogger")
+	example_logger.log("Example")
+
+	var test_logger: LogGDLogger = LogGDLogger.new("TestLogger")
+	test_logger.log("Test")
+
+	var other_logger: LogGDLogger = LogGDLogger.new("OtherLogger")
+	other_logger.log("Other")
+
+	example_logger.log("Example 2")
+	test_logger.log("Test 2")
+	other_logger.log("Other 2")
 
 
 ## Showcase any known bugs for the running version of Godot.
