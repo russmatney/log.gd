@@ -11,7 +11,7 @@ var icon_err: Texture2D = EditorInterface.get_editor_theme().get_icon("StatusErr
 
 
 func _enter_tree() -> void:
-	override_log_level_option_button.visible = ProjectSettings.get_setting("log_gd/config/show_log_level_selector", false)
+	override_log_level_option_button.visible = ProjectSettings.get_setting(LogConfig.KEY_SHOW_LOG_LEVEL_SELECTOR, false)
 	override_log_level_option_button.add_icon_item(icon_debug, "DEBUG")
 	override_log_level_option_button.add_icon_item(icon_info, "INFO")
 	override_log_level_option_button.add_icon_item(icon_warn, "WARN")
@@ -32,12 +32,12 @@ func _exit_tree() -> void:
 
 
 func on_settings_changed() -> void:
-	override_log_level_option_button.select(ProjectSettings.get_setting("log_gd/config/log_level"))
-	override_log_level_option_button.visible = ProjectSettings.get_setting("log_gd/config/show_log_level_selector")
+	override_log_level_option_button.select(ProjectSettings.get_setting(LogConfig.KEY_LOG_LEVEL))
+	override_log_level_option_button.visible = ProjectSettings.get_setting(LogConfig.KEY_SHOW_LOG_LEVEL_SELECTOR)
 	Log.rebuild_config()
 
 
 func override_log_level(value: Log.Levels) -> void:
 	Log.set_log_level(value)
-	ProjectSettings.set_setting("log_gd/config/log_level", value)
+	ProjectSettings.set_setting(LogConfig.KEY_LOG_LEVEL, value)
 	ProjectSettings.save()
