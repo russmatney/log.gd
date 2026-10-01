@@ -1,3 +1,6 @@
+@tool
+class_name Log
+extends Object
 ## Log.gd - colorized pretty printing functions
 ##
 ## [code]Log.pr(...)[/code] and [code]Log.prn(...)[/code] are drop-in replacements for [code]print(...)[/code].
@@ -18,33 +21,27 @@
 ## - https://github.com/russmatney/log.gd
 ## [br]
 ## - https://russmatney.github.io/log.gd
-##
-
-@tool
-extends Object
-class_name Log
 
 
 enum Levels {
-		DEBUG,
-		INFO,
-		WARN,
-		ERROR
-	}
+	DEBUG,
+	INFO,
+	WARN,
+	ERROR
+}
 
 enum TimestampTypes {
-		UNIX,
-		TICKS_MSEC,
-		TICKS_USEC,
-		HUMAN_12HR,
-		HUMAN_24HR
-	}
+	UNIX,
+	TICKS_MSEC,
+	TICKS_USEC,
+	HUMAN_12HR,
+	HUMAN_24HR
+}
 
 
 const LOGGER_NAME: String = "Log.gd"
 
 
-static var config: LogConfig = LogConfig.new()
 static var logger: LogGDLogger = LogGDLogger.new(LOGGER_NAME)
 
 
@@ -60,8 +57,154 @@ static func get_color_using_typeof(s: Variant, opts: Dictionary) -> Variant:
 	return logger.get_color_using_typeof(s, opts)
 
 
+static func get_config_color_theme() -> LogColorTheme:
+	return logger.config.get_config_color_theme()
+
+
+static func get_config_color_theme_dict() -> Dictionary:
+	return logger.config.get_config_color_theme_dict()
+
+
+static func get_disable_colors() -> bool:
+	return logger.config.get_disable_colors()
+
+
+static func get_force_termsafe_colors() -> bool:
+	return logger.config.get_force_termsafe_colors()
+
+
 static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	return logger.color_wrap(s, opts)
+
+
+##########
+# Colors #
+##########
+
+## Disable color-wrapping output.
+##
+## [br][br]
+## Useful to declutter the output if the environment does not support colors.
+## Note that some environments support only a subset of colors - you may prefer
+## [code]set_colors_termsafe()[/code].
+static func disable_colors() -> void:
+	logger.config.disable_colors()
+
+
+## Re-enable color-wrapping output.
+static func enable_colors() -> void:
+	logger.config.enable_colors()
+
+
+## Use prettier colors - i.e. whatever LogColorTheme is configured.
+static func set_colors_pretty() -> void:
+	logger.config.set_colors_pretty()
+
+
+## Use the terminal safe color scheme, which should support colors in most tty-like environments.
+static func set_colors_termsafe() -> void:
+	logger.config.set_colors_termsafe()
+
+
+##########
+# Config #
+##########
+
+static func rebuild_config(opts: Dictionary = {}) -> void:
+	logger.config.rebuild_config(logger.config, opts)
+
+
+static func setup_settings(opts: Dictionary = {}) -> void:
+	logger.config.setup_settings(opts)
+
+
+#############
+# Log Level #
+#############
+
+static func get_log_level() -> int:
+	return logger.config.get_log_level()
+
+
+## Set the minimum level of logs that get printed
+static func set_log_level(new_log_level: int) -> void:
+	logger.config.set_log_level(new_log_level)
+
+
+############
+# Newlines #
+############
+
+## Disable newlines in pretty-print output.
+##
+## [br][br]
+## Useful if you want your log output on a single line, typically for use with
+## log aggregation tools.
+static func disable_newlines() -> void:
+	logger.config.disable_newlines()
+
+
+## Re-enable newlines in pretty-print output.
+static func enable_newlines() -> void:
+	logger.config.enable_newlines()
+
+
+static func get_use_newlines() -> bool:
+	return logger.config.get_use_newlines()
+
+
+static func get_newline_max_depth() -> int:
+	return logger.config.get_newline_max_depth()
+
+
+## Resets the maximum object depth for newlines to the default.
+static func reset_newline_max_depth() -> void:
+	logger.config.reset_newline_max_depth()
+
+
+## Set the maximum depth of an object that will get its own newline.
+##
+## [br][br]
+## Useful if you have deeply nested objects where you're primarly interested
+## in easily parsing the information near the root of the object.
+static func set_newline_max_depth(new_depth: int) -> void:
+	logger.config.set_newline_max_depth(new_depth)
+
+
+##############
+# Timestamps #
+##############
+
+static func get_show_timestamps() -> bool:
+	return logger.config.get_show_timestamps()
+
+
+static func get_timestamp_type() -> Log.TimestampTypes:
+	return logger.config.get_timestamp_type()
+
+
+static func get_timestamp_format() -> String:
+	return logger.config.get_timestamp_format()
+
+
+## Don't timestamps in log lines
+static func hide_timestamps() -> void:
+	logger.config.hide_timestamps()
+
+
+## Show timestamps in log lines
+static func show_timestamps() -> void:
+	logger.config.show_timestamps()
+
+
+## Use the given timestamp type
+static func use_timestamp_type(timestamp_type: Log.TimestampTypes) -> void:
+	logger.config.use_timestamp_type(timestamp_type)
+
+
+## Use the given timestamp format
+static func use_timestamp_format(timestamp_format: String) -> void:
+	logger.config.use_timestamp_format(timestamp_format)
 
 
 ###################
@@ -71,7 +214,8 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 ## Register a single type overwrite.
 ##
 ## [br][br]
-## The key should be either obj.get_class() or typeof(var). (Note that using typeof(var) may overwrite more broadly than expected).
+## The key should be either obj.get_class() or typeof(var). (Note that using
+## typeof(var) may overwrite more broadly than expected).
 ##
 ## [br][br]
 ## The handler is called with the object and an options dict.
@@ -83,17 +227,39 @@ static func register_type_overwrite(key: String, handler: Callable) -> void:
 ## Register a dictionary of type overwrite.
 ##
 ## [br][br]
-## Expects a Dictionary like [code]{obj.get_class(): func(obj): return {key=obj.get_key()}}[/code].
+## Expects a Dictionary like [code]{obj.get_class(): func(obj): return
+## {key=obj.get_key()}}[/code].
 ##
 ## [br][br]
-## It depends on [code]obj.get_class()[/code] then [code]typeof(obj)[/code] for the key.
-## The handler is called with the object as the only argument. (e.g. [code]func(obj): return {name=obj.name}[/code]).
+## It depends on [code]obj.get_class()[/code] then [code]typeof(obj)[/code] for
+## the key.
+## The handler is called with the object as the only argument. (e.g.
+## [code]func(obj): return {name=obj.name}[/code]).
 static func register_type_overwrites(overwrites: Dictionary) -> void:
 	logger.register_type_overwrites(overwrites)
 
 
 static func clear_type_overwrites() -> void:
 	logger.clear_type_overwrites()
+
+
+################
+# Warn on TODO #
+################
+
+
+## Disable warning on Log.todo().
+static func disable_warn_todo() -> void:
+	logger.config.disable_warn_todo()
+
+
+## Enable warning on Log.todo().
+static func enable_warn_todo() -> void:
+	logger.config.enable_warn_todo()
+
+
+static func get_warn_todo() -> int:
+	return logger.config.get_warn_todo()
 
 
 #############
@@ -141,17 +307,20 @@ static func pr(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF",
 	logger.pr(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
-## Pretty-print the passed arguments, expanding dictionaries and arrays with a newline and indentation.
+## Pretty-print the passed arguments, expanding dictionaries and arrays with a
+## newline and indentation.
 static func prn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	logger.prn(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
-## Pretty-print the passed arguments, expanding dictionaries and arrays with two newlines and indentation.
+## Pretty-print the passed arguments, expanding dictionaries and arrays with two
+## newlines and indentation.
 static func prnn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	logger.prnn(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
-## Pretty-print the passed arguments, expanding dictionaries and arrays with three newlines and indentation.
+## Pretty-print the passed arguments, expanding dictionaries and arrays with
+## three newlines and indentation.
 static func prnnn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	logger.prnnn(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
@@ -171,22 +340,26 @@ static func info(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF
 	logger.info(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
-## Like [code]Log.pr()[/code], but also calls push_warning() with the pretty string.
+## Like [code]Log.pr()[/code], but also calls push_warning() with the pretty
+## string.
 static func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	logger.warn(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
-## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
+## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning()
+## with the pretty string.
 static func todo(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	logger.todo(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
-## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
+## Like [code]Log.pr()[/code], but also calls push_error() with the pretty
+## string.
 static func err(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	logger.err(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
 
-## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
+## Like [code]Log.pr()[/code], but also calls push_error() with the pretty
+## string.
 static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	logger.error(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
