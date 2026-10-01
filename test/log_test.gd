@@ -449,3 +449,28 @@ func test_timestamp_human_readable() -> void:
 	assert_str(Log.to_printable(["test"])) \
 			.ends_with("test") \
 			.has_length(14, Comparator.EQUAL)
+
+
+#################
+# Named Loggers #
+#################
+
+func test_named_loggers() -> void:
+	var example_logger: LogCore = LogCore.new("ExampleLogger")
+	assert_str(example_logger.to_printable(["Example"])) \
+		.is_equal("[ExampleLogger][color=pink]Example[/color]")
+
+	var test_logger: LogCore = LogCore.new("TestLogger")
+	assert_str(test_logger.to_printable(["Test"], {"pretty": false})) \
+		.is_equal("[TestLogger]Test")
+
+	var other_logger: LogCore = LogCore.new("OtherLogger")
+	assert_str(other_logger.to_printable(["Other"])) \
+		.is_equal("[OtherLogger][color=pink]Other[/color]")
+
+	assert_str(example_logger.to_printable(["Example 2"])) \
+		.is_equal("[ExampleLogger][color=pink]Example 2[/color]")
+	assert_str(test_logger.to_printable(["Test", 2], {"pretty": false})) \
+		.is_equal("[TestLogger]Test 2")
+	assert_str(other_logger.to_printable(["Other", 2])) \
+		.is_equal("[OtherLogger][color=pink]Other[/color] [color=green]2[/color]")
