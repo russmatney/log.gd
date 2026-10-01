@@ -337,13 +337,13 @@ func showcase_objects() -> void:
 
 ## Showcase how named loggers function
 func showcase_named_loggers() -> void:
-	var example_logger: LogGDLogger = LogGDLogger.new("ExampleLogger")
+	var example_logger: LogCore = LogCore.new("ExampleLogger")
 	example_logger.log("Example")
 
-	var test_logger: LogGDLogger = LogGDLogger.new("TestLogger")
+	var test_logger: LogCore = LogCore.new("TestLogger")
 	test_logger.log("Test")
 
-	var other_logger: LogGDLogger = LogGDLogger.new("OtherLogger")
+	var other_logger: LogCore = LogCore.new("OtherLogger")
 	other_logger.log("Other")
 
 	example_logger.log("Example 2")

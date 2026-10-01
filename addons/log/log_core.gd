@@ -1,4 +1,4 @@
-class_name LogGDLogger
+class_name LogCore
 extends Object
 ## Core logging functionality behind [Log]
 
