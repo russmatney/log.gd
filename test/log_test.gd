@@ -1,8 +1,8 @@
 extends GdUnitTestSuite
 
 func before_test() -> void:
-	Log.logger.config.values = {}
-	Log.logger.config.is_config_setup = false
+	Log.core.config.values = {}
+	Log.core.config.is_config_setup = false
 
 # func test_debug_log() -> void:
 # 	# Log.rebuild_config()
@@ -347,12 +347,12 @@ func test_disable_colors_via_config() -> void:
 	assert_str(Log.to_pretty(1)).is_equal("[color=green]1[/color]")
 
 	Log.disable_colors()
-	assert_bool(Log.logger.config.values[LogConfig.KEY_DISABLE_COLORS]).is_true()
+	assert_bool(Log.core.config.values[LogConfig.KEY_DISABLE_COLORS]).is_true()
 	print(Log.to_pretty(1))
 	assert_str(Log.to_pretty(1)).is_equal("1")
 
 	Log.enable_colors()
-	assert_bool(Log.logger.config.values[LogConfig.KEY_DISABLE_COLORS]).is_false()
+	assert_bool(Log.core.config.values[LogConfig.KEY_DISABLE_COLORS]).is_false()
 	assert_str(Log.to_pretty(1)).is_equal("[color=green]1[/color]")
 
 ## newlines ##########################################
@@ -443,7 +443,7 @@ func test_timestamp_human_readable() -> void:
 
 	Log.use_timestamp_type(Log.TimestampTypes.HUMAN_24HR)
 	Log.use_timestamp_format(
-		Log.logger.config.CONFIG_DEFAULTS[Log.logger.config.KEY_HUMAN_READABLE_TIMESTAMP_FORMAT]
+		Log.core.config.CONFIG_DEFAULTS[Log.core.config.KEY_HUMAN_READABLE_TIMESTAMP_FORMAT]
 	)
 	Log.to_printable(["test"])
 	assert_str(Log.to_printable(["test"])) \
