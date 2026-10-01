@@ -3,6 +3,7 @@ extends Object
 
 
 var config: LogConfig
+var name: String = ""
 var type_overwrites: Dictionary = {}
 
 
@@ -41,7 +42,8 @@ static func log_prefix(stack: Array) -> String:
 	return ""
 
 
-func _init(p_config: LogConfig = LogConfig.new()) -> void:
+func _init(p_name: String, p_config: LogConfig = LogConfig.new()) -> void:
+	name = p_name
 	config = p_config
 
 
@@ -379,6 +381,9 @@ func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 		# TODO colorize
 		m += "[%s]" % get_process_id()
 
+	if name and name != Log.LOGGER_NAME:
+		m += "[%s]" % name
+
 	if config.get_show_timestamps():
 		m += "[%s]" % timestamp()
 
@@ -561,6 +566,10 @@ func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg
 func blank() -> void:
 	print()
 
+
+####################
+# Internal methods #
+####################
 
 ## Helper that will both print() and print_rich() the enriched string
 func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
