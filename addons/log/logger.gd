@@ -1,5 +1,6 @@
 class_name LogGDLogger
 extends Object
+## Core logging functionality behind [Log]
 
 
 var config: LogConfig

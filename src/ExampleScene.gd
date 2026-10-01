@@ -40,25 +40,25 @@ var example_object: ExampleObj = ExampleObj.new({
 
 
 func _ready() -> void:
-	check_button_colors.set_pressed_no_signal(not Log.config.get_disable_colors())
+	check_button_colors.set_pressed_no_signal(not Log.get_disable_colors())
 	color_picker_button.color = custom_color
 	check_button_pretty_colors.set_pressed_no_signal(true)
-	check_button_newlines.set_pressed_no_signal(Log.config.get_use_newlines())
-	spin_box_newline_max_depth.set_value_no_signal(Log.config.get_newline_max_depth())
-	option_button_log_level.select(Log.config.get_log_level())
-	check_button_warn_todo.set_pressed_no_signal(Log.config.get_warn_todo())
-	check_button_show_timestamps.set_pressed_no_signal(Log.config.get_show_timestamps())
-	option_button_timestamp_type.select(Log.config.get_timestamp_type())
-	line_edit_timestamp_format.text = Log.config.get_timestamp_format()
+	check_button_newlines.set_pressed_no_signal(Log.get_use_newlines())
+	spin_box_newline_max_depth.set_value_no_signal(Log.get_newline_max_depth())
+	option_button_log_level.select(Log.get_log_level())
+	check_button_warn_todo.set_pressed_no_signal(Log.get_warn_todo())
+	check_button_show_timestamps.set_pressed_no_signal(Log.get_show_timestamps())
+	option_button_timestamp_type.select(Log.get_timestamp_type())
+	line_edit_timestamp_format.text = Log.get_timestamp_format()
 
 
 ## Connected to CheckButtonColors.
 func set_enable_colors(enable: bool) -> void:
 	if enable:
-		Log.config.enable_colors()
+		Log.enable_colors()
 		Log.log("Enabled colors")
 	else:
-		Log.config.disable_colors()
+		Log.disable_colors()
 		Log.log("Disabled colors")
 
 
@@ -70,53 +70,53 @@ func set_custom_color(color: Color) -> void:
 ## Connected to CheckButtonPrettyColors.
 func set_pretty_colors(enable: bool) -> void:
 	if enable:
-		Log.config.set_colors_pretty()
+		Log.set_colors_pretty()
 		Log.log("Pretty colors enabled")
 	else:
-		Log.config.set_colors_termsafe()
+		Log.set_colors_termsafe()
 		Log.log("Term safe colors enabled")
 
 
 ## Connected to CheckButtonNewlines.
 func set_enable_newlines(enable: bool) -> void:
 	if enable:
-		Log.config.enable_newlines()
+		Log.enable_newlines()
 		Log.log("Enabled newlines")
 	else:
-		Log.config.disable_newlines()
+		Log.disable_newlines()
 		Log.log("Disabled newlines")
 
 
 ## Connected to SpinBoxNewlineMaxDepth.
 func set_newline_max_depth(depth: float) -> void:
-	Log.config.set_newline_max_depth(int(depth))
+	Log.set_newline_max_depth(int(depth))
 	Log.log("Newline max depth: %d" % depth)
 
 
 ## Connected to OptionButtonLogLevel.
 func set_log_level(log_level: int) -> void:
 	var log_level_lookup: Array[String] = ["Debug", "Info", "Warn", "Error"]
-	Log.config.set_log_level(log_level)
+	Log.set_log_level(log_level)
 	Log.log("Log Level: %s" % log_level_lookup[log_level])
 
 
 ## Connected to CheckButtonWarnTodo.
 func set_warn_todo(enable: bool) -> void:
 	if enable:
-		Log.config.enable_warn_todo()
+		Log.enable_warn_todo()
 		Log.log("Enabled warn todo")
 	else:
-		Log.config.disable_warn_todo()
+		Log.disable_warn_todo()
 		Log.log("Disabled warn todo")
 
 
 ## Connected to CheckButtonShowTimestamps.
 func set_show_timestamps(enable: bool) -> void:
 	if enable:
-		Log.config.show_timestamps()
+		Log.show_timestamps()
 		Log.log("Showing timestamps")
 	else:
-		Log.config.hide_timestamps()
+		Log.hide_timestamps()
 		Log.log("Hiding timestamps")
 
 
@@ -129,13 +129,13 @@ func set_timestamp_type(timestamp_type: int) -> void:
 		"Human-readable 12-hour",
 		"Human-readable 24-hour",
 	]
-	Log.config.use_timestamp_type(timestamp_type)
+	Log.use_timestamp_type(timestamp_type)
 	Log.log("Timestamp Type: %s" % timestamp_type_lookup[timestamp_type])
 
 
 ## Connected to TextEditTimestampFormat.
 func set_timestamp_format(format: String) -> void:
-	Log.config.use_timestamp_format(format)
+	Log.use_timestamp_format(format)
 	Log.log("Timestamp format: %s" % format)
 
 
