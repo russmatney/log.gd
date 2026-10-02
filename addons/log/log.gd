@@ -282,10 +282,6 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 # to_printable #
 ################
 
-static func log_prefix(stack: Array) -> String:
-	return _core.log_prefix(stack)
-
-
 static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	return _core.to_printable(msgs, opts)
 
