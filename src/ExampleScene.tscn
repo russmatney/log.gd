@@ -388,7 +388,7 @@ vertical_alignment = 1
 [node name="OptionButtonTimestampType" type="OptionButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer/HBoxContainer" unique_id=1922052032]
 unique_name_in_owner = true
 layout_mode = 2
-selected = 4
+selected = 3
 item_count = 5
 popup/item_0/text = "UNIX"
 popup/item_0/id = 0
