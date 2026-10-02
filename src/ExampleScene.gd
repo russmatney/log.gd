@@ -339,16 +339,22 @@ func showcase_objects() -> void:
 func showcase_named_loggers() -> void:
 	var example_logger: LogCore = LogCore.new("ExampleLogger")
 	example_logger.log("Example")
+	example_logger.info("Example Info")
+	example_logger.debug("Example Debug")
 
 	var test_logger: LogCore = LogCore.new("TestLogger")
+	test_logger.config.disable_colors()
 	test_logger.log("Test")
 
 	var other_logger: LogCore = LogCore.new("OtherLogger")
+	other_logger.config.set_log_level(Log.Levels.DEBUG)
 	other_logger.log("Other")
+	other_logger.info("Other Info")
+	other_logger.debug("Other Debug")
 
-	example_logger.log("Example 2")
-	test_logger.log("Test 2")
-	other_logger.log("Other 2")
+	example_logger.log("Example", 2)
+	test_logger.log({"Test": 2})
+	other_logger.log({"Other": 2})
 
 
 ## Showcase any known bugs for the running version of Godot.
