@@ -334,65 +334,65 @@ static func timestamp() -> String:
 ##########################
 
 ## Pretty-print the passed arguments in a single line.
-static func pr(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.pr(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func pr(...msgs: Array) -> void:
+	_core.pr(msgs)
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with a
 ## newline and indentation.
-static func prn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.prn(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func prn(...msgs: Array) -> void:
+	_core.prn(msgs)
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with two
 ## newlines and indentation.
-static func prnn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.prnn(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func prnn(...msgs: Array) -> void:
+	_core.prnn(msgs)
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with
 ## three newlines and indentation.
-static func prnnn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.prnnn(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func prnnn(...msgs: Array) -> void:
+	_core.prnnn(msgs)
 
 
 ## Pretty-print the passed arguments in a single line.
-static func log(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.log(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func log(...msgs: Array) -> void:
+	_core.log(msgs)
 
 
 ## Pretty-print the passed arguments in a single line.
-static func debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.debug(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func debug(...msgs: Array) -> void:
+	_core.debug(msgs)
 
 
 ## Pretty-print the passed arguments in a single line.
-static func info(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.info(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func info(...msgs: Array) -> void:
+	_core.info(msgs)
 
 
 ## Like [code]Log.pr()[/code], but also calls push_warning() with the pretty
 ## string.
-static func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.warn(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func warn(...msgs: Array) -> void:
+	_core.warn(msgs)
 
 
 ## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning()
 ## with the pretty string.
-static func todo(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.todo(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func todo(...msgs: Array) -> void:
+	_core.todo(msgs)
 
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty
 ## string.
-static func err(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.err(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func err(...msgs: Array) -> void:
+	_core.err(msgs)
 
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty
 ## string.
-static func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core.error(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func error(...msgs: Array) -> void:
+	_core.error(msgs)
 
 
 ## Bespoke method designed to print data in a tabular fashion.[br]
@@ -412,8 +412,8 @@ static func blank() -> void:
 
 
 ## Helper that will both print() and print_rich() the enriched string
-static func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	_core._internal_debug(msg, msg2, msg3, msg4, msg5, msg6, msg7)
+static func _internal_debug(...msgs: Array) -> void:
+	_core._internal_debug(msgs)
 
 
 ##############
