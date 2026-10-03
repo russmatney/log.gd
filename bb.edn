@@ -1,10 +1,15 @@
 {:paths ["bb"]
  :tasks
  {:requires ([clojure.string :as string]
-             [changelog])
+             [changelog]
+             [clojure.java.shell :as clj-sh])
   :init
   (do
-    (def godot-bin "/run/current-system/sw/bin/godot")
+    (defn godot-bin []
+      (->
+        (clj-sh/sh "which" "godot")
+        :out
+        string/trim))
 
     (defn shell-and-log
       ([x] (shell-and-log {} x))
@@ -14,12 +19,12 @@
        (shell opts x))))
 
   test (shell-and-log
-         {:extra-env {"GODOT_BIN" godot-bin}}
+         {:extra-env {"GODOT_BIN" (godot-bin)}}
          (str "sh ./addons/gdUnit4/runtest.sh -c -a test --headless --ignoreHeadlessMode"))
 
   test-match (let [arg (some-> *command-line-args* first)]
                (shell-and-log
-                 {:extra-env {"GODOT_BIN" godot-bin}}
+                 {:extra-env {"GODOT_BIN" (godot-bin)}}
                  (str "sh ./addons/gdUnit4/runtest.sh -c --headless --ignoreHeadlessMode -a " arg)))
 
   release
