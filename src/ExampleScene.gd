@@ -414,7 +414,7 @@ func showcase_tables() -> void:
 	Log.table(["Test", 1, "Cheddar"])
 	Log.table(
 		["Test", 1, "Cheddar"],
-		Log.TableConfig.new(["Column A", "Col. 2", "Cheese"]),
+		LogTableConfig.new(["Column A", "Col. 2", "Cheese"]),
 	)
 	Log.table({
 		"Column A": "Test",
@@ -426,7 +426,7 @@ func showcase_tables() -> void:
 		["Example", 2, "Mozzarella"],
 		["Data", 3, "Brie"],
 		["Sample", 4, "Muenster"],
-	], Log.TableConfig.new(["Column A", "Col. 2", "Cheese"]))
+	], LogTableConfig.new(["Column A", "Col. 2", "Cheese"]))
 	Log.table([
 		{ "Column A": "Test", "Col. 2": 1, "Cheese": "Cheddar" },
 		{ "Column A": "Example", "Col. 2": 2, "Cheese": "Mozzarella" },
@@ -448,7 +448,7 @@ func showcase_tables() -> void:
 
 	Log.table(some_class)
 
-	var log_table_config: Log.TableConfig = Log.TableConfig.new([
+	var log_table_config: LogTableConfig = LogTableConfig.new([
 		"some_string",
 		"some_float",
 		"some_long_string",
@@ -469,19 +469,19 @@ func showcase_tables() -> void:
 		yet_another_class,
 	], log_table_config)
 
-	log_table_config = Log.TableConfig.new().set_max_length(16)
+	log_table_config = LogTableConfig.new().set_max_length(16)
 	Log.table([
 		some_class,
 		some_other_class,
 		yet_another_class,
 	], log_table_config)
 
-	log_table_config = Log.TableConfig.new()
+	log_table_config = LogTableConfig.new()
 	log_table_config.max_length = 64
 	log_table_config.pad_cells = false
 	Log.table(log_table_config)
 	Log.table(log_table_config, log_table_config)
-	Log.table(Log.TableConfig.new([
+	Log.table(LogTableConfig.new([
 		"some_string",
 		"some_float",
 		"some_long_string",
