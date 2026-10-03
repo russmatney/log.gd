@@ -37,10 +37,10 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_87w40")
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=1383032060]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer" unique_id=109368319]
 layout_mode = 2
@@ -51,7 +51,7 @@ layout_mode = 2
 
 [node name="VBoxContainerShowcases" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases" unique_id=353979672]
 layout_mode = 2
-size_flags_horizontal = 4
+theme_override_constants/separation = 6
 
 [node name="ButtonRunShowcases" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1028300950]
 clip_contents = true
@@ -82,6 +82,11 @@ text = "Run Ints and Floats Showcase"
 clip_contents = true
 layout_mode = 2
 text = "Run Vectors Showcase"
+
+[node name="ButtonRunTransformsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1519153342]
+clip_contents = true
+layout_mode = 2
+text = "Run Rects and Transforms"
 
 [node name="ButtonRunStringsShowcase" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases" unique_id=1325851325]
 clip_contents = true
@@ -417,8 +422,7 @@ layout_mode = 2
 
 [node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer/HBoxContainer" unique_id=1912947952]
 layout_mode = 2
-size_flags_horizontal = 3
-text = "Timestamp Format"
+text = "Timestamp Format "
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -430,12 +434,74 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "{hour}:{minute}:{second}"
 
+[node name="PanelContainerShowProcessUID" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=1923312984]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowProcessUID" unique_id=1426684715]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowProcessUID/MarginContainer" unique_id=768191028]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowProcessUID/MarginContainer/HBoxContainer" unique_id=1608042624]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Show Process Unique ID"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="CheckButtonShowProcessUID" type="CheckButton" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowProcessUID/MarginContainer/HBoxContainer" unique_id=1072621273]
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="PanelContainerFloatPrecision" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions" unique_id=2127734654]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerFloatPrecision" unique_id=168235962]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerFloatPrecision/MarginContainer" unique_id=750019779]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerFloatPrecision/MarginContainer/HBoxContainer" unique_id=1729257978]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Logged Floating Point Precision"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="SpinBoxFloatPrecision" type="SpinBox" parent="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerFloatPrecision/MarginContainer/HBoxContainer" unique_id=578434674]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(88, 31)
+layout_mode = 2
+size_flags_horizontal = 8
+max_value = 10.0
+value = 3.0
+rounded = true
+allow_greater = true
+alignment = 2
+
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunShowcases" to="." method="run_showcases"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunEasyNewlinesShowcase" to="." method="showcase_easy_newlines"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunLogLevelsShowcase" to="." method="showcase_log_levels"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunColorsShowcase" to="." method="showcase_colors"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunIntsAndFloatsShowcase" to="." method="showcase_ints_and_floats"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunVectorsShowcase" to="." method="showcase_vectors"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunTransformsShowcase" to="." method="showcase_rects_and_transforms"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunStringsShowcase" to="." method="showcase_strings"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunArraysShowcase" to="." method="showcase_arrays"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerShowcases/VBoxContainerShowcases/ButtonRunDictionariesShowcase" to="." method="showcase_dictionaries"]
@@ -451,3 +517,5 @@ text = "{hour}:{minute}:{second}"
 [connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowTimestamps/MarginContainer/HBoxContainer/CheckButtonShowTimestamps" to="." method="set_show_timestamps"]
 [connection signal="item_selected" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampType/MarginContainer/HBoxContainer/OptionButtonTimestampType" to="." method="set_timestamp_type"]
 [connection signal="text_submitted" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerTimestampFormat/MarginContainer/HBoxContainer/LineEditTimestampFormat" to="." method="set_timestamp_format"]
+[connection signal="toggled" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerShowProcessUID/MarginContainer/HBoxContainer/CheckButtonShowProcessUID" to="." method="set_show_process_uid"]
+[connection signal="value_changed" from="PanelContainer/MarginContainer/HBoxContainer/MarginContainerOptions/VBoxContainerOptions/PanelContainerFloatPrecision/MarginContainer/HBoxContainer/SpinBoxFloatPrecision" to="." method="set_float_precision"]

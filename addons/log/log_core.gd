@@ -278,6 +278,9 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		opts["indent_level"] -= 1 # ugh! updating the dict in-place
 		return tmp
 
+	elif msg is float:
+		return color_wrap(config.get_float_precision_string() % msg, opts)
+
 	# strings
 	elif msg is String:
 		if msg == "":
@@ -298,37 +301,103 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		return Log.color_wrap(msg.to_html(false), assoc(opts, "typeof", TYPE_COLOR))
 
 	# vectors
-	elif msg is Vector2 or msg is Vector2i:
+	elif msg is Vector2:
 		return '%s%s%s%s%s' % [
-			Log.color_wrap("(", opts),
-			Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(",", opts),
-			Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(")", opts),
+			color_wrap("(", opts),
+			color_wrap(config.get_float_precision_string() % msg.x, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(config.get_float_precision_string() % msg.y, assoc(opts, "typeof", "vector_value")),
+			color_wrap(")", opts),
+		]
+	elif msg is Vector2i:
+		return '%s%s%s%s%s' % [
+			color_wrap("(", opts),
+			color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
+			color_wrap(")", opts),
 		]
 
-	elif msg is Vector3 or msg is Vector3i:
+	elif msg is Vector3:
 		return '%s%s%s%s%s%s%s' % [
-			Log.color_wrap("(", opts),
-			Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(",", opts),
-			Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(",", opts),
-			Log.color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(")", opts),
-			]
-	elif msg is Vector4 or msg is Vector4i:
+			color_wrap("(", opts),
+			color_wrap(config.get_float_precision_string() % msg.x, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(config.get_float_precision_string() % msg.y, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(config.get_float_precision_string() % msg.z, assoc(opts, "typeof", "vector_value")),
+			color_wrap(")", opts),
+		]
+	elif msg is Vector3i:
+		return '%s%s%s%s%s%s%s' % [
+			color_wrap("(", opts),
+			color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
+			color_wrap(")", opts),
+		]
+
+	elif msg is Vector4:
 		return '%s%s%s%s%s%s%s%s%s' % [
-			Log.color_wrap("(", opts),
-			Log.color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(",", opts),
-			Log.color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(",", opts),
-			Log.color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(",", opts),
-			Log.color_wrap(msg.w, assoc(opts, "typeof", "vector_value")),
-			Log.color_wrap(")", opts),
-			]
+			color_wrap("(", opts),
+			color_wrap(config.get_float_precision_string() % msg.x, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(config.get_float_precision_string() % msg.y, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(config.get_float_precision_string() % msg.z, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(config.get_float_precision_string() % msg.w, assoc(opts, "typeof", "vector_value")),
+			color_wrap(")", opts),
+		]
+	elif msg is Vector4i:
+		return '%s%s%s%s%s%s%s%s%s' % [
+			color_wrap("(", opts),
+			color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
+			color_wrap(", ", opts),
+			color_wrap(msg.w, assoc(opts, "typeof", "vector_value")),
+			color_wrap(")", opts),
+		]
+
+	# rects
+	elif msg is Rect2:
+		return '%s%s%s%s' % [
+			color_wrap("(", opts),
+			color_wrap("P: %s, " % to_pretty(msg.position, opts), opts),
+			color_wrap("X: %s" % to_pretty(msg.size, opts), opts),
+			color_wrap(")", opts),
+		]
+	elif msg is Rect2i:
+		return '%s%s%s%s' % [
+			color_wrap("(", opts),
+			color_wrap("P: %s, " % to_pretty(msg.position, opts), opts),
+			color_wrap("X: %s" % to_pretty(msg.size, opts), opts),
+			color_wrap(")", opts),
+		]
+
+	# transforms
+	elif msg is Transform2D:
+		return '%s%s%s%s%s' % [
+			color_wrap("[", opts),
+			color_wrap("X: %s, " % to_pretty(msg.x, opts), opts),
+			color_wrap("Y: %s, " % to_pretty(msg.y, opts), opts),
+			color_wrap("O: %s" % to_pretty(msg.origin, opts), opts),
+			color_wrap("]", opts),
+		]
+	elif msg is Transform3D:
+		return '%s%s%s%s%s%s' % [
+			color_wrap("[", opts),
+			color_wrap("X: %s, " % to_pretty(msg.basis.x, opts), opts),
+			color_wrap("Y: %s, " % to_pretty(msg.basis.y, opts), opts),
+			color_wrap("Z: %s, " % to_pretty(msg.basis.z, opts), opts),
+			color_wrap("O: %s" % to_pretty(msg.origin, opts), opts),
+			color_wrap("]", opts),
+		]
 
 	# packed scene
 	elif msg is PackedScene:

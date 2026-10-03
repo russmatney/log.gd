@@ -1,6 +1,8 @@
-[gd_resource type="Theme" load_steps=0 format=3 uid="uid://o0twyvebgm22"]
+[gd_resource type="Theme" format=3 uid="uid://o0twyvebgm22"]
 
 [resource]
 default_font_size = 32
 HBoxContainer/constants/separation = 25
-VBoxContainer/constants/separation = 10
+LineEdit/font_sizes/font_size = 28
+OptionButton/font_sizes/font_size = 28
+VBoxContainer/constants/separation = 2

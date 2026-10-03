@@ -37,6 +37,7 @@ var example_object: ExampleObj = ExampleObj.new({
 @onready var check_button_show_timestamps: CheckButton = %CheckButtonShowTimestamps
 @onready var option_button_timestamp_type: OptionButton = %OptionButtonTimestampType
 @onready var line_edit_timestamp_format: LineEdit = %LineEditTimestampFormat
+@onready var spin_box_float_precision: SpinBox = %SpinBoxFloatPrecision
 
 
 func _ready() -> void:
@@ -50,6 +51,7 @@ func _ready() -> void:
 	check_button_show_timestamps.set_pressed_no_signal(Log.get_show_timestamps())
 	option_button_timestamp_type.select(Log.get_timestamp_type())
 	line_edit_timestamp_format.text = Log.get_timestamp_format()
+	spin_box_float_precision.set_value_no_signal(Log.get_float_precision())
 
 
 ## Connected to CheckButtonColors.
@@ -133,10 +135,25 @@ func set_timestamp_type(timestamp_type: int) -> void:
 	Log.log("Timestamp Type: %s" % timestamp_type_lookup[timestamp_type])
 
 
-## Connected to TextEditTimestampFormat.
+## Connected to LineEditTimestampFormat.
 func set_timestamp_format(format: String) -> void:
 	Log.use_timestamp_format(format)
 	Log.log("Timestamp format: %s" % format)
+
+
+func set_show_process_uid(show_process_uid: bool) -> void:
+	if show_process_uid:
+		Log.show_process_unique_id()
+		Log.log("Showing process unique ID")
+	else:
+		Log.hide_process_unique_id()
+		Log.log("Hiding process unique ID")
+
+
+## Connected to SpinBoxFloatPrecision.
+func set_float_precision(precision: int) -> void:
+	Log.set_float_precision(precision)
+	Log.log("Floating point precision: %s" % precision)
 
 
 ## Easily run all Log.gd showcases.
@@ -146,6 +163,7 @@ func run_showcases() -> void:
 	showcase_colors()
 	showcase_ints_and_floats()
 	showcase_vectors()
+	showcase_rects_and_transforms()
 	showcase_strings()
 	showcase_arrays()
 	showcase_dictionaries()
@@ -217,6 +235,14 @@ func showcase_ints_and_floats() -> void:
 
 	print(1.0)
 	Log.log(1.0)
+	Log.blank()
+
+	print(PI)
+	Log.log(PI)
+	Log.set_float_precision(2)
+	Log.log(PI)
+	Log.set_float_precision(5)
+	Log.log(PI)
 
 
 ## Showcase the printing of Vectors, float and int
@@ -237,6 +263,29 @@ func showcase_vectors() -> void:
 
 	print(Vector3i.UP)
 	Log.log(Vector3i.UP)
+
+
+## Showcase the printing of Rects, float and int, and of Transforms, 2D and 3D
+func showcase_rects_and_transforms() -> void:
+	print_header("Rects")
+
+	print(Rect2())
+	Log.log(Rect2())
+	Log.blank()
+
+	print(Rect2i())
+	Log.log(Rect2i())
+	Log.blank()
+
+	print_header("Transforms")
+
+	print(Transform2D())
+	Log.log(Transform2D())
+	Log.blank()
+
+	print(Transform3D())
+	Log.log(Transform3D())
+	Log.blank()
 
 
 ## Showcase strings and string names
