@@ -43,6 +43,10 @@ static func log_prefix(stack: Array) -> String:
 	return ""
 
 
+#############
+# Built-ins #
+#############
+
 func _init(p_name: String, p_config: LogConfig = LogConfig.new()) -> void:
 	name = p_name
 	config = p_config
@@ -414,6 +418,10 @@ func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 # Type Overwrites #
 ###################
 
+func clear_type_overwrites() -> void:
+	type_overwrites = {}
+
+
 ## Register a single type overwrite.
 ##
 ## [br][br]
@@ -427,6 +435,7 @@ func register_type_overwrite(key: String, handler: Callable) -> void:
 	# validate the key/handler somehow?
 	type_overwrites[key] = handler
 
+
 ## Register a dictionary of type overwrite.
 ##
 ## [br][br]
@@ -437,9 +446,6 @@ func register_type_overwrite(key: String, handler: Callable) -> void:
 ## The handler is called with the object as the only argument. (e.g. [code]func(obj): return {name=obj.name}[/code]).
 func register_type_overwrites(overwrites: Dictionary) -> void:
 	type_overwrites.merge(overwrites, true)
-
-func clear_type_overwrites() -> void:
-	type_overwrites = {}
 
 
 ##########################
