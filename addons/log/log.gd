@@ -49,10 +49,6 @@ static var _core: LogCore = LogCore.new(LOGGER_NAME)
 # Applying Colors #
 ###################
 
-static func should_use_color(opts: Dictionary = {}) -> bool:
-	return _core.should_use_color(opts)
-
-
 static func get_color_using_typeof(s: Variant, opts: Dictionary) -> Variant:
 	return _core.get_color_using_typeof(s, opts)
 
@@ -75,6 +71,10 @@ static func get_force_termsafe_colors() -> bool:
 
 static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	return _core.color_wrap(s, opts)
+
+
+static func should_use_color(opts: Dictionary = {}) -> bool:
+	return _core.should_use_color(opts)
 
 
 ##########
@@ -149,12 +149,12 @@ static func enable_newlines() -> void:
 	_core.config.enable_newlines()
 
 
-static func get_use_newlines() -> bool:
-	return _core.config.get_use_newlines()
-
-
 static func get_newline_max_depth() -> int:
 	return _core.config.get_newline_max_depth()
+
+
+static func get_use_newlines() -> bool:
+	return _core.config.get_use_newlines()
 
 
 ## Resets the maximum object depth for newlines to the default.
@@ -179,12 +179,12 @@ static func get_show_timestamps() -> bool:
 	return _core.config.get_show_timestamps()
 
 
-static func get_timestamp_type() -> Log.TimestampTypes:
-	return _core.config.get_timestamp_type()
-
-
 static func get_timestamp_format() -> String:
 	return _core.config.get_timestamp_format()
+
+
+static func get_timestamp_type() -> Log.TimestampTypes:
+	return _core.config.get_timestamp_type()
 
 
 ## Don't timestamps in log lines
@@ -197,19 +197,23 @@ static func show_timestamps() -> void:
 	_core.config.show_timestamps()
 
 
-## Use the given timestamp type
-static func use_timestamp_type(timestamp_type: Log.TimestampTypes) -> void:
-	_core.config.use_timestamp_type(timestamp_type)
-
-
 ## Use the given timestamp format
 static func use_timestamp_format(timestamp_format: String) -> void:
 	_core.config.use_timestamp_format(timestamp_format)
 
 
+## Use the given timestamp type
+static func use_timestamp_type(timestamp_type: Log.TimestampTypes) -> void:
+	_core.config.use_timestamp_type(timestamp_type)
+
+
 ###################
 # Type Overwrites #
 ###################
+
+static func clear_type_overwrites() -> void:
+	_core.clear_type_overwrites()
+
 
 ## Register a single type overwrite.
 ##
@@ -239,14 +243,9 @@ static func register_type_overwrites(overwrites: Dictionary) -> void:
 	_core.register_type_overwrites(overwrites)
 
 
-static func clear_type_overwrites() -> void:
-	_core.clear_type_overwrites()
-
-
 ################
 # Warn on TODO #
 ################
-
 
 ## Disable warning on Log.todo().
 static func disable_warn_todo() -> void:
@@ -368,6 +367,10 @@ static func blank() -> void:
 static func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
 	_core._internal_debug(msg, msg2, msg3, msg4, msg5, msg6, msg7)
 
+
+##############
+# Deprecated #
+##############
 
 ## DEPRECATED
 static func merge_theme_overwrites(_opts = {}) -> void:
