@@ -24,10 +24,6 @@ static func get_process_id() -> int:
 	return pid
 
 
-static func is_not_default(v: Variant) -> bool:
-	return not v is String or (v is String and v != "ZZZDEF")
-
-
 static func log_prefix(stack: Array) -> String:
 	# NOTE: this filters res://addons/log/* callsites OUT of the stack.
 	stack = stack.filter(func(s: Variant) -> bool:
@@ -539,122 +535,83 @@ func register_type_overwrites(overwrites: Dictionary) -> void:
 # Public Print Functions #
 ##########################
 
+func _to_printable_colorless(msgs: Array) -> String:
+	return to_printable(msgs, {disable_colors=true})
+
+
 ## Pretty-print the passed arguments in a single line.
-func pr(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	var m: String = to_printable(msgs, {stack=get_stack()})
-	print_rich(m)
+func pr(...msgs: Array) -> void:
+	print_rich(to_printable(msgs))
+
+
+## Pretty-print the passed arguments in a single line.
+##
+## An alias for `pr`
+func log(...msgs: Array) -> void:
+	print_rich(to_printable(msgs))
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with a newline and indentation.
-func prn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	var m: String = to_printable(msgs, {stack=get_stack(), newlines=true, newline_max_depth=1})
-	print_rich(m)
+func prn(...msgs: Array) -> void:
+	print_rich(to_printable(msgs, {newlines=true, newline_max_depth=1}))
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with two newlines and indentation.
-func prnn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	var m: String = to_printable(msgs, {stack=get_stack(), newlines=true, newline_max_depth=2})
-	print_rich(m)
+func prnn(...msgs: Array) -> void:
+	print_rich(to_printable(msgs, {newlines=true, newline_max_depth=2}))
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with three newlines and indentation.
-func prnnn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	var m: String = to_printable(msgs, {stack=get_stack(), newlines=true, newline_max_depth=3})
-	print_rich(m)
+func prnnn(...msgs: Array) -> void:
+	print_rich(to_printable(msgs, {newlines=true, newline_max_depth=3}))
 
 
 ## Pretty-print the passed arguments in a single line.
-func log(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	var m: String = to_printable(msgs, {stack=get_stack()})
-	print_rich(m)
-
-
-## Pretty-print the passed arguments in a single line.
-func debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+func debug(...msgs: Array) -> void:
 	if config.get_log_level() > Log.Levels.DEBUG:
 		return
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	msgs.push_front("[DEBUG]")
-	var m: String = to_printable(msgs, {stack=get_stack()})
-	print_rich(m)
-
+	print_rich("[DEBUG] " + to_printable(msgs))
 
 ## Pretty-print the passed arguments in a single line.
-func info(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+func info(...msgs: Array) -> void:
 	if config.get_log_level() > Log.Levels.INFO:
 		return
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	msgs.push_front("[INFO]")
-	var m: String = to_printable(msgs, {stack=get_stack()})
-	print_rich(m)
-
+	print_rich("[INFO] " + to_printable(msgs))
 
 ## Like [code]Log.pr()[/code], but also calls push_warning() with the pretty string.
-func warn(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+func warn(...msgs: Array) -> void:
 	if config.get_log_level() > Log.Levels.WARN:
 		return
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	var rich_msgs: Array = msgs.duplicate()
-	rich_msgs.push_front("[color=yellow][WARN][/color]")
-	print_rich(to_printable(rich_msgs, {stack=get_stack()}))
-	# skip the 'color' features in warnings to keep them readable in the debugger
-	var m: String = to_printable(msgs, {stack=get_stack(), disable_colors=true})
-	push_warning(m)
+	print_rich("[color=yellow][WARN][/color] " + to_printable(msgs))
+	push_warning(_to_printable_colorless(msgs))
 
 
 ## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
-func todo(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
+##
+## Pretty cool - lets you use the warnings tab as a TODO list!
+func todo(...msgs: Array) -> void:
 	if config.get_warn_todo() and config.get_log_level() > Log.Levels.WARN:
 		return
 	elif not config.get_warn_todo() and config.get_log_level() > Log.Levels.INFO:
 		return
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	msgs.push_front("[TODO]")
-	var rich_msgs: Array = msgs.duplicate()
+	var m: String = "[TODO] " + to_printable(msgs)
 	if config.get_warn_todo():
-		rich_msgs.push_front("[color=yellow][WARN][/color]")
-	print_rich(to_printable(rich_msgs, {stack=get_stack()}))
+		m = "[color=yellow][WARN][/color] " + m
+	print_rich(m)
 	if config.get_warn_todo():
-		var m: String = to_printable(msgs, {stack=get_stack(), disable_colors=true})
-		push_warning(m)
+		push_warning(_to_printable_colorless(msgs))
 
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
-func err(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	var rich_msgs: Array = msgs.duplicate()
-	rich_msgs.push_front("[color=red][ERR][/color]")
-	print_rich(to_printable(rich_msgs, {stack=get_stack()}))
-	# skip the 'color' features in errors to keep them readable in the debugger
-	var m: String = to_printable(msgs, {stack=get_stack(), disable_colors=true})
-	push_error(m)
+func err(...msgs: Array) -> void:
+	print_rich("[color=red][ERR][/color] " + to_printable(msgs))
+	push_error(_to_printable_colorless(msgs))
 
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
-func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	var rich_msgs: Array = msgs.duplicate()
-	rich_msgs.push_front("[color=red][ERR][/color]")
-	print_rich(to_printable(rich_msgs, {stack=get_stack()}))
-	# skip the 'color' features in errors to keep them readable in the debugger
-	var m: String = to_printable(msgs, {stack=get_stack(), disable_colors=true})
-	push_error(m)
+func error(...msgs: Array) -> void:
+	print_rich("[color=red][ERR][/color] " + to_printable(msgs))
+	push_error(_to_printable_colorless(msgs))
 
 
 ## Bespoke method designed to print data in a tabular fashion.[br]
@@ -732,9 +689,7 @@ func blank() -> void:
 ####################
 
 ## Helper that will both print() and print_rich() the enriched string
-func _internal_debug(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg4: Variant = "ZZZDEF", msg5: Variant = "ZZZDEF", msg6: Variant = "ZZZDEF", msg7: Variant = "ZZZDEF") -> void:
-	var msgs: Array = [msg, msg2, msg3, msg4, msg5, msg6, msg7]
-	msgs = msgs.filter(is_not_default)
-	var m: String = to_printable(msgs, {stack=get_stack()})
+func _internal_debug(...msgs: Array) -> void:
+	var m: String = to_printable(msgs, {})
 	print("_internal_debug: ", m)
 	print_rich(m)
