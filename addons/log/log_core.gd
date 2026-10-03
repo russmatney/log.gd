@@ -18,31 +18,6 @@ static func assoc(opts: Dictionary, key: String, val: Variant) -> Dictionary:
 	return _opts
 
 
-static func get_process_id() -> int:
-	var pid = OS.get_process_id()
-	# TODO consider building/using a process detail format? e.g. id/client data?
-	return pid
-
-
-static func log_prefix(stack: Array) -> String:
-	# NOTE: this filters res://addons/log/* callsites OUT of the stack.
-	stack = stack.filter(func(s: Variant) -> bool:
-		return s is Dictionary and s.has("source") and not s["source"].contains("res://addons/log/"))
-
-	if len(stack) > 0:
-		var call_site: Dictionary = stack[0]
-		var call_site_source: String = call_site.get("source", "")
-		var basename: String = call_site_source.get_file().get_basename()
-		var line_num: String = str(call_site.get("line", 0))
-		if call_site_source.match("*/test/*"):
-			return "{" + basename + ":" + line_num + "}: "
-		elif call_site_source.match("*/addons/*"):
-			return "<" + basename + ":" + line_num + ">: "
-		else:
-			return "[" + basename + ":" + line_num + "]: "
-	return ""
-
-
 ## Truncate a string to a maximum length of [param target_length] and a default
 ## [param suffix] of [code]...[/code] indicating there's more to the string than what was
 ## printed.  The resulting string will be no longer than [param target_length]
@@ -231,8 +206,9 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 	if msg is Object and (msg as Object).has_method("data"):
 		return to_pretty((msg as Object).call("data"), opts)
 	# DEPRECATED
-	if msg is Object and (msg as Object).has_method("to_printable"):
-		return to_pretty((msg as Object).call("to_printable"), opts)
+	# TODO delete! this should not longer be used
+	# if msg is Object and (msg as Object).has_method("to_printable"):
+	# 	return to_pretty((msg as Object).call("to_printable"), opts)
 
 	# arrays
 	if msg is Array or msg is PackedStringArray:
@@ -450,51 +426,124 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		return Log.color_wrap(msg, opts)
 
 
+##########
+# Prefix #
+##########
+
+## callsite
+
+func prefix_callsite(opts: Dictionary) -> String:
+	var stack = opts.get("stack", [])
+	var pretty: bool = opts.get("pretty", true)
+
+	var m: String = ""
+	if len(stack) > 0:
+		# we're assuming the stack has been filtered, and the first non-log frame is the call site
+		var call_site: Dictionary = stack[0]
+		var call_site_source: String = call_site.get("source", "")
+		var basename: String = call_site_source.get_file().get_basename()
+		var line_num: String = str(call_site.get("line", 0))
+		var prefix_type := ""
+		if call_site_source.match("*/test/*"):
+			m = "{" + basename + ":" + line_num + "}: "
+			prefix_type = "TEST"
+		elif call_site_source.match("*/addons/*"):
+			m = "<" + basename + ":" + line_num + ">: "
+			prefix_type = "ADDONS"
+		else:
+			m = "[" + basename + ":" + line_num + "]: "
+			prefix_type = "SRC"
+
+		if pretty:
+			m = color_wrap(m, assoc(opts, "typeof", prefix_type))
+	return m
+
+## proc id
+
+static func get_process_id() -> int:
+	return OS.get_process_id()
+
+func prefix_process_id() -> String:
+	if config.get_show_process_unique_id():
+		return "[%s]" % get_process_id()
+	return ""
+
+## timestamp
+
+func prefix_timestamp() -> String:
+	if config.get_show_timestamps():
+		return "[%s]" % timestamp()
+	return ""
+
+## custom logger name
+
+func prefix_logger_name():
+	if name and name != Log.LOGGER_NAME:
+		return "[%s]" % name
+	return ""
+
+## build_prefix
+
+func build_prefix(opts: Dictionary) -> String:
+	var m: String = ""
+
+	# reusing the stack here supports skipping it from various callers
+	# but it's likely the same use-case as skipping the prefix entirely
+	var stack: Array = opts.get("stack", get_stack())
+
+	# NOTE: this filters res://addons/log/* callsites OUT of the stack.
+	stack = stack.filter(func(s: Variant) -> bool:
+		return s is Dictionary and s.has("source") and not s["source"].contains("res://addons/log/"))
+	opts["stack"] = stack
+
+	# prefixes
+	var logger_name = prefix_logger_name()
+	var timestamp = prefix_timestamp()
+	var pid = prefix_process_id()
+	var callsite = prefix_callsite(opts)
+
+	# TODO we could expose this format string to support more prefix customization (reordering)
+	return "{logger_name}{timestamp}{pid}{callsite}".format({
+		logger_name=logger_name,
+		timestamp=timestamp,
+		pid=pid,
+		callsite=callsite,
+		})
+
 ################
 # to_printable #
 ################
 
+## Formats the args passed to public Log functions for printing, supporting a few options.
+##
+## This function mostly depends on to_pretty, but also adds the prefix itself.
+##
+## See also some common variants: to_printable_colorless.
+## See also some common variants: to_printable_simple.
 func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	if not config.is_config_setup:
 		LogConfig.rebuild_config(config)
 
+	var m: String = build_prefix(opts)
+
 	if not msgs is Array:
 		msgs = [msgs]
-	var stack: Array = opts.get("stack", [])
-	var pretty: bool = opts.get("pretty", true)
-	var m: String = ""
-
-	# Set ProcessID
-	if config.get_show_process_unique_id():
-		# TODO colorize
-		m += "[%s]" % get_process_id()
-
-	if name and name != Log.LOGGER_NAME:
-		m += "[%s]" % name
-
-	if config.get_show_timestamps():
-		m += "[%s]" % timestamp()
-
-	if len(stack) > 0:
-		var prefix: String = log_prefix(stack)
-		var prefix_type: String
-		if prefix != null and prefix[0] == "[":
-			prefix_type = "SRC"
-		elif prefix != null and prefix[0] == "{":
-			prefix_type = "TEST"
-		elif prefix != null and prefix[0] == "<":
-			prefix_type = "ADDONS"
-		if pretty:
-			m += color_wrap(prefix, assoc(opts, "typeof", prefix_type))
-		else:
-			m += prefix
 	for msg: Variant in msgs:
 		# add a space between msgs
-		if pretty:
+		if opts.get("pretty", true):
 			m += "%s " % to_pretty(msg, opts)
 		else:
 			m += "%s " % str(msg)
+
 	return m.trim_suffix(" ")
+
+## Variant of to_printable that disables colors.
+func to_printable_colorless(msgs: Array) -> String:
+	return to_printable(msgs, {disable_colors=true})
+
+## Variant of to_printable that disables the prefix and colors completely.
+func to_printable_simple(msgs: Array) -> String:
+	return to_printable(msgs, {stack=[], disable_colors=true})
 
 
 ###################
@@ -534,9 +583,6 @@ func register_type_overwrites(overwrites: Dictionary) -> void:
 ##########################
 # Public Print Functions #
 ##########################
-
-func _to_printable_colorless(msgs: Array) -> String:
-	return to_printable(msgs, {disable_colors=true})
 
 
 ## Pretty-print the passed arguments in a single line.
@@ -583,7 +629,7 @@ func warn(...msgs: Array) -> void:
 	if config.get_log_level() > Log.Levels.WARN:
 		return
 	print_rich("[color=yellow][WARN][/color] " + to_printable(msgs))
-	push_warning(_to_printable_colorless(msgs))
+	push_warning(to_printable_colorless(msgs))
 
 
 ## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
@@ -599,19 +645,19 @@ func todo(...msgs: Array) -> void:
 		m = "[color=yellow][WARN][/color] " + m
 	print_rich(m)
 	if config.get_warn_todo():
-		push_warning(_to_printable_colorless(msgs))
+		push_warning(to_printable_colorless(msgs))
 
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
 func err(...msgs: Array) -> void:
 	print_rich("[color=red][ERR][/color] " + to_printable(msgs))
-	push_error(_to_printable_colorless(msgs))
+	push_error(to_printable_colorless(msgs))
 
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
 func error(...msgs: Array) -> void:
 	print_rich("[color=red][ERR][/color] " + to_printable(msgs))
-	push_error(_to_printable_colorless(msgs))
+	push_error(to_printable_colorless(msgs))
 
 
 ## Bespoke method designed to print data in a tabular fashion.[br]

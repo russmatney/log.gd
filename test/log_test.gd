@@ -435,17 +435,17 @@ func test_show_timestamp() -> void:
 	Log.disable_colors()
 
 	Log.show_timestamps()
-	Log.to_printable(["test"])
-	assert_str(Log.to_printable(["test"])) \
+	Log.to_printable_simple(["test"])
+	assert_str(Log.to_printable_simple(["test"])) \
 			.ends_with("test") \
 			.has_length(13, Comparator.GREATER_EQUAL) \
 			.has_length(14, Comparator.LESS_EQUAL)
 
 	Log.hide_timestamps()
-	assert_str(Log.to_printable(["test"])).is_equal("test")
+	assert_str(Log.to_printable_simple(["test"])).is_equal("test")
 
 	Log.show_timestamps()
-	assert_str(Log.to_printable(["test"])) \
+	assert_str(Log.to_printable_simple(["test"])) \
 			.ends_with("test") \
 			.has_length(13, Comparator.GREATER_EQUAL) \
 			.has_length(14, Comparator.LESS_EQUAL)
@@ -456,8 +456,8 @@ func test_timestamp_human_readable() -> void:
 
 	Log.use_timestamp_type(Log.TimestampTypes.HUMAN_12HR)
 	Log.use_timestamp_format("{hour}:{minute}:{second} {meridiem}")
-	Log.to_printable(["test"])
-	assert_str(Log.to_printable(["test"])) \
+	Log.to_printable_simple(["test"])
+	assert_str(Log.to_printable_simple(["test"])) \
 			.ends_with("test") \
 			.has_length(16, Comparator.GREATER_EQUAL) \
 			.has_length(17, Comparator.LESS_EQUAL)
@@ -466,8 +466,8 @@ func test_timestamp_human_readable() -> void:
 	Log.use_timestamp_format(
 		Log._core.config.CONFIG_DEFAULTS[Log._core.config.KEY_HUMAN_READABLE_TIMESTAMP_FORMAT]
 	)
-	Log.to_printable(["test"])
-	assert_str(Log.to_printable(["test"])) \
+	Log.to_printable_simple(["test"])
+	assert_str(Log.to_printable_simple(["test"])) \
 			.ends_with("test") \
 			.has_length(14, Comparator.EQUAL)
 
@@ -478,30 +478,31 @@ func test_timestamp_human_readable() -> void:
 
 func test_named_loggers() -> void:
 	var example_logger: LogCore = LogCore.new("ExampleLogger")
-	assert_str(example_logger.to_printable(["Example"])) \
-		.is_equal("[ExampleLogger][color=pink]Example[/color]")
+	assert_str(example_logger.to_printable_simple(["Example"])) \
+		.is_equal("[ExampleLogger]Example")
 
 	var test_logger: LogCore = LogCore.new("TestLogger")
-	assert_str(test_logger.to_printable(["Test"], {"pretty": false})) \
+	assert_str(test_logger.to_printable_simple(["Test"])) \
 		.is_equal("[TestLogger]Test")
 
 	var other_logger: LogCore = LogCore.new("OtherLogger")
-	assert_str(other_logger.to_printable(["Other"])) \
-		.is_equal("[OtherLogger][color=pink]Other[/color]")
+	assert_str(other_logger.to_printable_simple(["Other"])) \
+		.is_equal("[OtherLogger]Other")
 
-	assert_str(example_logger.to_printable(["Example 2"])) \
-		.is_equal("[ExampleLogger][color=pink]Example 2[/color]")
-	assert_str(test_logger.to_printable(["Test", 2], {"pretty": false})) \
+	assert_str(example_logger.to_printable_simple(["Example 2"])) \
+		.is_equal("[ExampleLogger]Example 2")
+	assert_str(test_logger.to_printable_simple(["Test", 2])) \
 		.is_equal("[TestLogger]Test 2")
-	assert_str(other_logger.to_printable(["Other", 2])) \
-		.is_equal("[OtherLogger][color=pink]Other[/color] [color=green]2[/color]")
 
-	assert_str(example_logger.to_printable(["Example", 2])) \
-		.is_equal("[ExampleLogger][color=pink]Example[/color] [color=green]2[/color]")
-	assert_str(test_logger.to_printable([{"Test": 2}], {"pretty": false})) \
+	assert_str(other_logger.to_printable_simple(["Other", 2])) \
+		.is_equal("[OtherLogger]Other 2")
+
+	assert_str(example_logger.to_printable_simple(["Example", 2])) \
+		.is_equal("[ExampleLogger]Example 2")
+	assert_str(test_logger.to_printable_simple([{"Test": 2}])) \
 		.is_equal('[TestLogger]{ "Test": 2 }')
-	assert_str(other_logger.to_printable([{"Other": 2}])) \
-		.is_equal('[OtherLogger][color=dc143c]{ [/color][color=dc143c]"Other"[/color][color=a9a9a9]: [/color][color=green]2[/color][color=dc143c] }[/color]')
+	assert_str(other_logger.to_printable_simple([{"Other": 2}])) \
+		.is_equal('[OtherLogger]{ "Other": 2 }')
 
 
 ##########
