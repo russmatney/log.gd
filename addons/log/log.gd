@@ -320,6 +320,12 @@ static func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 static func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	return _core.to_printable(msgs, opts)
 
+static func to_printable_colorless(msgs: Array) -> String:
+	return _core.to_printable_colorless(msgs)
+
+static func to_printable_simple(msgs: Array) -> String:
+	return _core.to_printable_simple(msgs)
+
 
 #############
 # timestamp #
