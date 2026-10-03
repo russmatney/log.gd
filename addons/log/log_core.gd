@@ -43,6 +43,20 @@ static func log_prefix(stack: Array) -> String:
 	return ""
 
 
+## Truncate a string to a maximum length of [param target_length] and a default
+## [param suffix] of [code]...[/code] indicating there's more to the string than what was
+## printed.  The resulting string will be no longer than [param target_length]
+## even when the [param suffix] is appended.
+static func _truncate_string(input_string: String, target_length: int, suffix: String = "...") -> String:
+	var do_suffix: bool = len(input_string) > target_length
+	if not len(input_string) > target_length:
+		return input_string
+
+	input_string = input_string.substr(0, target_length - suffix.length())
+	input_string += suffix
+	return input_string
+
+
 #############
 # Built-ins #
 #############
@@ -637,6 +651,73 @@ func error(msg: Variant, msg2: Variant = "ZZZDEF", msg3: Variant = "ZZZDEF", msg
 	# skip the 'color' features in errors to keep them readable in the debugger
 	var m: String = to_printable(msgs, {stack=get_stack(), disable_colors=true})
 	push_error(m)
+
+
+## Bespoke method designed to print data in a tabular fashion.[br]
+## [br]
+## Creates multi-line output where the first line is the standard Log.gd
+## preface, the second line is the table header, the third line is the header
+## separator, then each subsequent line is a row of table data.
+func table(
+	msg: Variant,
+	config: LogTableConfig = LogTableConfig.new()
+) -> void:
+	if typeof(msg) in [TYPE_INT, TYPE_STRING]:
+		print_rich(to_printable([msg], {stack=get_stack()}))
+		return
+
+	if config.columns == [] \
+	and typeof(msg) == TYPE_ARRAY \
+	and typeof(msg[0]) not in [TYPE_DICTIONARY, TYPE_OBJECT]:
+		print_rich(to_printable(msg, {stack=get_stack()}))
+		return
+
+	print_rich(to_printable([], {stack=get_stack()}))
+
+	if typeof(msg) != TYPE_ARRAY:
+		msg = [msg]
+
+	if config.columns == [] and typeof(msg[0]) == TYPE_DICTIONARY:
+		config.columns = msg[0].keys()
+	elif config.columns == [] and typeof(msg[0]) == TYPE_OBJECT:
+		config.columns = msg[0].get_property_list() \
+			.filter(func(x): return x["usage"] in [
+				# TODO-table: Clean up bitmask usage
+				PROPERTY_USAGE_SCRIPT_VARIABLE,
+				PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_CLASS_IS_ENUM
+			]) \
+			.map(func(x): return x["name"])
+
+	var longest_values: Array[int] = []
+	for i in range(len(config.columns)):
+		longest_values.append(len(str(config.columns[i])))
+
+	if typeof(msg[0]) == TYPE_ARRAY:
+		for item: Array in msg:
+			for i in range(len(item)):
+				longest_values[i] = max(longest_values[i], len(str(item[i])))
+	elif typeof(msg[0]) == TYPE_DICTIONARY:
+		for item: Dictionary in msg:
+			var item_values: Array = item.values()
+			for i in range(len(item_values)):
+				longest_values[i] = max(longest_values[i], len(str(item_values[i])))
+	elif typeof(msg[0]) == TYPE_OBJECT:
+		for item: Object in msg:
+			for i in range(len(config.columns)):
+				var str_value: String = str(item.get(config.columns[i]))
+				longest_values[i] = max(longest_values[i], len(str_value))
+	else:
+		for i in range(len(msg)):
+			longest_values[i] = max(longest_values[i], len(str(msg[i])))
+
+	for i in range(len(longest_values)):
+		longest_values[i] = min(longest_values[i], config.max_length)
+
+	var header: String = LogTable.header(config, longest_values)
+	print_rich(header)
+
+	var body: String = LogTable.body(config, longest_values, msg)
+	print_rich(body)
 
 
 func blank() -> void:
