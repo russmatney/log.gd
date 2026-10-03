@@ -84,14 +84,24 @@ them out!
 - [https://github.com/ZeeWeasel/LogDuck](https://github.com/ZeeWeasel/LogDuck)
 - [https://github.com/DaviD4Chirino/Awesome-Debug-Log](https://github.com/DaviD4Chirino/Awesome-Debug-Log)
 
-
 ## Contributors
 
 Huge thanks to the Log.gd contributors!
 
+- [gofastlily](https://github.com/gofastlily)
 - [cridenour](https://github.com/cridenour)
 - [Gramps](https://github.com/Gramps)
-- [gofastlily](https://github.com/gofastlily)
-- [gofastlily](https://github.com/gofastlily)
 - [IAmTraffic](https://github.com/IAmTraffic)
 - [Fox-Alpha](https://github.com/Fox-Alpha)
+
+## Contribution Guidelines
+
+See [Contributing.md](Contributing.md) for full Contribution Guidelines.
+
+Log.gd adopt's [Godot's AI-contribution
+Policy](https://contributing.godotengine.org/en/latest/development/contribution_rules.html#ai-assisted-contributions),
+which discourages AI-based contributions and interactions.
+
+This is a small project that collaborators work on in limited free time - we
+prefer to minimize slop and enjoy the code.
+
