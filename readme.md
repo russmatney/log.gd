@@ -65,6 +65,15 @@ This makes Godot's `Output` buffer much more readable! And now, I can't live wit
 
 - [Color Constants Cheatsheet](https://raw.githubusercontent.com/godotengine/godot-docs/master/img/color_constants.png)
 
+## Old Versions
+
+Godot 4.5 introduced a splat operator, which allows for significant clean up in
+this tool. If you need a Godot 4.4 or earlier version, the `godot-4.4` branch
+should work: https://github.com/russmatney/log.gd/tree/godot-4.4
+
+We don't expect to backport features to this older build unless it is requested,
+so reach out if you need something. Otherwise, onward!
+
 ## Other Godot Loggers
 
 There are some other great printers/loggers with a variety of features - check
