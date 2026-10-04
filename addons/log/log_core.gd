@@ -205,10 +205,6 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		return to_pretty((msg as Object).call("to_pretty"), opts)
 	if msg is Object and (msg as Object).has_method("data"):
 		return to_pretty((msg as Object).call("data"), opts)
-	# DEPRECATED
-	# TODO delete! this should not longer be used
-	# if msg is Object and (msg as Object).has_method("to_printable"):
-	# 	return to_pretty((msg as Object).call("to_printable"), opts)
 
 	# arrays
 	if msg is Array or msg is PackedStringArray:
@@ -430,59 +426,61 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 # Prefix #
 ##########
 
-## callsite
+# callsite
 
 func prefix_callsite(opts: Dictionary) -> String:
 	var stack = opts.get("stack", [])
 	var pretty: bool = opts.get("pretty", true)
 
 	var m: String = ""
-	if len(stack) > 0:
-		# we're assuming the stack has been filtered, and the first non-log frame is the call site
-		var call_site: Dictionary = stack[0]
-		var call_site_source: String = call_site.get("source", "")
-		var basename: String = call_site_source.get_file().get_basename()
-		var line_num: String = str(call_site.get("line", 0))
-		var prefix_type := ""
-		if call_site_source.match("*/test/*"):
-			m = "{" + basename + ":" + line_num + "}: "
-			prefix_type = "TEST"
-		elif call_site_source.match("*/addons/*"):
-			m = "<" + basename + ":" + line_num + ">: "
-			prefix_type = "ADDONS"
-		else:
-			m = "[" + basename + ":" + line_num + "]: "
-			prefix_type = "SRC"
+	if len(stack) == 0:
+		return m
 
-		if pretty:
-			m = color_wrap(m, assoc(opts, "typeof", prefix_type))
+	# we're assuming the stack has been filtered, and the first non-log frame is the call site
+	var call_site: Dictionary = stack[0]
+	var call_site_source: String = call_site.get("source", "")
+	var basename: String = call_site_source.get_file().get_basename()
+	var line_num: String = str(call_site.get("line", 0))
+	var prefix_type := ""
+	if call_site_source.match("*/test/*"):
+		m = "{" + basename + ":" + line_num + "}: "
+		prefix_type = "TEST"
+	elif call_site_source.match("*/addons/*"):
+		m = "<" + basename + ":" + line_num + ">: "
+		prefix_type = "ADDONS"
+	else:
+		m = "[" + basename + ":" + line_num + "]: "
+		prefix_type = "SRC"
+
+	if pretty:
+		m = color_wrap(m, assoc(opts, "typeof", prefix_type))
 	return m
 
-## proc id
+# proc id
 
 static func get_process_id() -> int:
 	return OS.get_process_id()
 
 func prefix_process_id() -> String:
-	if config.get_show_process_unique_id():
-		return "[%s]" % get_process_id()
-	return ""
+	if not config.get_show_process_unique_id():
+		return ""
+	return "[%s]" % get_process_id()
 
-## timestamp
+# timestamp
 
 func prefix_timestamp() -> String:
-	if config.get_show_timestamps():
-		return "[%s]" % timestamp()
-	return ""
+	if not config.get_show_timestamps():
+		return ""
+	return "[%s]" % timestamp()
 
-## custom logger name
+# custom logger name
 
 func prefix_logger_name():
-	if name and name != Log.LOGGER_NAME:
-		return "[%s]" % name
-	return ""
+	if not (name and name != Log.LOGGER_NAME):
+		return ""
+	return "[%s]" % name
 
-## build_prefix
+# build_prefix
 
 func build_prefix(opts: Dictionary) -> String:
 	var m: String = ""
