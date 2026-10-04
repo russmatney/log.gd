@@ -482,7 +482,7 @@ func prefix_logger_name():
 
 # build_prefix
 
-func build_prefix(opts: Dictionary) -> String:
+func build_prefix(opts: Dictionary = {}) -> String:
 	var m: String = ""
 
 	# reusing the stack here supports skipping it from various callers
@@ -673,16 +673,16 @@ func table(
 	config: LogTableConfig = LogTableConfig.new()
 ) -> void:
 	if typeof(msg) in [TYPE_INT, TYPE_STRING]:
-		print_rich(to_printable([msg], {stack=get_stack()}))
+		print_rich(to_printable([msg]))
 		return
 
 	if config.columns == [] \
 	and typeof(msg) == TYPE_ARRAY \
 	and typeof(msg[0]) not in [TYPE_DICTIONARY, TYPE_OBJECT]:
-		print_rich(to_printable(msg, {stack=get_stack()}))
+		print_rich(to_printable(msg))
 		return
 
-	print_rich(to_printable([], {stack=get_stack()}))
+	print_rich(build_prefix())
 
 	if typeof(msg) != TYPE_ARRAY:
 		msg = [msg]
@@ -739,6 +739,6 @@ func blank() -> void:
 
 ## Helper that will both print() and print_rich() the enriched string
 func _internal_debug(...msgs: Array) -> void:
-	var m: String = to_printable(msgs, {})
+	var m: String = to_printable(msgs)
 	print("_internal_debug: ", m)
 	print_rich(m)
