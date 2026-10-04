@@ -29,8 +29,12 @@ static func is_not_default(v: Variant) -> bool:
 
 
 static func log_prefix(stack: Array) -> String:
-	if len(stack) > 1:
-		var call_site: Dictionary = stack[1]
+	# NOTE: this filters res://addons/log/* callsites OUT of the stack.
+	stack = stack.filter(func(s: Variant) -> bool:
+		return s is Dictionary and s.has("source") and not s["source"].contains("res://addons/log/"))
+
+	if len(stack) > 0:
+		var call_site: Dictionary = stack[0]
 		var call_site_source: String = call_site.get("source", "")
 		var basename: String = call_site_source.get_file().get_basename()
 		var line_num: String = str(call_site.get("line", 0))
