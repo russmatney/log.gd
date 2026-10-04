@@ -514,10 +514,11 @@ func build_prefix(opts: Dictionary) -> String:
 
 ## Formats the args passed to public Log functions for printing, supporting a few options.
 ##
+## [br][br]
 ## This function mostly depends on to_pretty, but also adds the prefix itself.
 ##
-## See also some common variants: to_printable_colorless.
-## See also some common variants: to_printable_simple.
+## [br][br]
+## See also some common variants: [method to_printable_colorless], [method to_printable_simple].
 func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	if not config.is_config_setup:
 		LogConfig.rebuild_config(config)

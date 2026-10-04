@@ -16,7 +16,7 @@ extends Object
 ## there is a [code]register_type_overwrite(key, handler)[/code] helper.
 ##
 ## [br][br]
-## You can find up-to-date docs and examples in the Log.gd repo and docs site:
+## You can find more docs and examples in the Log.gd repo and docs site:
 ## [br]
 ## - https://github.com/russmatney/log.gd
 ## [br]
