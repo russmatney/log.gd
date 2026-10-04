@@ -536,9 +536,11 @@ func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 
 	return m.trim_suffix(" ")
 
+
 ## Variant of to_printable that disables colors.
 func to_printable_colorless(msgs: Array) -> String:
 	return to_printable(msgs, {disable_colors=true})
+
 
 ## Variant of to_printable that disables the prefix and colors completely.
 func to_printable_simple(msgs: Array) -> String:
@@ -617,11 +619,13 @@ func debug(...msgs: Array) -> void:
 		return
 	print_rich("[DEBUG] " + to_printable(msgs))
 
+
 ## Pretty-print the passed arguments in a single line.
 func info(...msgs: Array) -> void:
 	if config.get_log_level() > Log.Levels.INFO:
 		return
 	print_rich("[INFO] " + to_printable(msgs))
+
 
 ## Like [code]Log.pr()[/code], but also calls push_warning() with the pretty string.
 func warn(...msgs: Array) -> void:
