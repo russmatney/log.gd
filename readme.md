@@ -1,3 +1,18 @@
+# Legacy Godot 4.4 branch
+
+Godot 4.5 introduced a splat operator, which allows for simpler variadic
+function implementation (`func my_fn(...args: Array)`) - this allowed Log.gd to clean
+up it's public interface (which had been hard-coded to 7 args).
+
+This `godot-4.4` branch exists for folks who can't upgrade immediately.
+Hopefully you can soon!
+
+> We don't expect to backport features going forward. The
+> latest test suite doesn't run on 4.4 for similar syntax-breaking reasons (though it
+> could - reach out if you need this supported!).
+
+---
+
 <p align="center">
   <a href="https://github.com/russmatney/log.gd/actions/workflows/ci.yml"><img alt="Unit Tests" src="https://github.com/russmatney/log.gd/actions/workflows/ci.yml/badge.svg" /></a>
 </p>
