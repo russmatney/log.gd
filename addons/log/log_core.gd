@@ -18,20 +18,6 @@ static func assoc(opts: Dictionary, key: String, val: Variant) -> Dictionary:
 	return _opts
 
 
-## Truncate a string to a maximum length of [param target_length] and a default
-## [param suffix] of [code]...[/code] indicating there's more to the string than what was
-## printed.  The resulting string will be no longer than [param target_length]
-## even when the [param suffix] is appended.
-static func _truncate_string(input_string: String, target_length: int, suffix: String = "...") -> String:
-	var do_suffix: bool = len(input_string) > target_length
-	if not len(input_string) > target_length:
-		return input_string
-
-	input_string = input_string.substr(0, target_length - suffix.length())
-	input_string += suffix
-	return input_string
-
-
 #############
 # Built-ins #
 #############
