@@ -2,6 +2,12 @@ class_name LogTable
 extends Object
 
 
+## Returns the column width that Log.to_pretty will print.
+static func item_width(item: Variant):
+	# colorless and no newlines - could probably use a dedicated to_pretty_basic (or better named) variant
+	var pretty_bb = Log.to_pretty(item, {newlines=false, disable_colors=true})
+	return len(pretty_bb)
+
 static func header(
 	config: LogTableConfig,
 	longest_values: Array[int],

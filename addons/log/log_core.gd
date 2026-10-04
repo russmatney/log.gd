@@ -695,20 +695,19 @@ func table(
 	if typeof(msg[0]) == TYPE_ARRAY:
 		for item: Array in msg:
 			for i in range(len(item)):
-				longest_values[i] = max(longest_values[i], len(str(item[i])))
+				longest_values[i] = max(longest_values[i], LogTable.item_width(item[i]))
 	elif typeof(msg[0]) == TYPE_DICTIONARY:
 		for item: Dictionary in msg:
 			var item_values: Array = item.values()
 			for i in range(len(item_values)):
-				longest_values[i] = max(longest_values[i], len(str(item_values[i])))
+				longest_values[i] = max(longest_values[i], LogTable.item_width(item_values[i]))
 	elif typeof(msg[0]) == TYPE_OBJECT:
 		for item: Object in msg:
 			for i in range(len(config.columns)):
-				var str_value: String = str(item.get(config.columns[i]))
-				longest_values[i] = max(longest_values[i], len(str_value))
+				longest_values[i] = max(longest_values[i], LogTable.item_width(item.get(config.columns[i])))
 	else:
 		for i in range(len(msg)):
-			longest_values[i] = max(longest_values[i], len(str(msg[i])))
+			longest_values[i] = max(longest_values[i], LogTable.item_width(msg[i]))
 
 	for i in range(len(longest_values)):
 		longest_values[i] = min(longest_values[i], config.max_length)
