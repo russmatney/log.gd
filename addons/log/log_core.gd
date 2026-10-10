@@ -7,6 +7,144 @@ var config: LogConfig
 var name: String = ""
 var type_overwrites: Dictionary = {}
 
+##############
+# PrettyOpts #
+##############
+
+class PrettyOpts:
+	extends Object
+
+	var newlines: bool = false
+	var newline_depth: int = 0
+	var newline_max_depth: int = 0
+	var indent_level: int = 0
+	var disable_colors: bool = false
+	var s_type: Variant = null
+	var color: Variant = null
+	var pretty: bool = true
+	var stack: Array = []
+	var show_prefix: bool = true
+
+	var config: LogConfig
+
+	func _init(opts: Dictionary, _config: LogConfig) -> void:
+		config = _config
+		newlines = opts.get("newlines", config.get_use_newlines())
+		newline_depth = opts.get("newline_depth", 0)
+		newline_max_depth = opts.get("newline_max_depth", config.get_newline_max_depth())
+		indent_level = opts.get("indent_level", 0)
+		disable_colors = opts.get("disable_colors", false)
+		s_type = opts.get("typeof")
+		color = opts.get("color")
+		pretty = opts.get("pretty", true)
+		stack = opts.get("stack", [])
+		show_prefix = opts.get("show_prefix", true)
+
+		if not newlines:
+			newline_max_depth = 0
+		elif newline_max_depth == 0:
+			newlines = false
+
+		if newline_max_depth > 0 and newline_depth >= newline_max_depth:
+			newlines = false
+
+
+	func no_color() -> PrettyOpts:
+		disable_colors = true
+		return self
+
+	func no_stack() -> PrettyOpts:
+		stack = []
+		return self
+
+	func inc_newline_depth() -> PrettyOpts:
+		newline_depth += 1
+		return self
+
+	func dec_newline_depth() -> PrettyOpts:
+		newline_depth -= 1
+		return self
+
+	func inc_indent_level() -> PrettyOpts:
+		indent_level += 1
+		return self
+
+	func dec_indent_level() -> PrettyOpts:
+		indent_level -= 1
+		return self
+
+	func duplicate() -> PrettyOpts:
+		var dupe: PrettyOpts = PrettyOpts.new({}, config)
+
+		dupe.newlines = newlines
+		dupe.newline_depth = newline_depth
+		dupe.newline_max_depth = newline_max_depth
+		dupe.indent_level = indent_level
+		dupe.disable_colors = disable_colors
+		dupe.s_type = s_type
+		dupe.color = color
+		dupe.pretty = pretty
+		dupe.stack = stack
+		dupe.show_prefix = show_prefix
+
+		return dupe
+
+	## assoc creates a new PrettyOpts with the given key/value pair updated.
+	## a new PrettyOpts is returned, leaving the original unchanged.
+	func assoc(key: String, val: Variant) -> PrettyOpts:
+		var dupe: PrettyOpts = duplicate()
+
+		if key == "newlines":
+			dupe.newlines = val
+		elif key == "newline_depth":
+			dupe.newline_depth = val
+		elif key == "newline_max_depth":
+			dupe.newline_max_depth = val
+		elif key == "indent_level":
+			dupe.indent_level = val
+		elif key == "disable_colors":
+			dupe.disable_colors = val
+		elif key == "typeof" or key == "s_type":
+			dupe.s_type = val
+		elif key == "color":
+			dupe.color = val
+		elif key == "pretty":
+			dupe.pretty = val
+		elif key == "stack":
+			dupe.stack = val
+		elif key == "show_prefix":
+			dupe.show_prefix = val
+		return dupe
+
+	func color_opts() -> ColorOpts:
+		return ColorOpts.new(false if disable_colors else color, s_type, newline_depth)
+
+
+class ColorOpts:
+	extends Object
+
+	var color: Variant = null
+	var s_type: Variant = null
+	var newline_depth: int = 0
+	var disable_color: bool = false
+
+	func _init(color: Variant = null, s_type: Variant = null, newline_depth: int = 0) -> void:
+		color = color
+		s_type = s_type
+		newline_depth = newline_depth
+
+		if disable_color == null and color == false:
+			disable_color = true
+
+	static func from_dict(opts: Dictionary) -> ColorOpts:
+		var color: Variant = opts.get("color", null)
+		var s_type: Variant = opts.get("typeof", null)
+		var newline_depth: int = opts.get("newline_depth", 0)
+		if opts.get("disable_colors"):
+			color = false
+		return ColorOpts.new(color, s_type, newline_depth)
+
+
 
 ##################
 # Static Helpers #
@@ -32,42 +170,45 @@ func _init(p_name: String, p_config: LogConfig = LogConfig.new()) -> void:
 ##########
 
 func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
+	return _color_wrap(s, PrettyOpts.new(opts, config))
+
+# color_wrap should never mutate opts
+func _color_wrap(s: Variant, opts: PrettyOpts) -> String:
 	# TODO refactor to use the color theme directly
 	var color_theme: LogColorTheme = config.get_config_color_theme()
 
-	if not should_use_color(opts):
+	if not _should_use_color(opts):
 		return str(s)
 
-	var color: Variant = opts.get("color", "")
+	var color: Variant = opts.color
 	if color == null or (color is String and color == ""):
-		color = get_color_using_typeof(s, opts)
+		color = get_color_using_typeof(s, opts.s_type if opts.s_type else typeof(s))
 
 	if color is String and color == "" or color == null:
 		print("Log.gd could not determine color for object: %s type: (%s)" % [str(s), typeof(s)])
 
 	if color is Array:
 		# support rainbow delimiters
-		if opts.get("typeof", "") in ["dict_key"]:
+		if opts.s_type in ["dict_key"]:
 			# subtract 1 for dict_keys
 			# we the keys are 'down' a nesting level, but we want the curly + dict keys to match
-			color = color[(opts.get("newline_depth", 0) - 1) % len(color)]
+			color = color[(opts.newline_depth - 1) % len(color)]
 		else:
-			color = color[opts.get("newline_depth", 0) % len(color)]
+			color = color[opts.newline_depth % len(color)]
 
 	if color is Color:
 		# get the colors back to something bb_code can handle
 		color = color.to_html(false)
 
 	if color_theme and color_theme.has_bg():
-		var bg_color: String = color_theme.get_bg_color(opts.get("newline_depth", 0)).to_html(false)
+		var bg_color: String = color_theme.get_bg_color(opts.newline_depth).to_html(false)
 		return "[bgcolor=%s][color=%s]%s[/color][/bgcolor]" % [bg_color, color, s]
 	return "[color=%s]%s[/color]" % [color, s]
 
 
-func get_color_using_typeof(s: Variant, opts: Dictionary) -> Variant:
+func get_color_using_typeof(s: Variant, s_type: Variant) -> Variant:
 	var colors: Dictionary = config.get_config_color_theme_dict()
 	var color: Variant
-	var s_type: Variant = opts.get("typeof", typeof(s))
 	if s_type is String:
 		# type overwrites
 		color = colors.get(s_type)
@@ -86,13 +227,17 @@ func get_color_using_typeof(s: Variant, opts: Dictionary) -> Variant:
 
 
 func should_use_color(opts: Dictionary = {}) -> bool:
+	# return _should_use_color(ColorOpts.from_dict(opts))
+	return _should_use_color(PrettyOpts.new(opts, config))
+
+func _should_use_color(opts: PrettyOpts) -> bool:
 	if OS.has_feature("ios") or OS.has_feature("web"):
 		# ios and web (and likely others) don't handle colors well
 		return false
 	if config.get_disable_colors():
 		return false
 	# supports per-print color skipping
-	if opts.get("disable_colors", false):
+	if opts.disable_colors:
 		return false
 	return true
 
@@ -152,45 +297,29 @@ func timestamp() -> String:
 ## Can be useful to feed directly into a RichTextLabel.
 ##
 func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
-	var newlines: bool = opts.get("newlines", config.get_use_newlines())
-	var newline_depth: int = opts.get("newline_depth", 0)
-	var newline_max_depth: int = opts.get("newline_max_depth", config.get_newline_max_depth())
-	var indent_level: int = opts.get("indent_level", 0)
+	return _to_pretty(msg, PrettyOpts.new(opts, config))
 
-	if not newlines:
-		newline_max_depth = 0
-	elif newline_max_depth == 0:
-		newlines = false
-
-	# If newline_max_depth is negative, don't limit the depth
-	if newline_max_depth > 0 and newline_depth >= newline_max_depth:
-		newlines = false
-
-	if not "newline_depth" in opts:
-		opts["newline_depth"] = newline_depth
-
-	if not "indent_level" in opts:
-		opts["indent_level"] = indent_level
-
+func _to_pretty(msg: Variant, opts: PrettyOpts) -> String:
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
 		return str("invalid instance: ", msg)
 
+	var color_opts = opts.color_opts()
 	if msg == null:
-		return color_wrap(msg, opts)
+		return _color_wrap(msg, color_opts)
 
 	if msg is Object and (msg as Object).get_class() in type_overwrites:
 		var fn: Callable = type_overwrites.get((msg as Object).get_class())
-		return to_pretty(fn.call(msg), opts)
+		return _to_pretty(fn.call(msg), opts)
 	elif typeof(msg) in type_overwrites:
 		var fn: Callable = type_overwrites.get(typeof(msg))
-		return to_pretty(fn.call(msg), opts)
+		return _to_pretty(fn.call(msg), opts)
 
 	# objects
 	if msg is Object and (msg as Object).has_method("to_pretty"):
 		# using a cast and `call.("blah")` here it's "type safe"
-		return to_pretty((msg as Object).call("to_pretty"), opts)
+		return _to_pretty((msg as Object).call("to_pretty"), opts)
 	if msg is Object and (msg as Object).has_method("data"):
-		return to_pretty((msg as Object).call("data"), opts)
+		return _to_pretty((msg as Object).call("data"), opts)
 
 	# arrays
 	if msg is Array or msg is PackedStringArray:
@@ -198,30 +327,30 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 		if len(msg) > config.get_max_array_size():
 			Log.pr("[DEBUG]: truncating large array. total:", len(msg))
 			msg_array = msg_array.slice(0, config.get_max_array_size() - 1)
-			if newlines:
+			if opts.newlines:
 				msg_array.append("...")
 
 		# shouldn't we be incrementing index_level here?
-		var tmp: String = color_wrap("[ ", opts)
-		opts["newline_depth"] += 1
+		var tmp: String = _color_wrap("[ ", opts)
+		opts.inc_newline_depth()
 		var last: int = len(msg) - 1
 		for i: int in range(len(msg)):
-			if newlines and last > 1:
-				tmp += color_wrap("\n\t", opts)
-			tmp += to_pretty(msg[i],
-				# duplicate here to prevent indenting-per-msg
+			if opts.newlines and last > 1:
+				tmp += _color_wrap("\n\t", opts)
+			tmp += _to_pretty(msg[i],
+				# pass a duplicate here to prevent indenting-per-msg
 				# e.g. when printing an array of dictionaries
-				opts.duplicate(true))
+				opts.duplicate())
 			if i != last:
-				tmp += color_wrap(", ", opts)
-		opts["newline_depth"] -= 1
-		tmp += color_wrap(" ]", opts)
+				tmp += _color_wrap(", ", opts)
+		opts.dec_newline_depth()
+		tmp += _color_wrap(" ]", opts)
 		return tmp
 
 	# dictionary
 	elif msg is Dictionary:
-		var tmp: String = color_wrap("{ ", opts)
-		opts["newline_depth"] += 1
+		var tmp: String = _color_wrap("{ ", opts)
+		opts.inc_newline_depth()
 		var ct: int = len(msg)
 		var last: Variant
 		if len(msg) > 0:
@@ -234,24 +363,24 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 			else:
 				if not indent_updated:
 					indent_updated = true
-					opts["indent_level"] += 1
-				val = to_pretty(msg[k], opts)
-			if newlines and ct > 1:
-				tmp += color_wrap("\n\t", opts) \
-					+ color_wrap(range(indent_level)\
+					opts.inc_indent_level()
+				val = _to_pretty(msg[k], opts)
+			if opts.newlines and ct > 1:
+				tmp += _color_wrap("\n\t", opts) \
+					+ _color_wrap(range(opts.indent_level)\
 					.map(func(_i: int) -> String: return "\t")\
 					.reduce(func(a: String, b: Variant) -> String: return str(a, b), ""), opts)
-			var key: String = color_wrap('"%s"' % k, assoc(opts, "typeof", "dict_key"))
-			tmp += "%s%s%s" % [key, color_wrap(": ", opts), val]
+			var key: String = _color_wrap('"%s"' % k, opts.assoc("typeof", "dict_key"))
+			tmp += "%s%s%s" % [key, _color_wrap(": ", opts), val]
 			if last and str(k) != str(last):
-				tmp += color_wrap(", ", opts)
-		opts["newline_depth"] -= 1
-		tmp += color_wrap(" }", opts)
-		opts["indent_level"] -= 1 # ugh! updating the dict in-place
+				tmp += _color_wrap(", ", opts)
+		opts.dec_newline_depth()
+		tmp += _color_wrap(" }", opts)
+		opts.dec_indent_level()
 		return tmp
 
 	elif msg is float:
-		return color_wrap(config.get_float_precision_string() % msg, opts)
+		return _color_wrap(config.get_float_precision_string() % msg, opts)
 
 	# strings
 	elif msg is String:
@@ -262,150 +391,150 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 			# can't remember this use-case
 			# perhaps should use a regex and unit tests for something more robust
 			return msg
-		return Log.color_wrap(msg, opts)
+		return _color_wrap(msg, opts)
 	elif msg is StringName:
-		return str(Log.color_wrap("&", opts), '"%s"' % msg)
+		return str(_color_wrap("&", opts), '"%s"' % msg)
 	elif msg is NodePath:
-		return str(Log.color_wrap("^", opts), '"%s"' % msg)
+		return str(_color_wrap("^", opts), '"%s"' % msg)
 
 	elif msg is Color:
 		# probably too opinionated, but seeing 4 floats for color is noisey
-		return Log.color_wrap(msg.to_html(false), assoc(opts, "typeof", TYPE_COLOR))
+		return _color_wrap(msg.to_html(false), opts.assoc("typeof", TYPE_COLOR))
 
 	# vectors
 	elif msg is Vector2:
 		return '%s%s%s%s%s' % [
-			color_wrap("(", opts),
-			color_wrap(config.get_float_precision_string() % msg.x, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(config.get_float_precision_string() % msg.y, assoc(opts, "typeof", "vector_value")),
-			color_wrap(")", opts),
+			_color_wrap("(", opts),
+			_color_wrap(config.get_float_precision_string() % msg.x, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(config.get_float_precision_string() % msg.y, opts.assoc("typeof", "vector_value")),
+			_color_wrap(")", opts),
 		]
 	elif msg is Vector2i:
 		return '%s%s%s%s%s' % [
-			color_wrap("(", opts),
-			color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-			color_wrap(")", opts),
+			_color_wrap("(", opts),
+			_color_wrap(msg.x, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(msg.y, opts.assoc("typeof", "vector_value")),
+			_color_wrap(")", opts),
 		]
 
 	elif msg is Vector3:
 		return '%s%s%s%s%s%s%s' % [
-			color_wrap("(", opts),
-			color_wrap(config.get_float_precision_string() % msg.x, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(config.get_float_precision_string() % msg.y, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(config.get_float_precision_string() % msg.z, assoc(opts, "typeof", "vector_value")),
-			color_wrap(")", opts),
+			_color_wrap("(", opts),
+			_color_wrap(config.get_float_precision_string() % msg.x, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(config.get_float_precision_string() % msg.y, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(config.get_float_precision_string() % msg.z, opts.assoc("typeof", "vector_value")),
+			_color_wrap(")", opts),
 		]
 	elif msg is Vector3i:
 		return '%s%s%s%s%s%s%s' % [
-			color_wrap("(", opts),
-			color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
-			color_wrap(")", opts),
+			_color_wrap("(", opts),
+			_color_wrap(msg.x, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(msg.y, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(msg.z, opts.assoc("typeof", "vector_value")),
+			_color_wrap(")", opts),
 		]
 
 	elif msg is Vector4:
 		return '%s%s%s%s%s%s%s%s%s' % [
-			color_wrap("(", opts),
-			color_wrap(config.get_float_precision_string() % msg.x, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(config.get_float_precision_string() % msg.y, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(config.get_float_precision_string() % msg.z, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(config.get_float_precision_string() % msg.w, assoc(opts, "typeof", "vector_value")),
-			color_wrap(")", opts),
+			_color_wrap("(", opts),
+			_color_wrap(config.get_float_precision_string() % msg.x, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(config.get_float_precision_string() % msg.y, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(config.get_float_precision_string() % msg.z, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(config.get_float_precision_string() % msg.w, opts.assoc("typeof", "vector_value")),
+			_color_wrap(")", opts),
 		]
 	elif msg is Vector4i:
 		return '%s%s%s%s%s%s%s%s%s' % [
-			color_wrap("(", opts),
-			color_wrap(msg.x, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(msg.y, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(msg.z, assoc(opts, "typeof", "vector_value")),
-			color_wrap(", ", opts),
-			color_wrap(msg.w, assoc(opts, "typeof", "vector_value")),
-			color_wrap(")", opts),
+			_color_wrap("(", opts),
+			_color_wrap(msg.x, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(msg.y, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(msg.z, opts.assoc("typeof", "vector_value")),
+			_color_wrap(", ", opts),
+			_color_wrap(msg.w, opts.assoc("typeof", "vector_value")),
+			_color_wrap(")", opts),
 		]
 
 	# rects
 	elif msg is Rect2:
 		return '%s%s%s%s' % [
-			color_wrap("(", opts),
-			color_wrap("P: %s, " % to_pretty(msg.position, opts), opts),
-			color_wrap("X: %s" % to_pretty(msg.size, opts), opts),
-			color_wrap(")", opts),
+			_color_wrap("(", opts),
+			_color_wrap("P: %s, " % _to_pretty(msg.position, opts), opts),
+			_color_wrap("X: %s" % _to_pretty(msg.size, opts), opts),
+			_color_wrap(")", opts),
 		]
 	elif msg is Rect2i:
 		return '%s%s%s%s' % [
-			color_wrap("(", opts),
-			color_wrap("P: %s, " % to_pretty(msg.position, opts), opts),
-			color_wrap("X: %s" % to_pretty(msg.size, opts), opts),
-			color_wrap(")", opts),
+			_color_wrap("(", opts),
+			_color_wrap("P: %s, " % _to_pretty(msg.position, opts), opts),
+			_color_wrap("X: %s" % _to_pretty(msg.size, opts), opts),
+			_color_wrap(")", opts),
 		]
 
 	# transforms
 	elif msg is Transform2D:
 		return '%s%s%s%s%s' % [
-			color_wrap("[", opts),
-			color_wrap("X: %s, " % to_pretty(msg.x, opts), opts),
-			color_wrap("Y: %s, " % to_pretty(msg.y, opts), opts),
-			color_wrap("O: %s" % to_pretty(msg.origin, opts), opts),
-			color_wrap("]", opts),
+			_color_wrap("[", opts),
+			_color_wrap("X: %s, " % _to_pretty(msg.x, opts), opts),
+			_color_wrap("Y: %s, " % _to_pretty(msg.y, opts), opts),
+			_color_wrap("O: %s" % _to_pretty(msg.origin, opts), opts),
+			_color_wrap("]", opts),
 		]
 	elif msg is Transform3D:
 		return '%s%s%s%s%s%s' % [
-			color_wrap("[", opts),
-			color_wrap("X: %s, " % to_pretty(msg.basis.x, opts), opts),
-			color_wrap("Y: %s, " % to_pretty(msg.basis.y, opts), opts),
-			color_wrap("Z: %s, " % to_pretty(msg.basis.z, opts), opts),
-			color_wrap("O: %s" % to_pretty(msg.origin, opts), opts),
-			color_wrap("]", opts),
+			_color_wrap("[", opts),
+			_color_wrap("X: %s, " % _to_pretty(msg.basis.x, opts), opts),
+			_color_wrap("Y: %s, " % _to_pretty(msg.basis.y, opts), opts),
+			_color_wrap("Z: %s, " % _to_pretty(msg.basis.z, opts), opts),
+			_color_wrap("O: %s" % _to_pretty(msg.origin, opts), opts),
+			_color_wrap("]", opts),
 		]
 
 	# packed scene
 	elif msg is PackedScene:
 		var msg_ps: PackedScene = msg
 		if msg_ps.resource_path != "":
-			return str(Log.color_wrap("PackedScene:", opts), '%s' % msg_ps.resource_path.get_file())
+			return str(_color_wrap("PackedScene:", opts), '%s' % msg_ps.resource_path.get_file())
 		elif msg_ps.get_script() != null and msg_ps.get_script().resource_path != "":
 			var path: String = msg_ps.get_script().resource_path
-			return Log.color_wrap(path.get_file(), assoc(opts, "typeof", "class_name"))
+			return _color_wrap(path.get_file(), opts.assoc("typeof", "class_name"))
 		else:
-			return Log.color_wrap(msg_ps, opts)
+			return _color_wrap(msg_ps, opts)
 
 	# resource
 	elif msg is Resource:
 		var msg_res: Resource = msg
 		if msg_res.get_script() != null and msg_res.get_script().resource_path != "":
 			var path: String = msg_res.get_script().resource_path
-			return Log.color_wrap(path.get_file(), assoc(opts, "typeof", "class_name"))
+			return _color_wrap(path.get_file(), opts.assoc("typeof", "class_name"))
 		elif msg_res.resource_path != "":
 			var path: String = msg_res.resource_path
-			return str(Log.color_wrap("Resource:", opts), '%s' % path.get_file())
+			return str(_color_wrap("Resource:", opts), '%s' % path.get_file())
 		else:
-			return Log.color_wrap(msg_res, opts)
+			return _color_wrap(msg_res, opts)
 
 	# refcounted
 	elif msg is RefCounted:
 		var msg_ref: RefCounted = msg
 		if msg_ref.get_script() != null and msg_ref.get_script().resource_path != "":
 			var path: String = msg_ref.get_script().resource_path
-			return Log.color_wrap(path.get_file(), assoc(opts, "typeof", "class_name"))
+			return _color_wrap(path.get_file(), opts.assoc("typeof", "class_name"))
 		else:
-			return Log.color_wrap(msg_ref.get_class(), assoc(opts, "typeof", "class_name"))
+			return _color_wrap(msg_ref.get_class(), opts.assoc("typeof", "class_name"))
 
 	# fallback to primitive-type lookup
 	else:
-		return Log.color_wrap(msg, opts)
+		return _color_wrap(msg, opts)
 
 
 ##########
@@ -414,16 +543,13 @@ func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
 
 # callsite
 
-func prefix_callsite(opts: Dictionary) -> String:
-	var stack = opts.get("stack", [])
-	var pretty: bool = opts.get("pretty", true)
-
+func prefix_callsite(opts: PrettyOpts) -> String:
 	var m: String = ""
-	if len(stack) == 0:
+	if len(opts.stack) == 0:
 		return m
 
 	# we're assuming the stack has been filtered, and the first non-log frame is the call site
-	var call_site: Dictionary = stack[0]
+	var call_site: Dictionary = opts.stack[0]
 	var call_site_source: String = call_site.get("source", "")
 	var basename: String = call_site_source.get_file().get_basename()
 	var line_num: String = str(call_site.get("line", 0))
@@ -438,8 +564,8 @@ func prefix_callsite(opts: Dictionary) -> String:
 		m = "[" + basename + ":" + line_num + "]: "
 		prefix_type = "SRC"
 
-	if pretty:
-		m = color_wrap(m, assoc(opts, "typeof", prefix_type))
+	if opts.pretty:
+		m = _color_wrap(m, opts.assoc("typeof", prefix_type))
 	return m
 
 # proc id
@@ -468,17 +594,18 @@ func prefix_logger_name():
 
 # build_prefix
 
-func build_prefix(opts: Dictionary = {}) -> String:
+func build_prefix(opts: PrettyOpts) -> String:
 	var m: String = ""
 
 	# reusing the stack here supports skipping it from various callers
 	# but it's likely the same use-case as skipping the prefix entirely
-	var stack: Array = opts.get("stack", get_stack())
-
-	# NOTE: this filters res://addons/log/* callsites OUT of the stack.
-	stack = stack.filter(func(s: Variant) -> bool:
-		return s is Dictionary and s.has("source") and not s["source"].contains("res://addons/log/"))
-	opts["stack"] = stack
+	var stack: Array = opts.stack
+	if opts.show_prefix and stack == []:
+		stack = get_stack()
+		stack = stack.filter(func(s: Variant) -> bool:
+			# NOTE: this filters res://addons/log/* callsites OUT of the stack.
+			return s is Dictionary and s.has("source") and not s["source"].contains("res://addons/log/"))
+		opts.stack = stack
 
 	# prefixes
 	var logger_name = prefix_logger_name()
@@ -508,29 +635,29 @@ func build_prefix(opts: Dictionary = {}) -> String:
 func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	if not config.is_config_setup:
 		LogConfig.rebuild_config(config)
+	return _to_printable(msgs, PrettyOpts.new(opts, config))
 
+func _to_printable(msgs: Array, opts: PrettyOpts) -> String:
 	var m: String = build_prefix(opts)
 
 	if not msgs is Array:
 		msgs = [msgs]
 	for msg: Variant in msgs:
 		# add a space between msgs
-		if opts.get("pretty", true):
-			m += "%s " % to_pretty(msg, opts)
+		if opts.pretty:
+			m += "%s " % _to_pretty(msg, opts)
 		else:
 			m += "%s " % str(msg)
 
 	return m.trim_suffix(" ")
 
-
 ## Variant of to_printable that disables colors.
 func to_printable_colorless(msgs: Array) -> String:
-	return to_printable(msgs, {disable_colors=true})
-
+	return _to_printable(msgs, PrettyOpts.new({}, config).no_color())
 
 ## Variant of to_printable that disables the prefix and colors completely.
 func to_printable_simple(msgs: Array) -> String:
-	return to_printable(msgs, {stack=[], disable_colors=true})
+	return _to_printable(msgs, PrettyOpts.new({}, config).no_color().no_stack())
 
 
 ###################
@@ -586,17 +713,17 @@ func log(...msgs: Array) -> void:
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with a newline and indentation.
 func prn(...msgs: Array) -> void:
-	print_rich(to_printable(msgs, {newlines=true, newline_max_depth=1}))
+	print_rich(_to_printable(msgs, PrettyOpts.new({newlines=true, newline_max_depth=1}, config)))
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with two newlines and indentation.
 func prnn(...msgs: Array) -> void:
-	print_rich(to_printable(msgs, {newlines=true, newline_max_depth=2}))
+	print_rich(_to_printable(msgs, PrettyOpts.new({newlines=true, newline_max_depth=2}, config)))
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with three newlines and indentation.
 func prnnn(...msgs: Array) -> void:
-	print_rich(to_printable(msgs, {newlines=true, newline_max_depth=3}))
+	print_rich(_to_printable(msgs, PrettyOpts.new({newlines=true, newline_max_depth=3}, config)))
 
 
 ## Pretty-print the passed arguments in a single line.
@@ -668,7 +795,7 @@ func table(
 		print_rich(to_printable(msg))
 		return
 
-	print_rich(build_prefix())
+	print_rich(build_prefix(PrettyOpts.new({}, self.config)))
 
 	if typeof(msg) != TYPE_ARRAY:
 		msg = [msg]
