@@ -21,16 +21,19 @@ class PrettyOpts:
 	var stack: Array = []
 	var show_prefix: bool = true
 
-	var config: LogConfig
-
-	func _init(opts: Dictionary, _config: LogConfig) -> void:
-		config = _config
-		use_newlines = opts.get("newlines", config.get_use_newlines())
-		newline_max_depth = opts.get("newline_max_depth", config.get_newline_max_depth())
+	func _init(opts: Dictionary) -> void:
+		use_newlines = opts.get("newlines")
+		newline_max_depth = opts.get("newline_max_depth")
 		disable_colors = opts.get("disable_colors", false)
 		pretty = opts.get("pretty", true)
 		stack = opts.get("stack", [])
 		show_prefix = opts.get("show_prefix", true)
+
+	func apply_config(config: LogConfig) -> PrettyOpts:
+		use_newlines = config.get_use_newlines()
+		newline_max_depth = config.get_newline_max_depth()
+		disable_colors = config.get_disable_colors()
+		return self
 
 	func no_color() -> PrettyOpts:
 		disable_colors = true
@@ -39,6 +42,9 @@ class PrettyOpts:
 	func no_prefix() -> PrettyOpts:
 		show_prefix = false
 		return self
+
+	static func with_depth(depth: int) -> PrettyOpts:
+		return PrettyOpts.new({newlines=true, newline_max_depth=depth})
 
 
 class ColorOpts:
@@ -79,6 +85,7 @@ class Ctx:
 		new_ctx.indent_level = ctx.indent_level
 		return new_ctx
 
+
 #############
 # Built-ins #
 #############
@@ -92,11 +99,13 @@ func _init(p_name: String, p_config: LogConfig = LogConfig.new()) -> void:
 # Colors #
 ##########
 
+
 ## Wraps the passed var in bb-code color tags. Uses typeof() to determine the color. [br]
 ## [br]
 ## [opts] is a dictionary supporting various overrides.
 func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	return _color_wrap(s, ColorOpts.from_dict(opts), opts.get("type"))
+
 
 func _color_wrap(s: Variant, color_opts: ColorOpts, type: Variant = null) -> String:
 	# TODO refactor to use the color theme directly
@@ -169,6 +178,7 @@ func _should_use_color(color_opts: ColorOpts) -> bool:
 # timestamp #
 #############
 
+
 func timestamp() -> String:
 	match config.get_timestamp_type():
 		Log.TimestampTypes.UNIX:
@@ -211,6 +221,7 @@ func timestamp() -> String:
 # to_pretty #
 #############
 
+
 ## Returns the passed object as a bb-colorized string.
 ##
 ## [br][br]
@@ -220,7 +231,8 @@ func timestamp() -> String:
 ## Can be useful to feed directly into a RichTextLabel.
 ##
 func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
-	return _to_pretty(msg, PrettyOpts.new(opts, config))
+	return _to_pretty(msg, PrettyOpts.new(opts))
+
 
 # This function is called recursively until we have a string representing the passed 'msg'.
 func _to_pretty(msg: Variant, pretty_opts: PrettyOpts, color_opts: ColorOpts = null, ctx: Ctx = null) -> String:
@@ -495,7 +507,6 @@ func _to_pretty(msg: Variant, pretty_opts: PrettyOpts, color_opts: ColorOpts = n
 ##########
 
 # callsite
-
 func prefix_callsite(pretty_opts: PrettyOpts, color_opts: ColorOpts) -> String:
 	var m: String = ""
 	if len(pretty_opts.stack) == 0:
@@ -522,31 +533,31 @@ func prefix_callsite(pretty_opts: PrettyOpts, color_opts: ColorOpts) -> String:
 	return m
 
 # proc id
-
 static func get_process_id() -> int:
 	return OS.get_process_id()
+
 
 func prefix_process_id() -> String:
 	if not config.get_show_process_unique_id():
 		return ""
 	return "[%s]" % get_process_id()
 
-# timestamp
 
+# timestamp
 func prefix_timestamp() -> String:
 	if not config.get_show_timestamps():
 		return ""
 	return "[%s]" % timestamp()
 
-# custom logger name
 
+# custom logger name
 func prefix_logger_name():
 	if not (name and name != Log.LOGGER_NAME):
 		return ""
 	return "[%s]" % name
 
-# build_prefix
 
+# build_prefix
 func build_prefix(pretty_opts: PrettyOpts, color_opts: ColorOpts = null) -> String:
 	# hopefully only build ColorOpts once
 	if color_opts == null:
@@ -581,9 +592,11 @@ func build_prefix(pretty_opts: PrettyOpts, color_opts: ColorOpts = null) -> Stri
 		callsite=callsite,
 		})
 
+
 ################
 # to_printable #
 ################
+
 
 ## Formats the args passed to public Log functions for printing, supporting a few options.
 ##
@@ -595,7 +608,8 @@ func build_prefix(pretty_opts: PrettyOpts, color_opts: ColorOpts = null) -> Stri
 func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 	if not config.is_config_setup:
 		LogConfig.rebuild_config(config)
-	return _to_printable(msgs, PrettyOpts.new(opts, config))
+	return _to_printable(msgs, PrettyOpts.new(opts))
+
 
 func _to_printable(msgs: Array, pretty_opts: PrettyOpts, color_opts: ColorOpts = null) -> String:
 	# hopefully only build ColorOpts once
@@ -617,18 +631,21 @@ func _to_printable(msgs: Array, pretty_opts: PrettyOpts, color_opts: ColorOpts =
 
 	return m.trim_suffix(" ")
 
+
 ## Variant of to_printable that disables colors.
 func to_printable_colorless(msgs: Array) -> String:
-	return _to_printable(msgs, PrettyOpts.new({}, config).no_color())
+	return _to_printable(msgs, PrettyOpts.new({}).no_color())
+
 
 ## Variant of to_printable that disables the prefix and colors completely.
 func to_printable_simple(msgs: Array) -> String:
-	return _to_printable(msgs, PrettyOpts.new({}, config).no_color().no_prefix())
+	return _to_printable(msgs, PrettyOpts.new({}).no_color().no_prefix())
 
 
 ###################
 # Type Overwrites #
 ###################
+
 
 func clear_type_overwrites() -> void:
 	type_overwrites = {}
@@ -679,17 +696,17 @@ func log(...msgs: Array) -> void:
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with a newline and indentation.
 func prn(...msgs: Array) -> void:
-	print_rich(_to_printable(msgs, PrettyOpts.new({newlines=true, newline_max_depth=1}, config)))
+	print_rich(_to_printable(msgs, PrettyOpts.with_depth(1).apply_config(config)))
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with two newlines and indentation.
 func prnn(...msgs: Array) -> void:
-	print_rich(_to_printable(msgs, PrettyOpts.new({newlines=true, newline_max_depth=2}, config)))
+	print_rich(_to_printable(msgs, PrettyOpts.with_depth(2).apply_config(config)))
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with three newlines and indentation.
 func prnnn(...msgs: Array) -> void:
-	print_rich(_to_printable(msgs, PrettyOpts.new({newlines=true, newline_max_depth=3}, config)))
+	print_rich(_to_printable(msgs, PrettyOpts.with_depth(3).apply_config(config)))
 
 
 ## Pretty-print the passed arguments in a single line.
