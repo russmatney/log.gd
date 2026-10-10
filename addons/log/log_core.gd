@@ -40,38 +40,26 @@ class PrettyOpts:
 		stack = opts.get("stack", [])
 		show_prefix = opts.get("show_prefix", true)
 
-		if not newlines:
-			newline_max_depth = 0
-		elif newline_max_depth == 0:
-			newlines = false
-
-		if newline_max_depth > 0 and newline_depth >= newline_max_depth:
-			newlines = false
-
 
 	func no_color() -> PrettyOpts:
 		disable_colors = true
 		return self
-
 	func no_stack() -> PrettyOpts:
 		stack = []
 		return self
+	func no_prefix() -> PrettyOpts:
+		show_prefix = false
+		return self
 
-	func inc_newline_depth() -> PrettyOpts:
+	func inc_newline_depth() -> void:
 		newline_depth += 1
-		return self
-
-	func dec_newline_depth() -> PrettyOpts:
+	func dec_newline_depth() -> void:
 		newline_depth -= 1
-		return self
 
-	func inc_indent_level() -> PrettyOpts:
+	func inc_indent_level() -> void:
 		indent_level += 1
-		return self
-
-	func dec_indent_level() -> PrettyOpts:
+	func dec_indent_level() -> void:
 		indent_level -= 1
-		return self
 
 	func duplicate() -> PrettyOpts:
 		var dupe: PrettyOpts = PrettyOpts.new({}, config)
@@ -303,9 +291,19 @@ func _to_pretty(msg: Variant, opts: PrettyOpts) -> String:
 	if not is_instance_valid(msg) and typeof(msg) == TYPE_OBJECT:
 		return str("invalid instance: ", msg)
 
-	var color_opts = opts.color_opts()
+	var newlines: bool = opts.newlines
+
+	if not newlines:
+		opts.newline_max_depth = 0
+	elif opts.newline_max_depth == 0:
+		newlines = false
+
+	if opts.newline_max_depth > 0 and opts.newline_depth >= opts.newline_max_depth:
+		newlines = false
+
+	# var color_opts = opts.color_opts()
 	if msg == null:
-		return _color_wrap(msg, color_opts)
+		return _color_wrap(msg, opts)
 
 	if msg is Object and (msg as Object).get_class() in type_overwrites:
 		var fn: Callable = type_overwrites.get((msg as Object).get_class())
@@ -327,7 +325,7 @@ func _to_pretty(msg: Variant, opts: PrettyOpts) -> String:
 		if len(msg) > config.get_max_array_size():
 			Log.pr("[DEBUG]: truncating large array. total:", len(msg))
 			msg_array = msg_array.slice(0, config.get_max_array_size() - 1)
-			if opts.newlines:
+			if newlines:
 				msg_array.append("...")
 
 		# shouldn't we be incrementing index_level here?
@@ -335,7 +333,7 @@ func _to_pretty(msg: Variant, opts: PrettyOpts) -> String:
 		opts.inc_newline_depth()
 		var last: int = len(msg) - 1
 		for i: int in range(len(msg)):
-			if opts.newlines and last > 1:
+			if newlines and last > 1:
 				tmp += _color_wrap("\n\t", opts)
 			tmp += _to_pretty(msg[i],
 				# pass a duplicate here to prevent indenting-per-msg
@@ -355,7 +353,8 @@ func _to_pretty(msg: Variant, opts: PrettyOpts) -> String:
 		var last: Variant
 		if len(msg) > 0:
 			last = (msg as Dictionary).keys()[-1]
-		var indent_updated = false
+		var indent_updated: bool = false
+		var indent_level: int = opts.indent_level
 		for k: Variant in (msg as Dictionary).keys():
 			var val: Variant
 			if k in config.get_dictionary_skip_keys():
@@ -365,9 +364,9 @@ func _to_pretty(msg: Variant, opts: PrettyOpts) -> String:
 					indent_updated = true
 					opts.inc_indent_level()
 				val = _to_pretty(msg[k], opts)
-			if opts.newlines and ct > 1:
+			if newlines and ct > 1:
 				tmp += _color_wrap("\n\t", opts) \
-					+ _color_wrap(range(opts.indent_level)\
+					+ _color_wrap(range(indent_level)\
 					.map(func(_i: int) -> String: return "\t")\
 					.reduce(func(a: String, b: Variant) -> String: return str(a, b), ""), opts)
 			var key: String = _color_wrap('"%s"' % k, opts.assoc("typeof", "dict_key"))
@@ -657,7 +656,7 @@ func to_printable_colorless(msgs: Array) -> String:
 
 ## Variant of to_printable that disables the prefix and colors completely.
 func to_printable_simple(msgs: Array) -> String:
-	return _to_printable(msgs, PrettyOpts.new({}, config).no_color().no_stack())
+	return _to_printable(msgs, PrettyOpts.new({}, config).no_color().no_prefix())
 
 
 ###################
