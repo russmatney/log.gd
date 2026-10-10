@@ -73,10 +73,6 @@ static func color_wrap(s: Variant, opts: Dictionary = {}) -> String:
 	return _core.color_wrap(s, opts)
 
 
-static func should_use_color(opts: Dictionary = {}) -> bool:
-	return _core.should_use_color(opts)
-
-
 ##########
 # Colors #
 ##########
