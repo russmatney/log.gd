@@ -158,7 +158,7 @@ func _should_use_color(color_opts: ColorOpts) -> bool:
 	if config.get_disable_colors():
 		return false
 	# supports per-print color skipping
-	if color_opts.disable_colors:
+	if color_opts.disable_color:
 		return false
 	if color_opts.color == false:
 		return false
