@@ -14,25 +14,26 @@ var type_overwrites: Dictionary = {}
 class PrettyOpts:
 	extends Object
 
-	var use_newlines: bool = false
+	var use_newlines: Variant = null
 	var newline_max_depth: int = 0
-	var disable_colors: bool = false
-	var pretty: bool = true
-	var stack: Array = []
+	var disable_colors: Variant = null
 	var show_prefix: bool = true
+	var skip_callsite: bool = false
 
 	func _init(opts: Dictionary) -> void:
 		use_newlines = opts.get("newlines")
-		newline_max_depth = opts.get("newline_max_depth")
-		disable_colors = opts.get("disable_colors", false)
-		pretty = opts.get("pretty", true)
-		stack = opts.get("stack", [])
+		newline_max_depth = opts.get("newline_max_depth", 0)
+		disable_colors = opts.get("disable_colors")
 		show_prefix = opts.get("show_prefix", true)
+		skip_callsite = opts.get("skip_callsite", false)
 
 	func apply_config(config: LogConfig) -> PrettyOpts:
-		use_newlines = config.get_use_newlines()
-		newline_max_depth = config.get_newline_max_depth()
-		disable_colors = config.get_disable_colors()
+		if newline_max_depth == 0:
+			newline_max_depth = config.get_newline_max_depth()
+		if use_newlines == null:
+			use_newlines = config.get_use_newlines()
+		if disable_colors == null:
+			disable_colors = config.get_disable_colors()
 		return self
 
 	func no_color() -> PrettyOpts:
@@ -45,6 +46,9 @@ class PrettyOpts:
 
 	static func with_depth(depth: int) -> PrettyOpts:
 		return PrettyOpts.new({newlines=true, newline_max_depth=depth})
+
+	static func simple() -> PrettyOpts:
+		return PrettyOpts.new({newlines=false, disable_colors=true, skip_callsite=true})
 
 
 class ColorOpts:
@@ -74,7 +78,7 @@ class ColorOpts:
 
 
 class Ctx:
-	var use_newlines: bool = false
+	var use_newlines: Variant = null
 	var newline_depth: int = 0
 	var indent_level: int = 0
 
@@ -243,12 +247,13 @@ func _to_pretty(msg: Variant, pretty_opts: PrettyOpts, color_opts: ColorOpts = n
 	if ctx == null:
 		ctx = Ctx.new()
 		ctx.use_newlines = pretty_opts.use_newlines
+
 		if not ctx.use_newlines:
 			pretty_opts.newline_max_depth = 0
 		elif pretty_opts.newline_max_depth == 0:
 			ctx.use_newlines = false
 
-	# hopefully only build ColorOpts once
+	# build ColorOpts
 	if color_opts == null:
 		color_opts = ColorOpts.new()
 		if pretty_opts.disable_colors:
@@ -292,7 +297,11 @@ func _to_pretty(msg: Variant, pretty_opts: PrettyOpts, color_opts: ColorOpts = n
 		for i: int in range(len(msg)):
 			if ctx.use_newlines and last > 1:
 				tmp += _color_wrap("\n", color_opts)
-				tmp += _color_wrap("\t", color_opts)
+				# tmp += _color_wrap("\t", color_opts)
+				var indents = range(ctx.indent_level)\
+					.map(func(_i: int) -> String: return "\t")\
+					.reduce(func(a: String, b: Variant) -> String: return str(a, b), "")
+				tmp += _color_wrap(indents, color_opts)
 
 			# we are in an array, recursing on nested values
 			# do we need to dupe the context here? (might be missing nested array test-case?)
@@ -329,7 +338,7 @@ func _to_pretty(msg: Variant, pretty_opts: PrettyOpts, color_opts: ColorOpts = n
 					Ctx.from(ctx))
 			if ctx.use_newlines and ct > 1:
 				tmp += _color_wrap("\n", color_opts)
-				tmp += _color_wrap("\t", color_opts)
+				# tmp += _color_wrap("\t", color_opts)
 				var indents = range(indent_level)\
 					.map(func(_i: int) -> String: return "\t")\
 					.reduce(func(a: String, b: Variant) -> String: return str(a, b), "")
@@ -509,11 +518,19 @@ func _to_pretty(msg: Variant, pretty_opts: PrettyOpts, color_opts: ColorOpts = n
 # callsite
 func prefix_callsite(pretty_opts: PrettyOpts, color_opts: ColorOpts) -> String:
 	var m: String = ""
-	if len(pretty_opts.stack) == 0:
+
+	if pretty_opts.skip_callsite:
 		return m
 
-	# we're assuming the stack has been filtered, and the first non-log frame is the call site
-	var call_site: Dictionary = pretty_opts.stack[0]
+	var stack: Array = get_stack()
+	stack = stack.filter(func(s: Variant) -> bool:
+		# filters res://addons/log/* callsites OUT of the stack
+		# assumes the first non-log callsite is the one we want
+		return s is Dictionary and s.has("source") and not s["source"].contains("res://addons/log/"))
+	if len(stack) == 0:
+		return m
+
+	var call_site: Dictionary = stack[0]
 	var call_site_source: String = call_site.get("source", "")
 	var basename: String = call_site_source.get_file().get_basename()
 	var line_num: String = str(call_site.get("line", 0))
@@ -528,7 +545,7 @@ func prefix_callsite(pretty_opts: PrettyOpts, color_opts: ColorOpts) -> String:
 		m = "[" + basename + ":" + line_num + "]: "
 		prefix_type = "SRC"
 
-	if pretty_opts.pretty:
+	if not pretty_opts.disable_colors:
 		m = _color_wrap(m, color_opts, prefix_type)
 	return m
 
@@ -559,24 +576,13 @@ func prefix_logger_name():
 
 # build_prefix
 func build_prefix(pretty_opts: PrettyOpts, color_opts: ColorOpts = null) -> String:
-	# hopefully only build ColorOpts once
 	if color_opts == null:
 		color_opts = ColorOpts.new()
 		if pretty_opts.disable_colors:
 			color_opts.no_color()
 
-	var m: String = ""
-
-	# reusing the stack here supports skipping it from various callers
-	# but it's likely the same use-case as skipping the prefix entirely
-	var stack: Array = pretty_opts.stack
-	if pretty_opts.show_prefix and stack == []:
-		stack = get_stack()
-		stack = stack.filter(func(s: Variant) -> bool:
-			# NOTE: this filters res://addons/log/* callsites OUT of the stack.
-			return s is Dictionary and s.has("source") and not s["source"].contains("res://addons/log/"))
-		#TODO move the stack to ctx, leave pretty_opts immutable (and merge w/ config?)
-		pretty_opts.stack = stack
+	if not pretty_opts.show_prefix:
+		return ""
 
 	# prefixes
 	var logger_name = prefix_logger_name()
@@ -612,7 +618,9 @@ func to_printable(msgs: Array, opts: Dictionary = {}) -> String:
 
 
 func _to_printable(msgs: Array, pretty_opts: PrettyOpts, color_opts: ColorOpts = null) -> String:
-	# hopefully only build ColorOpts once
+	# should we apply the config on every to_printable?
+	pretty_opts.apply_config(config)
+
 	if color_opts == null:
 		color_opts = ColorOpts.new()
 		if pretty_opts.disable_colors:
@@ -624,10 +632,7 @@ func _to_printable(msgs: Array, pretty_opts: PrettyOpts, color_opts: ColorOpts =
 		msgs = [msgs]
 	for msg: Variant in msgs:
 		# add a space between msgs
-		if pretty_opts.pretty:
-			m += "%s " % _to_pretty(msg, pretty_opts, color_opts)
-		else:
-			m += "%s " % str(msg)
+		m += "%s " % _to_pretty(msg, pretty_opts, color_opts)
 
 	return m.trim_suffix(" ")
 
@@ -639,7 +644,7 @@ func to_printable_colorless(msgs: Array) -> String:
 
 ## Variant of to_printable that disables the prefix and colors completely.
 func to_printable_simple(msgs: Array) -> String:
-	return _to_printable(msgs, PrettyOpts.new({}).no_color().no_prefix())
+	return _to_printable(msgs, PrettyOpts.simple())
 
 
 ###################
@@ -696,17 +701,17 @@ func log(...msgs: Array) -> void:
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with a newline and indentation.
 func prn(...msgs: Array) -> void:
-	print_rich(_to_printable(msgs, PrettyOpts.with_depth(1).apply_config(config)))
+	print_rich(_to_printable(msgs, PrettyOpts.with_depth(1)))
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with two newlines and indentation.
 func prnn(...msgs: Array) -> void:
-	print_rich(_to_printable(msgs, PrettyOpts.with_depth(2).apply_config(config)))
+	print_rich(_to_printable(msgs, PrettyOpts.with_depth(2)))
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with three newlines and indentation.
 func prnnn(...msgs: Array) -> void:
-	print_rich(_to_printable(msgs, PrettyOpts.with_depth(3).apply_config(config)))
+	print_rich(_to_printable(msgs, PrettyOpts.with_depth(3)))
 
 
 ## Pretty-print the passed arguments in a single line.
@@ -778,7 +783,7 @@ func table(
 		print_rich(to_printable(msg))
 		return
 
-	print_rich(build_prefix(PrettyOpts.new({}, self.config)))
+	print_rich(build_prefix(PrettyOpts.new({})))
 
 	if typeof(msg) != TYPE_ARRAY:
 		msg = [msg]
