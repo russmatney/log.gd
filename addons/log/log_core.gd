@@ -15,20 +15,20 @@ class PrettyOpts:
 	extends Object
 
 	var use_newlines: Variant = null
-	var newline_max_depth: int = 0
+	var newline_max_depth: Variant = null
 	var disable_colors: Variant = null
 	var show_prefix: bool = true
 	var skip_callsite: bool = false
 
 	func _init(opts: Dictionary) -> void:
 		use_newlines = opts.get("newlines")
-		newline_max_depth = opts.get("newline_max_depth", 0)
+		newline_max_depth = opts.get("newline_max_depth")
 		disable_colors = opts.get("disable_colors")
 		show_prefix = opts.get("show_prefix", true)
 		skip_callsite = opts.get("skip_callsite", false)
 
 	func apply_config(config: LogConfig) -> PrettyOpts:
-		if newline_max_depth == 0:
+		if newline_max_depth == null:
 			newline_max_depth = config.get_newline_max_depth()
 		if use_newlines == null:
 			use_newlines = config.get_use_newlines()
@@ -235,7 +235,7 @@ func timestamp() -> String:
 ## Can be useful to feed directly into a RichTextLabel.
 ##
 func to_pretty(msg: Variant, opts: Dictionary = {}) -> String:
-	return _to_pretty(msg, PrettyOpts.new(opts))
+	return _to_pretty(msg, PrettyOpts.new(opts).apply_config(config))
 
 
 # This function is called recursively until we have a string representing the passed 'msg'.
@@ -297,7 +297,6 @@ func _to_pretty(msg: Variant, pretty_opts: PrettyOpts, color_opts: ColorOpts = n
 		for i: int in range(len(msg)):
 			if ctx.use_newlines and last > 1:
 				tmp += _color_wrap("\n", color_opts)
-				# tmp += _color_wrap("\t", color_opts)
 				var indents = range(ctx.indent_level)\
 					.map(func(_i: int) -> String: return "\t")\
 					.reduce(func(a: String, b: Variant) -> String: return str(a, b), "")
@@ -337,8 +336,7 @@ func _to_pretty(msg: Variant, pretty_opts: PrettyOpts, color_opts: ColorOpts = n
 					# dupe the context so nested vals start from the same indent_level
 					Ctx.from(ctx))
 			if ctx.use_newlines and ct > 1:
-				tmp += _color_wrap("\n", color_opts)
-				# tmp += _color_wrap("\t", color_opts)
+				tmp += _color_wrap("\n\t", color_opts)
 				var indents = range(indent_level)\
 					.map(func(_i: int) -> String: return "\t")\
 					.reduce(func(a: String, b: Variant) -> String: return str(a, b), "")
