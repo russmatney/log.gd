@@ -339,64 +339,64 @@ static func timestamp() -> String:
 
 ## Pretty-print the passed arguments in a single line.
 static func pr(...msgs: Array) -> void:
-	_core.pr(msgs)
+	_core._do_pr(msgs)
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with a
 ## newline and indentation.
 static func prn(...msgs: Array) -> void:
-	_core.prn(msgs)
+	_core._do_prn(msgs)
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with two
 ## newlines and indentation.
 static func prnn(...msgs: Array) -> void:
-	_core.prnn(msgs)
+	_core._do_prnn(msgs)
 
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with
 ## three newlines and indentation.
 static func prnnn(...msgs: Array) -> void:
-	_core.prnnn(msgs)
+	_core._do_prnnn(msgs)
 
 
 ## Pretty-print the passed arguments in a single line.
 static func log(...msgs: Array) -> void:
-	_core.log(msgs)
+	_core._do_pr(msgs)
 
 
 ## Pretty-print the passed arguments in a single line.
 static func debug(...msgs: Array) -> void:
-	_core.debug(msgs)
+	_core._do_debug(msgs)
 
 
 ## Pretty-print the passed arguments in a single line.
 static func info(...msgs: Array) -> void:
-	_core.info(msgs)
+	_core._do_info(msgs)
 
 
 ## Like [code]Log.pr()[/code], but also calls push_warning() with the pretty
 ## string.
 static func warn(...msgs: Array) -> void:
-	_core.warn(msgs)
+	_core._do_warn(msgs)
 
 
 ## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning()
 ## with the pretty string.
 static func todo(...msgs: Array) -> void:
-	_core.todo(msgs)
+	_core._do_todo_warn(msgs)
 
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty
 ## string.
 static func err(...msgs: Array) -> void:
-	_core.err(msgs)
+	_core._do_err(msgs)
 
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty
 ## string.
 static func error(...msgs: Array) -> void:
-	_core.error(msgs)
+	_core._do_err(msgs)
 
 
 ## Bespoke method designed to print data in a tabular fashion.[br]

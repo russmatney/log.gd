@@ -684,60 +684,77 @@ func register_type_overwrites(overwrites: Dictionary) -> void:
 # Public Print Functions #
 ##########################
 
+func _do_pr(msgs: Array) -> void:
+	print_rich(to_printable(msgs))
 
 ## Pretty-print the passed arguments in a single line.
 func pr(...msgs: Array) -> void:
-	print_rich(to_printable(msgs))
+	_do_pr(msgs)
 
 
 ## Pretty-print the passed arguments in a single line.
 ##
 ## An alias for `pr`
 func log(...msgs: Array) -> void:
-	print_rich(to_printable(msgs))
+	_do_pr(msgs)
 
+
+func _do_prn(msgs: Array) -> void:
+	print_rich(_to_printable(msgs, PrettyOpts.with_depth(1)))
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with a newline and indentation.
 func prn(...msgs: Array) -> void:
-	print_rich(_to_printable(msgs, PrettyOpts.with_depth(1)))
+	_do_prn(msgs)
 
+
+func _do_prnn(msgs: Array) -> void:
+	print_rich(_to_printable(msgs, PrettyOpts.with_depth(2)))
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with two newlines and indentation.
 func prnn(...msgs: Array) -> void:
-	print_rich(_to_printable(msgs, PrettyOpts.with_depth(2)))
+	_do_prnn(msgs)
 
+
+func _do_prnnn(msgs: Array) -> void:
+	print_rich(_to_printable(msgs, PrettyOpts.with_depth(3)))
 
 ## Pretty-print the passed arguments, expanding dictionaries and arrays with three newlines and indentation.
 func prnnn(...msgs: Array) -> void:
-	print_rich(_to_printable(msgs, PrettyOpts.with_depth(3)))
+	_do_prnnn(msgs)
 
 
-## Pretty-print the passed arguments in a single line.
-func debug(...msgs: Array) -> void:
+func _do_debug(msgs: Array) -> void:
 	if config.get_log_level() > Log.Levels.DEBUG:
 		return
 	print_rich("[DEBUG] " + to_printable(msgs))
 
-
 ## Pretty-print the passed arguments in a single line.
-func info(...msgs: Array) -> void:
+func debug(...msgs: Array) -> void:
+	_do_debug(msgs)
+
+
+func _do_info(msgs: Array) -> void:
 	if config.get_log_level() > Log.Levels.INFO:
 		return
 	print_rich("[INFO] " + to_printable(msgs))
 
+## Pretty-print the passed arguments in a single line.
+func info(...msgs: Array) -> void:
+	_do_info(msgs)
 
-## Like [code]Log.pr()[/code], but also calls push_warning() with the pretty string.
-func warn(...msgs: Array) -> void:
+
+func _do_warn(msgs: Array) -> void:
 	if config.get_log_level() > Log.Levels.WARN:
 		return
 	print_rich("[color=yellow][WARN][/color] " + to_printable(msgs))
 	push_warning(to_printable_colorless(msgs))
 
+## Like [code]Log.pr()[/code], but also calls push_warning() with the pretty string.
+func warn(...msgs: Array) -> void:
+	_do_warn(msgs)
 
-## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
-##
-## Pretty cool - lets you use the warnings tab as a TODO list!
-func todo(...msgs: Array) -> void:
+
+func _do_warn_todo(msgs: Array) -> void:
 	if config.get_warn_todo() and config.get_log_level() > Log.Levels.WARN:
 		return
 	elif not config.get_warn_todo() and config.get_log_level() > Log.Levels.INFO:
@@ -749,17 +766,26 @@ func todo(...msgs: Array) -> void:
 	if config.get_warn_todo():
 		push_warning(to_printable_colorless(msgs))
 
+## Like [code]Log.pr()[/code], but prepends a "[TODO]" and calls push_warning() with the pretty string.
+##
+## Pretty cool - lets you use the warnings tab as a TODO list!
+func todo(...msgs: Array) -> void:
+	_do_warn_todo(msgs)
+
+
+func _do_err(msgs: Array) -> void:
+	print_rich("[color=red][ERR][/color] " + to_printable(msgs))
+	push_error(to_printable_colorless(msgs))
+
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
 func err(...msgs: Array) -> void:
-	print_rich("[color=red][ERR][/color] " + to_printable(msgs))
-	push_error(to_printable_colorless(msgs))
+	_do_err(msgs)
 
 
 ## Like [code]Log.pr()[/code], but also calls push_error() with the pretty string.
 func error(...msgs: Array) -> void:
-	print_rich("[color=red][ERR][/color] " + to_printable(msgs))
-	push_error(to_printable_colorless(msgs))
+	_do_err(msgs)
 
 
 ## Bespoke method designed to print data in a tabular fashion.[br]
