@@ -3,4 +3,7 @@
 
 # Only include addons/log when downloading from the Asset Library.
 /**             export-ignore
+/addons         !export-ignore
+/addons/*       export-ignore
 /addons/log/    !export-ignore
+/addons/log/**  !export-ignore
