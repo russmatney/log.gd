@@ -1,11 +1,243 @@
 # CHANGELOG
 
 
+## v0.3.0
+
+
+### 21 Nov 2026
+
+- ([`fcd7438`](https://github.com/russmatney/log.gd/commit/fcd7438)) docs: link to codeberg, godot asset store
+
+### 25 Oct 2026
+
+- ([`0554850`](https://github.com/russmatney/log.gd/commit/0554850)) fix: don't wrap public Log funcs twice
+
+  > Gathering the variadic ...msgs twice was double wrapping the public Log
+  > print funcs, causing everything to print in an array format.
+
+
+### 11 Oct 2026
+
+- ([`dea9050`](https://github.com/russmatney/log.gd/commit/dea9050)) fix: tests restored
+
+### 10 Oct 2026
+
+- ([`b2a4c24`](https://github.com/russmatney/log.gd/commit/b2a4c24)) refactor: dropping more prettyOpts fields
+
+  > Finally moving stack calc into the callsite func, and a bunch of other
+  > clean up. newline tests not passing yet.
+
+- ([`0645cd9`](https://github.com/russmatney/log.gd/commit/0645cd9)) fix: more clean up, decoupling PrettyOpts from LogConfig
+
+  > Sometimes, we apply the LogConfig to PrettyOpts (in public funcs where
+  > it is expected). But for 'internal' calls to to_pretty, loggers allow
+  > PrettyOpts to win.
+
+- ([`ebb43d1`](https://github.com/russmatney/log.gd/commit/ebb43d1)) fix: ctx duplication where necessary, minimal object dupes overall
+
+  > Restores the tests with a few Ctx duplications. Much more minimal than
+  > the assoc dictionary duplication we were doing before.
+
+- ([`f699353`](https://github.com/russmatney/log.gd/commit/f699353)) fix: now there's a bug for ya
+
+  > disable_colors func name vs disable_color var name. naming conventions
+  > for bools/funcs/methods are important! Good luck finding this one.
+
+- ([`80dfab6`](https://github.com/russmatney/log.gd/commit/80dfab6)) wip: color_wrap using colorOpts, minimizing
+- ([`6ea119c`](https://github.com/russmatney/log.gd/commit/6ea119c)) wip: extracting ctx
+
+  > pulling the mutable bit out of PrettyOpts
+
+- ([`6a45567`](https://github.com/russmatney/log.gd/commit/6a45567)) fix: restore tests
+
+  > Not very clean yet, but the tests are passing
+
+- ([`5266eb9`](https://github.com/russmatney/log.gd/commit/5266eb9)) refactor: extract dictionary usage into PrettyOpts object
+
+  > It'd be interesting to compare the performance before/after this change
+  > - dictionaries vs objects.
+  > 
+  > Assoc is duplicating the dict/obj everytime, which feels excessive - i
+  > wonder if there's a cheaper way without so much object re-creation.
+
+
+### 4 Oct 2026
+
+- ([`c19987b`](https://github.com/russmatney/log.gd/commit/c19987b)) fix: drop dead _truncate_string func
+
+  > This now lives at LogTable.truncate_string
+
+- ([`280775d`](https://github.com/russmatney/log.gd/commit/280775d)) chore: drop get_stack in tables, use build_prefix
+- ([`988ce54`](https://github.com/russmatney/log.gd/commit/988ce54)) fix: couple more double newlines
+- ([`02091a1`](https://github.com/russmatney/log.gd/commit/02091a1)) docs: minor docstring fixups
+- ([`93cb6fb`](https://github.com/russmatney/log.gd/commit/93cb6fb)) refactor: formatting clean up
+
+  > newlines, early conditional returns, minor docs fixes.
+
+- ([`edfa281`](https://github.com/russmatney/log.gd/commit/edfa281)) readme: godot 4.4 and earlier quick note
+
+  > Turns out variadic came in godot 4.5, which we happened to drop
+  > yesterday b/c our version of gdunit also now fails on 4.4, probably for
+  > the same reason.
+  > 
+  > Tests are already passing on 4.5+ for the refactor branch. I cut a
+  > branch for godot-4.4 that we can carry onwards if anyone needs it, but
+  > we can wait and see. I expect most folks are on to 4.5+ by now.
+
+- ([`1548607`](https://github.com/russmatney/log.gd/commit/1548607)) fix: quick fix for source prefix
+
+  > A larger prefix refactor is coming in the next release, but it'll
+  > include some backward-incompatibility (that refactor also depends on
+  > gdscript's new variadic syntax).
+
+- ([`5cf1781`](https://github.com/russmatney/log.gd/commit/5cf1781)) fix: use log.to_pretty width to calc column width
+
+  > The column width count was off b/c gdscript str of strings includes
+  > quotes around those strings - log_core.to_pretty drops those strings.
+  > 
+  > This pulls out a column_width func for tables, where we might need to be
+  > smart at some point. For now, taking the length of a colorless
+  > to_pretty() call works for basic child array/dict cases.
+  > 
+  > Could probably use a few unit tests on the LogTable.column_width func,
+  > or some attention to using the passed logger's config (vs the global Log).
+
+
+### 3 Oct 2026
+
+- ([`3146f1a`](https://github.com/russmatney/log.gd/commit/3146f1a)) refactor: abstract prefixes out of to_printable
+
+  > This groups the prefix funcs and cleans up to_printable a bit. Should
+  > make it easier to add/manage the growing feature set, and set us up to
+  > support per-logger format strings.
+  > 
+  > This adds a couple to_printable variants that can clean up some of the
+  > test code - seems worth it to not test color logic everywhere.
+
+- ([`0309e1d`](https://github.com/russmatney/log.gd/commit/0309e1d)) refactor: move core fns to use variadic
+- ([`9d731ac`](https://github.com/russmatney/log.gd/commit/9d731ac): Lily) Split logs across multiple files
+- ([`6831fb7`](https://github.com/russmatney/log.gd/commit/6831fb7): Lily) Merge pull request #23 from gofastlily/float-precision
+
+  > Adjust logged floating point precision
+
+- ([`6a7b0e6`](https://github.com/russmatney/log.gd/commit/6a7b0e6)) chore: gdignore bb dir
+- ([`fa3de94`](https://github.com/russmatney/log.gd/commit/fa3de94)) chore: look up godot binary in bb
+
+  > This was hard-coded to a nixos setup - using which is a bit more
+  > portable.
+
+- ([`9fd01e8`](https://github.com/russmatney/log.gd/commit/9fd01e8): Lily) Merge pull request #26 from russmatney/add-ai-policy
+
+  > docs: address ai-assisted contribs
+
+- ([`365c780`](https://github.com/russmatney/log.gd/commit/365c780)) docs: address ai-assisted contribs
+
+  > Hopefully it's not too lazy to just adopt Godot's policy.
+  > Feels like a good fit for us, and it's well articulated.
+
+- ([`453bb77`](https://github.com/russmatney/log.gd/commit/453bb77)) ci: drop 4.4
+
+  > We're a few versions passed 4.4 now, so this seems fine.
+  > 
+  > Note that Log (for now) still runs on 4.4 - the issue is really that
+  > gdunit doesn't, and our ci setup doesn't run multiple versions of
+  > gdunit. (though i suppose it could... but that's not the rabbit hole
+  > we're going down today).
+
+- ([`95650e2`](https://github.com/russmatney/log.gd/commit/95650e2)) ci: don't publish-report, add 4.7.2
+- ([`9c71ff0`](https://github.com/russmatney/log.gd/commit/9c71ff0): Lily) Cleanup log.gd and log_core.gd
+
+### 2 Oct 2026
+
+- ([`656f6f4`](https://github.com/russmatney/log.gd/commit/656f6f4): Lily) Don't redefine LogCore.log_prefix()
+- ([`6ffbc86`](https://github.com/russmatney/log.gd/commit/6ffbc86): Lily) Add variety to named loggers in ExampleScene
+- ([`d3a447f`](https://github.com/russmatney/log.gd/commit/d3a447f): Lily) The core of Log should be private
+
+### 1 Oct 2026
+
+- ([`b966d0c`](https://github.com/russmatney/log.gd/commit/b966d0c): Lily) Add a simple test for named loggers
+- ([`77ac1e1`](https://github.com/russmatney/log.gd/commit/77ac1e1): Lily) Rename logger to core and use constants in plugin.gd
+- ([`c08a0c5`](https://github.com/russmatney/log.gd/commit/c08a0c5): Lily) Rename LogGDLogger to LogCore
+- ([`91f5e08`](https://github.com/russmatney/log.gd/commit/91f5e08): Lily) Fix tests and cleanup Log as per Godot's Style Guide (sort of).
+
+### 30 Sep 2026
+
+- ([`3400b69`](https://github.com/russmatney/log.gd/commit/3400b69): Lily) First attempt at named loggers
+- ([`21e9291`](https://github.com/russmatney/log.gd/commit/21e9291): Lily) Factor LogGDLogger out of Log
+- ([`b24eeda`](https://github.com/russmatney/log.gd/commit/b24eeda): Lily) LogConfig cleanup
+- ([`5d588ed`](https://github.com/russmatney/log.gd/commit/5d588ed): Lily) Extracted config to LogConfig
+
+### 28 Sep 2026
+
+- ([`a8d4fcc`](https://github.com/russmatney/log.gd/commit/a8d4fcc): Lily) Removed rogue print statement
+- ([`efb77c0`](https://github.com/russmatney/log.gd/commit/efb77c0): Lily) Add example for escaped output.
+- ([`f4c755b`](https://github.com/russmatney/log.gd/commit/f4c755b): Lily) Adjust padding for Arrays (only sometimes right now...), add more examples.
+- ([`bca4b0b`](https://github.com/russmatney/log.gd/commit/bca4b0b): Lily) Column alignment and optional padding
+
+### 27 Sep 2026
+
+- ([`bb2f68c`](https://github.com/russmatney/log.gd/commit/bb2f68c): Lily) Optionally escape the delimeter
+- ([`8a2275c`](https://github.com/russmatney/log.gd/commit/8a2275c): Lily) Table class
+- ([`3277566`](https://github.com/russmatney/log.gd/commit/3277566): Lily) Adjust logged floating point precision
+
+### 30 Aug 2026
+
+- ([`0536b16`](https://github.com/russmatney/log.gd/commit/0536b16)) feat: test on 4.6 and 4.7
+- ([`3a2b3b2`](https://github.com/russmatney/log.gd/commit/3a2b3b2)) feat: bump to 4.7
+
+  > Everything seems fine! Dropping the process_id bit to get tests passing again.
+
+- ([`676d138`](https://github.com/russmatney/log.gd/commit/676d138)) chore: drop plug.gd
+- ([`3d48725`](https://github.com/russmatney/log.gd/commit/3d48725)) chore: misc bb clj-kondo cruft
+
+### 31 Jul 2026
+
+- ([`ae63b17`](https://github.com/russmatney/log.gd/commit/ae63b17): Lily) Update documentation
+- ([`02470f7`](https://github.com/russmatney/log.gd/commit/02470f7): Lily) Editable delimiter, alignment as array
+- ([`2a0d837`](https://github.com/russmatney/log.gd/commit/2a0d837): Lily) Use Log.TableConfig
+- ([`fe6c60e`](https://github.com/russmatney/log.gd/commit/fe6c60e): Lily) Quick documentation pass
+- ([`ae9841c`](https://github.com/russmatney/log.gd/commit/ae9841c): Lily) Clean up examples
+- ([`81e6f62`](https://github.com/russmatney/log.gd/commit/81e6f62): Lily) Cleanup Log.table() and ExampleScene
+- ([`6a43fbf`](https://github.com/russmatney/log.gd/commit/6a43fbf): Lily) Initial pass at logging tabular data
+
+### 21 Feb 2026
+
+- ([`d0e66fb`](https://github.com/russmatney/log.gd/commit/d0e66fb)) fix: misc 4.6 updates, switching to addonz
+- ([`a74571b`](https://github.com/russmatney/log.gd/commit/a74571b)) fix: update gdunit to v6.1.1, drop /test
+
+### 8 Feb 2026
+
+- ([`1987ec5`](https://github.com/russmatney/log.gd/commit/1987ec5)) fix: only include addons/log in release exports
+
+  > The 'reload_current_scene' mini-plugin is something I use in every
+  > project (along with log.gd), which is why it has hung around for so
+  > long. It's completely undocumented and probably confusing for most users
+  > - I'll move it to 'bones' or it's own plugin at some point.
+
+
+### 10 Jan 2026
+
+- ([`33e59a0`](https://github.com/russmatney/log.gd/commit/33e59a0)) docs: update contributors!
+- ([`9565ee1`](https://github.com/russmatney/log.gd/commit/9565ee1)) refactor: extract get_color complexity from color_wrap
+
+  > This color stuff should probably be abstracted, could use some unit
+  > tests.
+  > 
+  > Also adds a few todos for colorizing process_ids
+
+- ([`c00fe16`](https://github.com/russmatney/log.gd/commit/c00fe16)) fix: add missing constant
+
+### 24 Dec 2025
+
+- ([`b09416e`](https://github.com/russmatney/log.gd/commit/b09416e): Fox-Alpha) Fix: timestamp overwrites process_id in formatted string
+- ([`4aa0c37`](https://github.com/russmatney/log.gd/commit/4aa0c37): Fox-Alpha) Add: New Feature, optional add ProcessID after Timestamp ===: As additional Info when you start more then one instance for debugging, e.g. Multiplayer 1 Server / multi Client's
+
 ## v0.2.2
 
 
 ### 21 Dec 2025
 
+- ([`505f17c`](https://github.com/russmatney/log.gd/commit/505f17c)) release: new version: v0.2.2
 - ([`1eaf898`](https://github.com/russmatney/log.gd/commit/1eaf898)) misc: test fixups
 
 ### 20 Dec 2025
