@@ -27,7 +27,8 @@
 # Log.gd, a Godot pretty printer
 
 > Available on the [Godot Asset
-> Library](https://godotengine.org/asset-library/asset/2696) and [Github](https://github.com/russmatney/log.gd).
+> Library](https://godotengine.org/asset-library/asset/2696), [Godot Asset Store](https://store.godotengine.org/asset/danger-russ-games/log-gd/),
+> [Github](https://github.com/russmatney/log.gd), [Codeberg](https://codeberg.org/danger-russ-games/Log.gd).
 
 > I gave [a Lightning talk](https://youtu.be/4Fv9YXHMA_U) about this addon at
 > Godot Con Boston! Here are [the
